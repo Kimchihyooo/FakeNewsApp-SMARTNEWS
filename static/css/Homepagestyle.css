@@ -339,6 +339,7 @@ nav a:hover {
 .img-placeholder {
     width: 350px;
     height: 350px;
+
     display: flex;
     align-items: center;
     justify-content: center;
