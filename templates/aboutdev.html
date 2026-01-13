@@ -3,71 +3,202 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us - CredibilityScan</title>
+    <title>How it Works - CredibilityScan</title>
     <link rel="stylesheet" href="../static/css/aboutdevstyle.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Oswald:wght@200..700&family=Rubik:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tutorial.css" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-<!-- Header -->
-        <header class="navbar">
-            <div class="logo">
-                <h1>CredibilityScan</h1>
-            </div>
 
-            <!-- Hamburger Toggle Checkbox (hidden) -->
-            <input type="checkbox" id="nav-toggle" class="nav-toggle">
-            <!-- Hamburger Icon Label -->
-            <label for="nav-toggle" class="nav-toggle-label">
+    <header class="navbar">
+        <div class="logo">
+            <h1>CredibilityScan</h1>
+        </div>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle">
+        <label for="nav-toggle" class="nav-toggle-label">
             <span></span>
-            </label>
+        </label>
+        <nav class="nav-menu">
+            <div class="bordernav">
+                <a href="/">Home</a>
+                <a href="detector">Detector</a>
+                <a href="about">How to Use?</a>
+            </div>
+        </nav>
+    </header>
 
-            <!-- Navigation Menu Wrapper -->
-            <nav class="nav-menu">
-                <div class="bordernav">
-                    <a href="/">Home</a>
-                    <a href="detector">Detector</a>
-                    <a href="about">About Us</a>
+    <main class="tutorial-container">
+        
+        <div class="header-section reveal">
+            <h2>How to Use</h2>
+            <p>For Text Content</p>
+        </div>
+
+        <section class="step-row reveal">
+            <div class="step-text">
+                <span class="step-number">01</span>
+                <h3>Copy the Content</h3>
+                <p>Navigate to the news site or social media platform. Highlight the suspicious Philippine news article and copy it to your clipboard.</p>
+                <div class="step-action">
+                    <i class="fa-regular fa-copy"></i> <span>Ctrl + C</span>
                 </div>
-            </nav>
-        </header>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <img src="../static/howtousepics/copytext.png" class="fa-solid fa-image">
+                    
+                    </div>
+            </div>
+        </section>
 
-    <!--MEET OUR DEVELOPMENT TEAM-->
-    <div class="team-hero">
-        <h1 class="Meet">Meet Our Development Team</h1>
-        <p class="Meet">A  passionate  group  of  students  committed  to  fighting  fake news  through  Machine  Learning.</p>
-    </div>
-    <!--TEAMCONTAINER-->
-    <div class="team-container">
-        <div class="team-card">
-            <img src="../static/pictures/jerry.png">
-            <h3>Jerry Mariano</h3>
+        <section class="step-row reverse reveal">
+            <div class="step-text">
+                <span class="step-number">02</span>
+                <h3>Paste into Detector</h3>
+                <p>Go to the CredibilityScan Detector page. Click inside the text area and paste your content.</p>
+                <div class="step-action">
+                    <i class="fa-regular fa-paste"></i> <span>Ctrl + V</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <img src="../static/howtousepics/pastetext.png" class="pastetext">
+                </div>
+            </div>
+        </section>
+
+        <section class="step-row reveal">
+            <div class="step-text">
+                <span class="step-number">03</span>
+                <h3>Analyze Content</h3>
+                <p>Hit the <strong>Analyze</strong> button. The model will process the text checking for credibility patterns.</p>
+                <div class="step-action">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> <span>Click Analyze</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <img src="../static/howtousepics/analyze.png">
+                </div>
+            </div>
+        </section>
+
+        <section class="step-row reverse reveal">
+            <div class="step-text">
+                <span class="step-number">04</span>
+                <h3>View Results</h3>
+                <p>Review the output. The system will flag the content as Real or Fake based on the calculated probability score. The system will also provide supporting evidences from reputable Philippine news sources. </p>
+                <div class="step-action">
+                    <i class="fa-solid fa-square-check"></i> <span>See Result</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <img src="../static/howtousepics/result.png">
+                </div>
+            </div>
+        </section>
+        </main>
+
+        <!--Video Content-->
+        <main class="tutorial-containervid">
+        
+        <div class="header-section reveal">
+            <h2>How to Use</h2>
+            <p>For Video Content</p>
         </div>
 
-        <div class="team-card">
-            <img src="../static/pictures/carlos.jpg">
-            <h3>Carlos John De Jesus</h3>
-        </div>
-    </div>
-    <div class="team-container2">
-        <div class="team-card">
-            <img src="../static/pictures/coie.jpg">
-            <h3>Wreigh Francoie Flores</h3>
-        </div>
+        <section class="step-row reveal">
+            <div class="step-text">
+                <span class="step-number">01</span>
+                <h3>Copy the Video URL</h3>
+                <p>Copy to your clipboard the url of the suspicious Philippine Video News content from any platforms like YouTube, Tiktok, Facebook, Instagram, etc.</p>
+                <div class="step-action">
+                    <i class="fa-regular fa-copy"></i> <span>Ctrl + C</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Upload Screenshot: Copying Text</span>
+                    </div>
+            </div>
+        </section>
 
-        <div class="team-card">
-            <img src="../static/pictures/josh.jpg">
-            <h3>Josh Melvin Lazaro</h3>
-        </div>
-    </div>
+        <section class="step-row reverse reveal">
+            <div class="step-text">
+                <span class="step-number">02</span>
+                <h3>Paste into Detector</h3>
+                <p>Go to the CredibilityScan Detector page. Click the Video tab and paste your video URL.</p>
+                <div class="step-action">
+                    <i class="fa-regular fa-paste"></i> <span>Ctrl + V</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Upload Screenshot: Pasting Text</span>
+                </div>
+            </div>
+        </section>
 
-    <!--OBJECTIVES-->
-    <div class="objectivescontainer">
-        <h1 class="Obj">Our Objective</h1>
-        <p class="Obj1"> To develop a user-friendly AI tool that uses the Random Forest algorithm to combat online misinformation.</p>
-    </div>
+        <section class="step-row reveal">
+            <div class="step-text">
+                <span class="step-number">03</span>
+                <h3>Analyze Content</h3>
+                <p>Hit the <strong>Analyze Video</strong> button. The model will process the video if manipulated by Deepfake Technology and collects supporting evidences from Reputable Philippine News Sources</p>
+                <div class="step-action">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> <span>Click Analyze</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Upload Screenshot: Clicking Button</span>
+                </div>
+            </div>
+        </section>
 
-    <div class="FooterContainer">
-        </div>
+        <section class="step-row reverse reveal">
+            <div class="step-text">
+                <span class="step-number">04</span>
+                <h3>View Results</h3>
+                <p>Review the output. The system will flag the Video content as Real or Fake based on the model's probability score. The system will also show the collected supporting evidences from reputable Philippine news sources. </p>
+                <div class="step-action">
+                    <i class="fa-solid fa-square-check"></i> <span>See Result</span>
+                </div>
+            </div>
+            <div class="step-visual">
+                <div class="img-placeholder">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Upload Screenshot: Final Result</span>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="final-cta reveal">
+            <a href="/detector" class="btn-primary">Start Scanning Now</a>
+        </div>   
+
+    </main>
+    
+
+    <script>
+        // Simple Intersection Observer to trigger animations on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 }); // Trigger when 10% of the item is visible
+
+        document.querySelectorAll('.reveal').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>

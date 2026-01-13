@@ -120,35 +120,35 @@ nav a:hover {
 }
 
 .nav-toggle-label {
-  display: none; /* Hide hamburger label on desktop */
-  cursor: pointer;
-  width: 30px;
-  height: 25px;
-  position: relative;
-  z-index: 1001; 
+    display: none; /* Hide hamburger label on desktop */
+    cursor: pointer;
+    width: 30px;
+    height: 25px;
+    position: relative;
+    z-index: 1001; 
 }
 
 /* Hamburger Icon Lines */
 .nav-toggle-label span,
 .nav-toggle-label span::before,
 .nav-toggle-label span::after {
-  display: block;
-  background-color: #080505;
-  height: 3px;
-  width: 100%;
-  border-radius: 2px;
-  position: absolute;
-  transition: all 0.3s ease-in-out;
+    display: block;
+    background-color: #080505;
+    height: 3px;
+    width: 100%;
+    border-radius: 2px;
+    position: absolute;
+    transition: all 0.3s ease-in-out;
 }
 
 .nav-toggle-label span::before {
-  content: '';
-  top: -8px;
+    content: '';
+    top: -8px;
 }
 
 .nav-toggle-label span::after {
-  content: '';
-  top: 8px;
+    content: '';
+    top: 8px;
 }
 
 /* Hamburger Animation on Click (transform to 'X') */
@@ -157,116 +157,216 @@ nav a:hover {
 }
 
 .nav-toggle:checked ~ .nav-toggle-label span::before {
-  transform: rotate(45deg);
-  top: 0;
+    transform: rotate(45deg);
+    top: 0;
 }
 
 .nav-toggle:checked ~ .nav-toggle-label span::after {
-  transform: rotate(-45deg);
-  top: 0;
+    transform: rotate(-45deg);
+    top: 0;
 }
 /* === END HAMBURGER STYLES === */
 
+.tutorial-wrapper{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+    min-height: 650px;
+    max-width: 100%;
+    padding-top: 50px; 
+    box-sizing: border-box;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: rgb(0, 0, 0);   
+}
 
-/*ABOUTUS*/
-.team-hero{
-    /* MODIFIED - Adjusted margin for desktop navbar */
-    margin-top: 50px;
-    padding: 80px 20px;
-    text-align: center;
-    font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-style: normal;
+/* === MAIN CONTAINER === */
+.tutorial-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 120px 20px 80px 20px; /* Top padding clears the fixed navbar */
+    overflow-x: hidden; /* Prevents horizontal scroll from animations */   
+    max-width: 100%;    
     background: linear-gradient(180deg, #88b2eb 0%, #fcfafa 100%);
+    background-size: cover; 
+    background-repeat: no-repeat;
+    color: rgb(0, 0, 0);                   
 }
-.Meet{
-    text-shadow: 0 50px 50px rgba(0,0,0,0.05);
+.tutorial-containervid {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 120px 20px 80px 20px; /* Top padding clears the fixed navbar */
+    overflow-x: hidden; /* Prevents horizontal scroll from animations */   
+    max-width: 100%;    
+    background: linear-gradient(180deg, #fcfafa 0%, #88b2eb 100%);
+    background-size: cover; 
+    background-repeat: no-repeat;
+    color: rgb(0, 0, 0);                   
 }
 
 
+/* === HEADER === */
+.header-section {
+    text-align: center;
+    margin-bottom: 80px;
+}
 
-.team-container {
-    margin-top: 50px;
+.header-section h2 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 3rem;
+    color: #080505;
+    margin-bottom: 10px;
+}
+
+.header-section p {
+    font-family: 'Rubik', sans-serif;
+    color: #666;
+    font-size: rem;
+}
+
+/* === THE ZIG-ZAG ROWS === */
+.step-row {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6rem; /* 32px */
+    align-items: center; /* Vertically Aligns Text with Image */
+    justify-content: space-between;
+    margin-bottom: 100px; /* Space between steps */
+    gap: 50px;
+    min-height: 40vh; /* Ensures each step takes up decent vertical space */
 }
 
-.team-container2{
-    margin-top: 50px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6rem;
+/* Reverse the layout for even numbers (Image Left, Text Right) */
+.step-row.reverse {
+    flex-direction: row-reverse;
 }
 
-/* Individual Team Card Styles */
-.team-card {
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(28, 42, 78, 0.08);
-    padding: 2rem;
-    width: 250px;
-    transition: transform 0.3s, box-shadow 0.3s;
+/* === TEXT CONTENT === */
+.step-text {
+    flex: 1;
+    padding: 20px;
+}
+
+.step-number {
+    display: inline-block;
+    font-family: 'Recoleta', sans-serif;
+    font-size: 4rem;
+    color: #f0f4ff; 
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: -20px;
+    position: relative;
+    z-index: -1;
+    text-shadow: 2px 2px 0px #3B82F6; 
+}
+
+.step-text h3 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #080505;
+}
+
+.step-text p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.step-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f5f9;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    color: #3B82F6;
     font-family: 'Rubik', sans-serif;
 }
 
-.team-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 12px 30px rgba(28, 42, 78, 0.12);
+/* === VISUAL / IMAGE PLACEHOLDER === */
+.step-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
 }
 
-/* Team Member Image */
-.team-card img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%; /* Makes the image a circle */
-    object-fit: cover; /* Prevents image distortion */
-    margin-bottom: 1.5rem; /* 24px */
-    border: 4px solid #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* The Placeholder Box */
+.img-placeholder {
+    width: 100%;
+    max-width: 500px;
+    height: 300px; /* Fixed height for consistency */
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* Adds a subtle floating animation to the image container */
+    animation: float 6s ease-in-out infinite;
 }
 
-/* Name and Role Text */
-.team-card h3 {
-    font-size: 1.1rem; /* 20px */
-    color: #1c2a4e;
-    margin: 0 0 0.25rem 0; /* 4px bottom margin */
+/* Use this class when you add real images later */
+.img-placeholder img {
+    width: 150%;
+    height: 200%;
+    opacity: 0.9;
+     /* Ensures image fills box without stretching */
+    border-radius: 10px;
 }
 
-.team-card span {
-    font-size: 0.6rem; /* 14.4px */
-    color: #007bff; /* A highlight color for the role */
-    font-weight: 600;
+
+
+
+/* === ANIMATIONS === */
+
+/* Floating Animation Keyframes */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
 }
 
-/*OBJ*/
-.objectivescontainer{
-    margin-top: 70px;
-    padding: 80px 20px;
+/* Scroll Reveal Setup */
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* CTA Button */
+.final-cta {
     text-align: center;
-    font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
+    margin-top: 50px;
+}
+
+.btn-primary {
+    background-color: #3B82F6;
+    color: white;
+    padding: 18px 40px;
+    border-radius: 50px;
+    font-family: 'Rubik', sans-serif;
     font-weight: 600;
-    font-style: normal;
-    background: linear-gradient(180deg, #fcfafa 0%, #88b2eb 100%);
-}
-.Obj{
-    text-shadow: 0 50px 50px rgba(0,0,0,0.05);
-    font-size: 80px;
-    justify-items: baseline;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
 }
 
-.Key{
-    text-align: left;
+.btn-primary:hover {
+    background-color: #2563eb;
+    transform: scale(1.05);
 }
-
 /* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
     
@@ -325,36 +425,18 @@ nav a:hover {
         text-align: center;
         margin-left: 0; /* Reset desktop margin */
     }
-
-    /* === NEW CONTENT STYLES === */
-    .team-hero {
-        /* Adjust margin for mobile navbar */
-        margin-top: 50px; 
-        /* Reduce padding for smaller screens */
-        padding: 40px 20px;
-    }
-
-    .team-container,
-    .team-container2 {
-        /* Stack cards vertically */
-        flex-direction: column;
-        gap: 2rem; /* Reduce gap */
-        margin-top: 30px;
-    }
-
-    .team-card {
-        /* Make cards wider on mobile */
-        width: 85%;
-        padding: 1.5rem;
+    .step-row, .step-row.reverse {
+        flex-direction: column-reverse; /* Puts image on top on mobile */
         text-align: center;
+        gap: 30px;
     }
 
-    .objectivescontainer {
-        padding: 40px 20px;
+    .step-number {
+        font-size: 3rem;
     }
-
-    .Obj {
-        /* Reduce font size for mobile */
-        font-size: 2.5rem; 
+    
+    .img-placeholder {
+        height: 200px; /* Smaller images on mobile */
     }
 }
+
