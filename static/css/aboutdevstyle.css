@@ -102,7 +102,7 @@ nav a{
     margin-left: 50px;
     font-family: "Rubik", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 600;
+    font-weight: normal;
     font-style: normal;
     border-radius: 8px;
     padding: 8px 16px;
@@ -369,74 +369,112 @@ nav a:hover {
 }
 /* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
-    
+
+    /* 1. Navbar & Menu Fixes */
     .navbar {
-        /* Keep logo and hamburger on one line */
-        flex-direction: row;
-        flex-wrap: wrap; /* Allows menu to drop below */
-        padding: 20px 30px; /* Consistent padding */
+        padding: 15px 20px; /* Reduced padding */
+        height: auto; /* Allow height to expand for menu */
+        flex-wrap: wrap; /* Allows menu to wrap below logo */
     }
 
-    .logo {
-        margin-bottom: 0; /* Remove bottom margin */
-    }
-    
     .logo h1 {
-        margin: 0; /* Remove top margin */
+        font-size: 1.2rem; /* Smaller logo text */
     }
 
-    /* Show hamburger label */
     .nav-toggle-label {
-        display: block;
+        display: block; /* Show hamburger icon */
     }
 
-    /* Hide nav menu by default */
     .nav-menu {
         display: none;
-        width: 100%; /* Take full width */
-        flex-direction: column;
-        align-items: center;
-        background-color: #ffffff; /* Add background */
-        /* Position it below the logo/hamburger row */
-        order: 3; /* Places it at the end of the flex items */
-        padding-top: 10px;
-        /* Add shadow to separate from content */
-        box-shadow: 0 20px 20px -10px rgba(0,0,0,0.05); 
-    }
-
-    /* Show menu when checkbox is checked */
-    .nav-toggle:checked ~ .nav-menu {
-        display: flex;
-    }
-
-    /* Style links for mobile dropdown */
-    .nav-menu .bordernav {
-        display: flex;
-        flex-direction: column;
         width: 100%;
+        background-color: #ffffff;
+        padding: 20px 0;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        position: absolute; /* Detach from flow */
+        top: 70px; /* Push below navbar */
+        left: 0;
+        flex-direction: column;
         align-items: center;
+    }
+
+    .nav-toggle:checked ~ .nav-menu {
+        display: flex; /* Show menu when checked */
     }
 
     nav a {
-        /* Stack links vertically */
-        margin: 5px 0;
-        padding: 10px 15px;
-        width: 90%;
+        margin: 10px 0; /* Vertical spacing for links */
+        width: 100%;
         text-align: center;
-        margin-left: 0; /* Reset desktop margin */
+        display: block;
     }
-    .step-row, .step-row.reverse {
-        flex-direction: column-reverse; /* Puts image on top on mobile */
-        text-align: center;
-        gap: 30px;
+
+    /* 2. Container Spacing */
+    .tutorial-container, 
+    .tutorial-containervid {
+        padding: 100px 20px 40px 20px; /* Less padding on sides/top */
+    }
+
+    /* 3. Typography Scaling */
+    .header-section h2 {
+        font-size: 2rem; /* Smaller headings */
     }
 
     .step-number {
-        font-size: 3rem;
+        font-size: 2.5rem; /* Smaller step numbers */
+    }
+
+    .step-text h3 {
+        font-size: 1.5rem; /* Smaller step titles */
+    }
+
+    .step-text p {
+        font-size: 1rem;
+    }
+
+    /* 4. Step Layout (Stacking) */
+    /* Since your HTML structure is Text First -> Visual Second for ALL steps,
+       using column-reverse puts the Image on TOP for all steps. */
+    .step-row, 
+    .step-row.reverse {
+        flex-direction: column-reverse; 
+        gap: 30px;
+        margin-bottom: 60px;
+        text-align: center; /* Center text for mobile */
+    }
+
+    .step-text {
+        padding: 0;
+    }
+
+    /* 5. Image & Placeholder Fixes */
+    .step-visual {
+        width: 100%;
+    }
+
+    .img-placeholder {
+        width: 100%;           /* Full width of the mobile screen */
+        height: 250px;         /* Fixed height so it doesn't get too tall */
+        overflow: hidden;      /* essential: cuts off anything that tries to spill out */
+        display: flex;         /* centers the image */
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;        /* centers the box itself */
+    }
+
+    /* 2. Tame the image inside */
+    .img-placeholder img {
+        width: 100% !important;      /* Force image to fit width */
+        height: 100% !important;     /* Force image to fit height */
+        object-fit: contain;         /* SHOWS WHOLE IMAGE: Ensures nothing is cut off */
+        border-radius: 8px;
+        
+        /* Reset any desktop shifting/zooming */
+        transform: none !important;  
+        margin: 0 !important;
     }
     
-    .img-placeholder {
-        height: 200px; /* Smaller images on mobile */
+    .step-action {
+        justify-content: center; /* Centers the button content */
     }
 }
-

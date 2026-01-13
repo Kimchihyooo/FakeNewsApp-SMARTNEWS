@@ -15,20 +15,22 @@ body {
 /* Navbar */
 .navbar {
     height: 80px;
-    padding: 0 30px;
+    padding: 20px 30px; /* Note: Your code had two paddings; this one wins */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;      /* Ensures it fills the entire page width */
-    left: 0;          /* Makes sure the fixed position spans from the left edge */
-    top: 0;      
-    padding-top: 100px;     /* Anchors it to the top */
-    padding: 20px 30px;
+    width: 100%;
+    /* left: 0; top: 0;  <-- These were doing nothing before */
+    
+    /* === ADD THIS === */
+    position: relative; 
+    /* ================ */
+    
     box-sizing: border-box;
     background-color: #ffffff;
     box-shadow: 0 30px 30px rgba(0,0,0,0.05);
-    z-index: 1000;    /* Stays above content */
+    z-index: 1000;   
 }
 
 .logo {
@@ -58,7 +60,7 @@ nav a{
     margin-left: 50px;
     font-family: "Rubik", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 600;
+    font-weight: normal;
     font-style: normal;
     border-radius: 8px;
     padding: 8px 16px;
@@ -526,16 +528,25 @@ input[type="url"].detector-textarea {
     /* Hide nav menu by default */
     .nav-menu {
         display: none;
-        width: 100%; /* Take full width */
+        
+        /* === CHANGE THESE === */
+        position: absolute;      /* Take it out of the normal flow */
+        top: 100%;               /* Position it exactly at the bottom of the navbar */
+        left: 0;
+        width: 100%;
+        z-index: 999;            /* Ensure it stays on top of everything */
+        /* ==================== */
+
         flex-direction: column;
         align-items: center;
-        background-color: #ffffff; /* Add background */
-        /* Position it below the logo/hamburger row */
-        order: 3; /* Places it at the end of the flex items */
+        background-color: #ffffff;
+        
+        /* order: 3; <-- You can remove this, absolute positioning overrides flex order */
+        
         padding-top: 10px;
-        /* Add shadow to separate from content */
         box-shadow: 0 20px 20px -10px rgba(0,0,0,0.05); 
     }
+
 
     /* Show menu when checkbox is checked */
     .nav-toggle:checked ~ .nav-menu {
@@ -543,7 +554,7 @@ input[type="url"].detector-textarea {
     }
 
     /* Style links for mobile dropdown */
-    .nav-menu .bordernav {
+    .nav-menu .bordnav {
         display: flex;
         flex-direction: column;
         width: 100%;
