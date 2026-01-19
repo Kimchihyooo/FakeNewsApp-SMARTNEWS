@@ -435,3 +435,70 @@ window.deleteItem = function(event, id) {
     localStorage.setItem('credibility_history', JSON.stringify(history));
     filterHistoryItems(); 
 };
+
+// =========================================================
+// 9. AUTO-FETCH VIDEO METADATA ON PASTE/TYPE
+// =========================================================
+const videoInput = document.getElementById('videoUrlInput');
+const previewCard = document.getElementById('video-preview-card');
+let debounceTimer;
+
+if (videoInput && previewCard) {
+    videoInput.addEventListener('input', () => {
+        const url = videoInput.value.trim();
+        
+        // Hide if empty
+        if (!url) {
+            previewCard.style.display = 'none';
+            return;
+        }
+
+        // Show "Loading" state immediately
+        previewCard.style.display = 'block';
+        document.getElementById('preview-title').innerText = "Fetching details...";
+        document.getElementById('preview-author').innerText = "...";
+        document.getElementById('preview-thumb').src = "https://via.placeholder.com/120x90?text=Loading"; // Placeholder
+
+        // Clear previous timer (Debounce)
+        clearTimeout(debounceTimer);
+
+        // Wait 500ms after user stops typing to send request
+        debounceTimer = setTimeout(async () => {
+            try {
+                const formData = new FormData();
+                formData.append('video_url', url);
+
+                const res = await fetch('/fetch-video-metadata', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error("Invalid URL");
+                
+                const data = await res.json();
+                
+                if (data.status === "success") {
+                    // Update UI with Real Data
+                    document.getElementById('preview-title').innerText = data.title;
+                    document.getElementById('preview-thumb').src = data.thumbnail;
+                    document.getElementById('preview-author').innerText = data.author;
+                    document.getElementById('preview-platform').innerText = data.platform;
+                    
+                    // Format Duration (Seconds -> MM:SS)
+                    const mins = Math.floor(data.duration / 60);
+                    const secs = data.duration % 60;
+                    document.getElementById('preview-duration').innerText = 
+                        `${mins}:${secs.toString().padStart(2, '0')}`;
+                        
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (err) {
+                // Show Error State
+                document.getElementById('preview-title').innerText = "❌ Video not found or invalid URL";
+                document.getElementById('preview-thumb').src = "https://via.placeholder.com/120x90?text=Error";
+                document.getElementById('preview-author').innerText = "Error";
+            }
+        }, 600); // 600ms delay
+    });
+}
