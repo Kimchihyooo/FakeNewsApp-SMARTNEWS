@@ -9,117 +9,90 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Oswald:wght@200..700&family=Rubik:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
     <style>
-        /* Simple style for video error box */
-        .video-error-box {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fca5a5;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-        /* Style for transcription box */
-        .transcription-box {
-            max-height: 150px; 
-            overflow-y: auto; 
-            background: #f8f9fa; 
-            padding: 12px; 
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: #343a40;
-            line-height: 1.5;
-            margin-top: 8px;
-        }
-        
-        /* --- LIME HIGHLIGHTS (TEXT) --- */
-        .lime-good {
-            background-color: #dcfce7 !important; /* Force Light Green */
-            color: #166534 !important;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 500;
-        }
-        .lime-bad {
-            background-color: #fee2e2 !important; /* Force Light Red */
-            color: #991b1b !important;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: 500;
-        }
+        /* --- LEGEND BOXES --- */
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; }
+        .legend-color-box { width: 20px; height: 20px; display: inline-block; border-radius: 4px; margin-right: 10px; border: 1px solid rgba(0,0,0,0.1); }
+        .legend-good { background-color: #dcfce7 !important; }
+        .legend-bad { background-color: #fee2e2 !important; }
 
-        /* --- LEGEND BOXES (SQUARES) --- */
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .legend-color-box {
-            width: 20px;
-            height: 20px;
-            display: inline-block;
-            border-radius: 4px;
-            margin-right: 10px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-        .legend-good {
-            background-color: #dcfce7 !important; /* Green */
-        }
-        .legend-bad {
-            background-color: #fee2e2 !important; /* Red */
-        }
+        /* --- LIME HIGHLIGHTS --- */
+        .lime-good { background-color: #dcfce7 !important; color: #166534 !important; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
+        .lime-bad { background-color: #fee2e2 !important; color: #991b1b !important; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
 
-        /* Link styles */
-        .clear-analysis-link {
-            display: inline-block;
-            margin-top: 12px;
-            font-size: 0.9rem;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .clear-analysis-link:hover {
-            text-decoration: underline;
-        }
-        
-        #results-area {
-            display: none; 
-        }
-
-        /* --- SCANNER ANIMATION (New) --- */
-        @keyframes scan-beam {
-            0% { background-position: 0 -200px; }
-            100% { background-position: 0 calc(100% + 200px); }
-        }
-
+        /* --- SCANNER ANIMATION --- */
+        @keyframes scan-beam { 0% { background-position: 0 -200px; } 100% { background-position: 0 calc(100% + 200px); } }
         .scanning {
-            background-image: linear-gradient(to bottom, 
-                rgba(255, 255, 255, 0) 0%, 
-                rgba(37, 99, 235, 0.2) 50%, 
-                rgba(255, 255, 255, 0) 100%) !important;
-            
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(37,99,235,0.2) 50%, rgba(255,255,255,0) 100%) !important;
             background-color: #ffffff !important;
             background-size: 100% 200px !important;
             background-repeat: no-repeat !important;
             animation: scan-beam 2s linear infinite !important;
-            
             border-color: #2563eb !important;
             box-shadow: 0 0 15px rgba(37, 99, 235, 0.2) !important;
             transition: all 0.3s ease;
+        }
+
+        /* --- VIDEO GALLERY --- */
+        .video-error-box { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .transcription-box { max-height: 150px; overflow-y: auto; background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #e9ecef; font-family: monospace; font-size: 0.9rem; color: #343a40; line-height: 1.5; margin-top: 8px; }
+
+        /* --- IMAGE MODAL (LIGHTBOX) STYLES --- */
+        .image-modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 2000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .image-modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            animation: zoom 0.3s;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .image-modal-close:hover,
+        .image-modal-close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes zoom {
+            from {transform:scale(0.8); opacity: 0;}
+            to {transform:scale(1); opacity: 1;}
         }
     </style>
 </head>
 <body>
 
     <header class="navbar">
-        <div class="logo">
-            <h1>CredibilityScan</h1>
-        </div>
+        <div class="logo"><h1>CredibilityScan</h1></div>
         <input type="checkbox" id="nav-toggle" class="nav-toggle">
-        <label for="nav-toggle" class="nav-toggle-label">
-            <span></span>
-        </label>
+        <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
         <nav class="nav-menu">
             <div class="bordnav">
                 <a href="/">Home</a>
@@ -130,7 +103,6 @@
     </header>
 
     <div class="detector-container">
-    
         <div class="main-content-wrapper">
 
             <div class="input-column">
@@ -143,41 +115,33 @@
                     <div class="mode mode-text">
                         <textarea id="userInput" name="news_text" class="detector-textarea" 
                             placeholder="Paste your news article text here to analyze..." required></textarea>
-                            
                         <div id="word-counts" class="word-count">0 words</div>
-
                         <button type="submit" class="detector-btn" id="btntext" style="margin-top: 20px;">Analyze</button>
                     </div>
                 
                     <div class="mode mode-video" style="display:none;">
-                        <label for="video-url" class="detector-label">Video</label>
+                        <label for="video-url" class="detector-label">Video URL</label>
                         <input id="videoUrlInput" name="video_url" type="url" class="detector-textarea" 
-                            placeholder="https://www.youtube.com/watch?v=..." />
-                        
-                        <div id="videoPreview" class="video-preview" aria-live="polite"></div>
-
+                            placeholder="https://www.youtube.com/watch?v=..." />                        
                         <button type="submit" class="detector-btn" id="btnvid">Analyze Video</button>
                     </div>
 
                     <div id="timer-display" style="display:none; text-align:center; margin-top:15px; font-family: monospace; font-size: 0.95rem; color: #666;">
                         Processing: 0.00s
                     </div>
-
                 </form>
             </div> 
 
             <div class="results-column">
 
-                <button type="button" class="history-trigger-btn" id="history-trigger-btn">
-                    View Recent Analysis
-                </button>
+                <button type="button" class="history-trigger-btn" id="history-trigger-btn">View Recent Analysis</button>
 
                 <div id="results-placeholder" class="results-placeholder">
                     <h3>Results will appear here</h3>
                     <p>Enter your text or video URL on the left and click "Analyze" to see the credibility assessment.</p>
                 </div>
 
-                <div id="results-area">
+                <div id="results-area" style="display: none;">
                     <div class="results-content">
                         <h2 style="font-family: 'Rubik', sans-serif; font-weight: 600; margin-top: 0;">Analysis Result</h2>
 
@@ -185,41 +149,51 @@
                             <h3 class="score" id="verdict-label" style="font-size: 2.25rem; margin-bottom: 8px;">--</h3>
                         </div>
 
-                        <div class="classification" id="classifications" style="background-color: #f0f0f0; border-left: 5px solid #ccc; padding: 15px; border-radius: 4px;">
-    
-                            <div style="margin-bottom: 8px;">
-                                Most Likely <strong id="classification-text" style="font-size: 1.1rem;">--</strong>
+                        <div class="classification" id="classifications" style="background-color: #f0f0f0; border-left: 5px solid #ccc; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px;">
+                                <span>Model Confidence:</span>
+                                <strong id="confidence-score">0%</strong>
                             </div>
-
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px;">
-                            <span>Confidence Score:</span>
-                        <strong id="confidence-score">0%</strong>
+                            <div style="background-color: rgba(0,0,0,0.1); height: 10px; border-radius: 5px; overflow: hidden;">
+                                <div id="confidence-bar" style="width: 0%; height: 100%; background-color: #666; transition: width 1s ease-out;"></div>
+                            </div>
                         </div>
 
-                        <div style="background-color: rgba(0,0,0,0.1); height: 10px; border-radius: 5px; overflow: hidden;">
-                            <div id="confidence-bar" style="width: 0%; height: 100%; background-color: #666; transition: width 1s ease-out;"></div>
-                        </div>
-
-                </div>
-                        <div style="margin-top: 20px;">
-                            <div id="result-container" class="detector-textarea" style="overflow-y: auto; line-height: 1.6; height: auto; min-height: 200px; background: white; border: 1px solid #ddd;">
-                                </div>
-
+                        <div id="text-results-container">
+                            <div id="result-container" class="detector-textarea" style="overflow-y: auto; line-height: 1.6; height: auto; min-height: 200px; background: white; border: 1px solid #ddd;"></div>
+                            
                             <div class="legend-box" style="margin-top: 10px;">
                                 <div class="legend-item">
                                     <div class="legend-color-box legend-bad"></div>
-                                    <span>Sentences flagged as highly suspicious or significant.</span>
+                                    <span>Sentences flagged as highly suspicious.</span>
                                 </div>
+                            </div>
+
+                            <div class="sources" style="margin-top: 20px;">
+                                <h3>Supporting Sources</h3>
+                                <div id="sources-list"></div>
                             </div>
                         </div>
 
-                        <div class="sources" style="margin-top: 20px;">
-                            <h3>Supporting Sources</h3>
-                            <div id="sources-list">
+                        <div id="video-results-container" style="display: none;">
+                            
+                            <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+                                <p id="video-interpretation" style="color: #4b5563; line-height: 1.6; margin-bottom: 0;">Analysis pending...</p>
+                            </div>
+
+                            <h4 style="color: #374151; margin-bottom: 10px;">Suspicious Frames (Click to Expand)</h4>
+                            <div id="frame-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px;">
                                 </div>
+
+                            <details style="margin-top: 10px; border: 1px solid #eee; border-radius: 5px; padding: 10px;">
+                                <summary style="cursor: pointer; font-weight: 500; color: #666;">View Full Transcript</summary>
+                                <div id="video-transcript" class="transcription-box"></div>
+                            </details>
                         </div>
+
                     </div>
-                </div> </div> 
+                </div> 
+            </div> 
         </div> 
     </div> 
 
@@ -232,17 +206,12 @@
                         <button class="modal-close-btn" id="history-close-btn">&times;</button>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <select id="history-filter-select" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #f8f9fa; cursor: pointer; font-family: 'Rubik', sans-serif;">
+                        <select id="history-filter-select" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                             <option value="all">All History</option>
-                            <option value="saved">⭐ Saved / Favorites</option>
-                            <option value="real">Verdicts: Real / Credible</option>
-                            <option value="fake">Verdicts: Fake / Low Credibility</option>
-                            <option value="uncertain">Verdicts: Uncertain</option>
-                            <option value="text">Type: Text Articles</option>
-                            <option value="video">Type: Videos</option>
+                            <option value="saved">⭐ Saved</option>
+                            <option value="video">Videos</option>
                         </select>
-                        <input type="text" id="history-search-input" placeholder="Search keywords..." 
-                            style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Rubik', sans-serif;">
+                        <input type="text" id="history-search-input" placeholder="Search..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                     </div>
                 </div>
                 <div id="history-list" class="history-list">
@@ -252,26 +221,28 @@
         </div>
     </div>
 
+    <div class="image-modal-overlay" id="image-modal-overlay">
+        <span class="image-modal-close" id="image-modal-close">&times;</span>
+        <img class="image-modal-content" id="image-modal-img">
+    </div>
+
     <script>
     (function(){
-        // === 1. TAB SWITCHING LOGIC ===
+        // TAB SWITCHING
         const bar = document.querySelector('.input-tab-bar');
         const tabs = Array.from(document.querySelectorAll('.tab'));
         const textMode = document.querySelector('.mode-text');
         const videoMode = document.querySelector('.mode-video');
         const analyzeForm = document.getElementById('analyzeForm');
-        
         const textInput = document.getElementById('userInput');
         const videoInput = document.getElementById('videoUrlInput');
 
-        if(bar && tabs.length && textMode && videoMode && analyzeForm){
+        if(bar && tabs.length){
             function setMode(mode){
                 tabs.forEach(t => {
                     const active = t.getAttribute('data-mode') === mode;
                     t.classList.toggle('tab-active', active);
-                    t.setAttribute('aria-selected', active ? 'true' : 'false');
                 });
-                
                 if(mode === 'video'){
                     textMode.style.display = 'none';
                     videoMode.style.display = 'block';
@@ -287,15 +258,15 @@
                 }
             }
             tabs.forEach(t => t.addEventListener('click', () => setMode(t.getAttribute('data-mode'))));
-            setMode('text'); // Default
+            setMode('text');
         }
 
-        // === 2. HISTORY MODAL TOGGLE ===
+        // HISTORY MODAL TOGGLE
         const historyTrigger = document.getElementById('history-trigger-btn');
         const modalOverlay = document.getElementById('history-modal-overlay');
         const modalCloseBtn = document.getElementById('history-close-btn');
 
-        if (historyTrigger && modalOverlay && modalCloseBtn) {
+        if (historyTrigger && modalOverlay) {
             historyTrigger.addEventListener('click', () => modalOverlay.classList.add('modal-active'));
             modalCloseBtn.addEventListener('click', () => modalOverlay.classList.remove('modal-active'));
             modalOverlay.addEventListener('click', (e) => {
@@ -303,36 +274,21 @@
             });
         }
 
-        // === 3. WORD COUNTER ===
+        // WORD COUNTER
         const countDisplay = document.getElementById('word-counts');
         const btnText = document.getElementById('btntext'); 
-        
-        function updateCounter(){
-            if (!textInput || !countDisplay) return;
-            const text = textInput.value.trim();
-            const count = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
-            
-            if (count > 250) {
-                countDisplay.innerText = count + " / 250 words (Limit exceeded)";
-                countDisplay.style.color = "#dc2626";
-                if(btnText) {
+        if(textInput && countDisplay) {
+            textInput.addEventListener('input', () => {
+                const count = textInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+                countDisplay.innerText = `${count} / 250 words`;
+                if (count > 250) {
+                    countDisplay.style.color = "red";
                     btnText.disabled = true;
-                    btnText.style.opacity = "0.5";
-                    btnText.style.cursor = "not-allowed";
-                }
-            } else {
-                countDisplay.innerText = count + " / 250 words";
-                countDisplay.style.color = "#6c757d";
-                if(btnText) {
+                } else {
+                    countDisplay.style.color = "#666";
                     btnText.disabled = false;
-                    btnText.style.opacity = "1";
-                    btnText.style.cursor = "pointer";
                 }
-            }
-        }
-        if(textInput) {
-            textInput.addEventListener('input', updateCounter);
-            updateCounter();
+            });
         }
     })();
     </script>

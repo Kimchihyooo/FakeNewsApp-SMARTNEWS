@@ -1,66 +1,82 @@
 // static/js/main.js
 
-// 1. INITIAL SETUP
+// static/js/main.js
+
 document.addEventListener('DOMContentLoaded', () => {
-    renderHistory();
+    // Initialize History
+    if (typeof renderHistory === 'function') renderHistory();
 
-    const searchInput = document.getElementById('history-search-input');
-    const filterSelect = document.getElementById('history-filter-select');
-
-    if (searchInput && filterSelect) {
-        searchInput.addEventListener('input', () => filterHistoryItems());
-        filterSelect.addEventListener('change', () => filterHistoryItems());
+    // Initialize Image Modal Logic
+    const imgModal = document.getElementById('image-modal-overlay');
+    const imgClose = document.getElementById('image-modal-close');
+    
+    if (imgClose && imgModal) {
+        imgClose.onclick = () => imgModal.style.display = "none";
+        imgModal.onclick = (e) => {
+            if (e.target === imgModal) imgModal.style.display = "none";
+        };
     }
 });
 
 // =========================================================
-// 2. FORM SUBMIT (Updated to catch and show errors)
+// 1. HELPER: OPEN IMAGE MODAL
+// =========================================================
+function openImageModal(src) {
+    const modal = document.getElementById('image-modal-overlay');
+    const modalImg = document.getElementById('image-modal-img');
+    if (modal && modalImg) {
+        modal.style.display = "flex";
+        modalImg.src = src;
+    }
+}
+
+// =========================================================
+// 2. FORM SUBMIT (FIXED TIMER + SCAN BEAM)
 // =========================================================
 const form = document.getElementById('analyzeForm');
 if (form) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault(); 
 
-        // A. FIND ELEMENTS
         const btnText = document.getElementById('btntext');
         const btnVid = document.getElementById('btnvid');
-        const textInput = document.getElementById('userInput'); 
         const timerDisplay = document.getElementById('timer-display');
         
-        // Determine which button was clicked/active
-        let activeBtn = btnText;
-        if (btnVid && btnVid.offsetParent !== null) {
-            activeBtn = btnVid;
-        }
+        // A. FIND ACTIVE ELEMENTS
+        // Check which tab is active to decide which input to animate
+        const videoTab = document.querySelector('.tab[data-mode="video"]');
+        const isVideoMode = videoTab && videoTab.classList.contains('tab-active');
+
+        // Select the visible input and button
+        const activeInput = isVideoMode 
+            ? document.getElementById('videoUrlInput') 
+            : document.getElementById('userInput');
+            
+        const activeBtn = isVideoMode ? btnVid : btnText;
+        const originalText = activeBtn.innerText;
 
         // B. START VISUAL EFFECTS
-        const originalText = activeBtn ? activeBtn.innerText : "Analyze";
+        const startTime = Date.now(); // Start clock
         let timerInterval = null;
-        let startTime = Date.now();
 
-        // 1. Change Button State
-        if (activeBtn) {
-            activeBtn.innerText = "Analyzing..."; 
-            activeBtn.disabled = true;
-            activeBtn.style.opacity = "0.7";
-            activeBtn.style.cursor = "wait";
-        }
-
-        // 2. Trigger Highlighter
-        if (textInput) {
-            textInput.classList.add('scanning'); 
-        }
-
-        // 3. Start Timer
-        if (timerDisplay) {
+        activeBtn.innerText = "Analyzing..."; 
+        activeBtn.disabled = true;
+        activeBtn.style.opacity = "0.7";
+        
+        // --- TIMER START ---
+        if(timerDisplay) {
             timerDisplay.style.display = 'block';
-            timerDisplay.style.color = '#666'; 
-            timerDisplay.innerText = "Processing content: 0.00s";
+            timerDisplay.innerText = "Processing: 0.00s";
             
             timerInterval = setInterval(() => {
                 const elapsed = (Date.now() - startTime) / 1000;
-                timerDisplay.innerText = `Processing content: ${elapsed.toFixed(2)}s`;
-            }, 50); 
+                timerDisplay.innerText = `Processing: ${elapsed.toFixed(2)}s`;
+            }, 50);
+        }
+
+        // --- SCAN BEAM START ---
+        if (activeInput) {
+            activeInput.classList.add('scanning');
         }
 
         const formData = new FormData(form);
@@ -71,53 +87,37 @@ if (form) {
                 body: formData
             });
 
-            // --- ERROR CATCHING LOGIC ---
             if (!response.ok) {
-                let errorMessage = "An unknown error occurred.";
-                try {
-                    // Try to read the JSON error from Python
-                    const errorData = await response.json();
-                    if (errorData.error) {
-                        errorMessage = errorData.error;
-                    }
-                } catch (jsonError) {
-                    // If response wasn't JSON, fall back to status text
-                    errorMessage = `Server Error: ${response.status} ${response.statusText}`;
-                }
-                throw new Error(errorMessage);
+                const err = await response.json();
+                throw new Error(err.error || "Server Error");
             }
 
             const data = await response.json();
-            
-            // Check for logical errors inside a 200 OK response
-            if (data.error) {
-                throw new Error(data.error);
-            }
+            if (data.error) throw new Error(data.error);
 
             displayAnalysis(data);
-            addToHistory(data);
 
         } catch (error) {
-            console.error("Analysis Error:", error);
-            displayError(error.message); 
-            
+            alert("Analysis Error: " + error.message);
+            console.error(error);
         } finally {
-            // C. RESET VISUAL EFFECTS
+            // C. RESET EFFECTS
             if (timerInterval) clearInterval(timerInterval);
+            
+            // --- TIMER END (Show Final Time) ---
             if (timerDisplay) {
                 const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
                 timerDisplay.innerText = `Process finished (${totalTime}s)`;
+                // Do NOT hide the timer here, so the user can see it.
             }
 
-            if (activeBtn) {
-                activeBtn.innerText = originalText;
-                activeBtn.disabled = false;
-                activeBtn.style.opacity = "1";
-                activeBtn.style.cursor = "pointer";
-            }
+            activeBtn.innerText = originalText;
+            activeBtn.disabled = false;
+            activeBtn.style.opacity = "1";
             
-            if (textInput) {
-                textInput.classList.remove('scanning');
+            // Remove .scanning from the input
+            if (activeInput) {
+                activeInput.classList.remove('scanning');
             }
         }
     });
@@ -151,88 +151,92 @@ function displayError(message) {
 }
 
 // =========================================================
-// 4. DISPLAY RESULTS (Success Case)
+// 3. DISPLAY ANALYSIS
 // =========================================================
 function displayAnalysis(data) {
     document.getElementById('results-placeholder').style.display = 'none';
     document.getElementById('results-area').style.display = 'block';
 
-    // Ensure success elements are visible (in case previous run was an error)
+    // Common UI Updates
     const scoreBox = document.getElementById('scoreBox');
-    const classBox = document.getElementById('classifications');
-    scoreBox.style.display = 'block';
-    classBox.style.display = 'block';
-
     const verdictLabel = document.getElementById('verdict-label');
-    verdictLabel.innerText = data.score_label;
-    
-    document.getElementById('classification-text').innerText = data.classification_text;
-    document.getElementById('confidence-score').innerText = data.model_confidence + "%";
+    const confScore = document.getElementById('confidence-score');
+    const confBar = document.getElementById('confidence-bar');
 
-    // --- Update Progress Bar ---
-    const progressBar = document.getElementById('confidence-bar');
-    if (progressBar) {
-        progressBar.style.width = '0%';
-        setTimeout(() => {
-            progressBar.style.width = data.model_confidence + "%";
-        }, 100);
-    }
+    verdictLabel.innerText = data.score_label;
+    confScore.innerText = data.model_confidence + "%";
 
     if (data.colors) {
         scoreBox.style.backgroundColor = data.colors.bg_color;
         scoreBox.style.border = `1px solid ${data.colors.accent_color}`;
         verdictLabel.style.color = data.colors.text_color;
-
-        classBox.style.backgroundColor = data.colors.bg_color;
-        classBox.style.borderLeft = `5px solid ${data.colors.accent_color}`;
-        classBox.style.color = data.colors.text_color;
-
-        if (progressBar) {
-            progressBar.style.backgroundColor = data.colors.text_color;
+        
+        if (confBar) {
+            confBar.style.width = '0%';
+            confBar.style.backgroundColor = data.colors.text_color;
+            setTimeout(() => { confBar.style.width = data.model_confidence + "%"; }, 100);
         }
     }
 
-    // --- UPDATED LOGIC: Hide Box if No Text (Video Analysis) ---
-    const highlightBox = document.getElementById('result-container');
-    const legendBox = document.querySelector('.legend-box');
+    // SWITCH MODE
+    const textContainer = document.getElementById('text-results-container');
+    const videoContainer = document.getElementById('video-results-container');
 
-    if (data.lime_html && data.lime_html.trim() !== "") {
-        // Text Analysis: Show box + legend
-        highlightBox.style.display = 'block';
-        highlightBox.innerHTML = data.lime_html;
-        if (legendBox) legendBox.style.display = 'block';
+    if (data.suspicious_frames || data.interpretation) {
+        // === VIDEO MODE ===
+        textContainer.style.display = 'none';
+        videoContainer.style.display = 'block';
+
+        // Interpretation
+        document.getElementById('video-interpretation').innerText = 
+            data.interpretation || "No interpretation available.";
+
+        // Frame Gallery
+        const gallery = document.getElementById('frame-gallery');
+        gallery.innerHTML = ""; 
+
+        if (data.suspicious_frames && data.suspicious_frames.length > 0) {
+            data.suspicious_frames.forEach(b64 => {
+                const img = document.createElement('img');
+                img.src = "data:image/jpeg;base64," + b64;
+                img.style.width = "100%";
+                img.style.borderRadius = "5px";
+                img.style.border = "2px solid #ef4444"; 
+                img.style.cursor = "zoom-in";
+                img.onclick = () => openImageModal(img.src);
+                gallery.appendChild(img);
+            });
+        } else {
+            gallery.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #9ca3af;">No suspicious frames detected.</p>`;
+        }
+
+        // Transcript
+        document.getElementById('video-transcript').innerText = data.transcript || "No transcript available.";
+
     } else {
-        // Video Analysis: Hide box + legend
-        highlightBox.style.display = 'none';
-        if (legendBox) legendBox.style.display = 'none';
-    }
-    // ------------------------------------------------------------
+        // === TEXT MODE ===
+        videoContainer.style.display = 'none';
+        textContainer.style.display = 'block';
 
-    const sourcesList = document.getElementById('sources-list');
-    sourcesList.innerHTML = ''; 
+        document.getElementById('result-container').innerHTML = data.lime_html || data.news_text;
 
-    if (data.supporting_articles && data.supporting_articles.length > 0) {
-        data.supporting_articles.forEach(article => {
-            const div = document.createElement('div');
-            div.className = 'source-item';
-            div.style.marginBottom = "15px"; 
-            div.style.padding = "10px";
-            div.style.border = "1px solid #eee";
-            div.style.borderRadius = "5px";
-
-            div.innerHTML = `
-                <a href="${article.link}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-                    ${article.title}
-                </a>
-                <p style="font-size: 0.85rem; color: #666; margin: 5px 0;">${article.displayLink}</p>
-            `;
-            sourcesList.appendChild(div);
-        });
-    } else {
-        sourcesList.innerHTML = '<p class="text-muted">No supporting articles found.</p>';
+        const sourcesList = document.getElementById('sources-list');
+        sourcesList.innerHTML = '';
+        if (data.supporting_articles && data.supporting_articles.length > 0) {
+            data.supporting_articles.forEach(article => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee; border-radius: 6px;">
+                        <a href="${article.link}" target="_blank" style="color: #2563eb; font-weight: 600;">${article.title}</a>
+                        <div style="font-size: 0.8rem; color: #666;">${article.displayLink}</div>
+                    </div>`;
+                sourcesList.appendChild(div);
+            });
+        } else {
+            sourcesList.innerHTML = '<p style="color:#999;">No supporting sources found.</p>';
+        }
     }
 }
-
 // =========================================================
 // 5. ADD TO HISTORY
 // =========================================================
