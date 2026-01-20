@@ -191,9 +191,25 @@ function displayAnalysis(data) {
         document.getElementById('video-interpretation').innerText = 
             data.interpretation || "No interpretation available.";
 
-        // Frame Gallery
+        // --- NEW: DYNAMIC GALLERY STYLING ---
         const gallery = document.getElementById('frame-gallery');
+        const galleryHeader = document.querySelector('#video-results-container h4');
         gallery.innerHTML = ""; 
+
+        // Check if the verdict is "Fake" or "Real"
+        const isOverallFake = data.score_label.toLowerCase().includes("deepfake") || 
+                            data.score_label.toLowerCase().includes("fake");
+
+        // Define Styles based on Verdict
+        let borderColor = isOverallFake ? "#ef4444" : "#f59e0b"; // Red vs Orange
+        let headerText = isOverallFake ? "📸 Suspicious Frames" : "⚠️ Flagged Anomalies (Potential Artifacts)";
+        let headerColor = isOverallFake ? "#b91c1c" : "#b45309"; // Dark Red vs Dark Orange
+
+        // Update Header
+        if (galleryHeader) {
+            galleryHeader.innerText = headerText;
+            galleryHeader.style.color = headerColor;
+        }
 
         if (data.suspicious_frames && data.suspicious_frames.length > 0) {
             data.suspicious_frames.forEach(b64 => {
@@ -201,19 +217,25 @@ function displayAnalysis(data) {
                 img.src = "data:image/jpeg;base64," + b64;
                 img.style.width = "100%";
                 img.style.borderRadius = "5px";
-                img.style.border = "2px solid #ef4444"; 
+                
+                // Apply the Dynamic Border Color
+                img.style.border = `3px solid ${borderColor}`; 
+                
                 img.style.cursor = "zoom-in";
                 img.onclick = () => openImageModal(img.src);
                 gallery.appendChild(img);
             });
         } else {
+            // No frames found
             gallery.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #9ca3af;">No suspicious frames detected.</p>`;
+             if (galleryHeader) galleryHeader.innerText = "📸 Suspicious Frames"; // Reset text
         }
 
         // Transcript
         document.getElementById('video-transcript').innerText = data.transcript || "No transcript available.";
 
     } else {
+    
         // === TEXT MODE ===
         videoContainer.style.display = 'none';
         textContainer.style.display = 'block';
