@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize History
     if (typeof renderHistory === 'function') renderHistory();
 
-    // 2. Initialize Filters (THIS WAS MISSING)
+    // 2. Initialize Filters
     const searchInput = document.getElementById('history-search-input');
     const filterSelect = document.getElementById('history-filter-select');
 
@@ -79,8 +79,6 @@ if (form) {
             }, 50);
         }
 
-        if (activeInput) activeInput.classList.add('scanning');
-
         const formData = new FormData(form);
 
         try {
@@ -97,10 +95,10 @@ if (form) {
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            // 1. SHOW RESULTS
+            // 1. SHOW RESULTS (With Animation)
             displayAnalysis(data);
 
-            // 2. SAVE TO HISTORY (This was missing!)
+            // 2. SAVE TO HISTORY
             addToHistory(data);
 
         } catch (error) {
@@ -117,8 +115,6 @@ if (form) {
             activeBtn.innerText = originalText;
             activeBtn.disabled = false;
             activeBtn.style.opacity = "1";
-            
-            if (activeInput) activeInput.classList.remove('scanning');
         }
     });
 }
@@ -127,17 +123,26 @@ if (form) {
 // 3. HELPER: DISPLAY ERROR
 // =========================================================
 function displayError(message) {
-    document.getElementById('results-placeholder').style.display = 'none';
-    document.getElementById('results-area').style.display = 'block';
+    const resultsArea = document.getElementById('results-area');
+    const placeholder = document.getElementById('results-placeholder');
+    
+    placeholder.style.display = 'none';
+    resultsArea.style.display = 'block';
 
+    // Hide normal results
     document.getElementById('scoreBox').style.display = 'none';
     document.getElementById('classifications').style.display = 'none';
-    document.getElementById('sources-list').innerHTML = ''; 
-
-    const resultContainer = document.getElementById('result-container');
+    
+    // Show Error Box in result container
+    const resultContainer = document.getElementById('text-results-container');
+    const videoContainer = document.getElementById('video-results-container');
+    
+    // Reset views
+    if(videoContainer) videoContainer.style.display = 'none';
     resultContainer.style.display = 'block';
+    
     resultContainer.innerHTML = `
-        <div style="text-align:center; padding: 24px; color: #b91c1c; background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px;">
+        <div style="text-align:center; padding: 30px; color: #b91c1c; background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 12px;">
             <h3 style="margin-top:0; font-family: 'Rubik', sans-serif;">⚠️ Analysis Failed</h3>
             <p style="margin-top:10px; font-size: 1.1rem; line-height: 1.5;">${message}</p>
         </div>
@@ -145,90 +150,163 @@ function displayError(message) {
 }
 
 // =========================================================
-// 4. DISPLAY ANALYSIS
+// 4. DISPLAY ANALYSIS (UPDATED: FORENSIC CARD)
 // =========================================================
 function displayAnalysis(data) {
-    document.getElementById('results-placeholder').style.display = 'none';
-    document.getElementById('results-area').style.display = 'block';
+    const resultsArea = document.getElementById('results-area');
+    const placeholder = document.getElementById('results-placeholder');
+    
+    // 1. Hide placeholder, Show results
+    placeholder.style.display = 'none';
+    resultsArea.style.display = 'block';
 
-    // Reset visibility in case it was hidden by an error before
-    document.getElementById('scoreBox').style.display = 'block';
-    document.getElementById('classifications').style.display = 'block';
+    // 2. Hide old generic boxes (We are replacing them)
+    document.getElementById('scoreBox').style.display = 'none';
+    document.getElementById('classifications').style.display = 'none';
 
-    // Common UI Updates
-    const scoreBox = document.getElementById('scoreBox');
-    const verdictLabel = document.getElementById('verdict-label');
-    const confScore = document.getElementById('confidence-score');
-    const confBar = document.getElementById('confidence-bar');
-    const classificationText = document.getElementById('classification-text');
-
-    verdictLabel.innerText = data.score_label;
-    if(classificationText) classificationText.innerText = data.classification_text || data.score_label;
-    confScore.innerText = data.model_confidence + "%";
-
-    if (data.colors) {
-        scoreBox.style.backgroundColor = data.colors.bg_color;
-        scoreBox.style.border = `1px solid ${data.colors.accent_color}`;
-        verdictLabel.style.color = data.colors.text_color;
-        
-        if (confBar) {
-            confBar.style.width = '0%';
-            confBar.style.backgroundColor = data.colors.text_color;
-            setTimeout(() => { confBar.style.width = data.model_confidence + "%"; }, 100);
-        }
+    // 3. GENERATE FORENSIC REPORT CARD
+    // Determine Theme Colors based on Verdict
+    let themeColor = "#3b82f6"; // Default Blue
+    let isReal = false;
+    
+    if (data.score_label.toLowerCase().includes("real")) {
+        themeColor = "#166534"; // Green
+        isReal = true;
+    } else if (data.score_label.toLowerCase().includes("fake") || data.score_label.toLowerCase().includes("deepfake")) {
+        themeColor = "#b91c1c"; // Red
+    } else if (data.score_label.toLowerCase().includes("debunked")) {
+        themeColor = "#b91c1c"; // Red
+    } else {
+        themeColor = "#d97706"; // Orange/Uncertain
     }
 
-    // SWITCH MODE
+    // Determine Frame Label (Trust Signal)
+    const frameLabel = isReal ? "Artifact" : "Manipulation";
+    const frameClass = isReal ? "frame-artifact" : "frame-fake";
+    const frameColor = isReal ? "#f59e0b" : "#ef4444";
+
+    // Build the HTML
+    const reportHTML = `
+        <div class="forensic-card">
+            <div class="forensic-header" style="border-left: 6px solid ${themeColor};">
+                <div class="forensic-verdict-box">
+                    <h4>Authenticity Verdict</h4>
+                    <h2 style="color: ${themeColor};">${data.score_label}</h2>
+                </div>
+                <div class="forensic-score-circle">
+                    <div class="forensic-score-val">${Math.round(data.model_confidence)}%</div>
+                    <div class="forensic-score-label">Confidence</div>
+                </div>
+            </div>
+            
+            <div class="forensic-grid">
+                <div class="forensic-stat">
+                    <h5>Visual Check</h5>
+                    <p style="color: ${data.suspicious_frames && data.suspicious_frames.length > 5 ? '#d97706' : '#166534'}">
+                        ${data.suspicious_frames && data.suspicious_frames.length > 0 ? (isReal ? 'Pass with noise' : 'Fail') : 'Clean'}
+                    </p>
+                </div>
+                <div class="forensic-stat">
+                    <h5>Metadata</h5>
+                    <p style="color: ${data.search_verdict === 'VERIFIED' ? '#166534' : '#64748b'}">
+                        ${data.search_verdict || 'N/A'}
+                    </p>
+                </div>
+                <div class="forensic-stat">
+                    <h5>Anomalies</h5>
+                    <p>${data.suspicious_frames ? data.suspicious_frames.length : 0} Frames</p>
+                </div>
+            </div>
+            
+            <div class="forensic-analysis-text">
+                ${data.interpretation || "No detailed interpretation available."}
+            </div>
+        </div>
+    `;
+
+    // Inject into a container (We reuse text-results-container for positioning, or insert before it)
+    let forensicContainer = document.getElementById('forensic-report-container');
+    if (!forensicContainer) {
+        forensicContainer = document.createElement('div');
+        forensicContainer.id = 'forensic-report-container';
+        // Insert before the detailed tabs
+        const parent = document.getElementById('text-results-container').parentNode;
+        parent.insertBefore(forensicContainer, document.getElementById('text-results-container'));
+    }
+    forensicContainer.innerHTML = reportHTML;
+    forensicContainer.style.display = 'block';
+
+    // 4. SWITCH MODE (Text vs Video Details)
     const textContainer = document.getElementById('text-results-container');
     const videoContainer = document.getElementById('video-results-container');
 
     // CHECK: Video Mode if specific fields exist
-    if (data.suspicious_frames || data.interpretation || data.evidence) {
+    if (data.suspicious_frames || data.evidence) {
         // === VIDEO MODE ===
         if(textContainer) textContainer.style.display = 'none';
         if(videoContainer) videoContainer.style.display = 'block';
 
-        // 1. Deepfake Interpretation
-        const interpBox = document.getElementById('video-interpretation');
-        if(interpBox) interpBox.innerText = data.interpretation || "No interpretation available.";
+        // Hide old interpretation box since it's now in the card
+        const oldInterp = document.getElementById('video-interpretation').parentNode;
+        if(oldInterp) oldInterp.style.display = 'none';
 
-        // 2. Frame Gallery
+        // Frame Gallery (Trustable Colors)
         const gallery = document.getElementById('frame-gallery');
         if(gallery) {
             gallery.innerHTML = ""; 
             if (data.suspicious_frames && data.suspicious_frames.length > 0) {
                 data.suspicious_frames.forEach(b64 => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.position = "relative";
+                    
                     const img = document.createElement('img');
                     img.src = "data:image/jpeg;base64," + b64;
                     img.style.width = "100%";
-                    img.style.borderRadius = "5px";
-                    img.style.border = "2px solid #ef4444"; 
+                    img.style.borderRadius = "8px";
+                    img.className = frameClass; // Apply Orange or Red class
+                    img.style.cursor = "zoom-in";
                     img.onclick = () => openImageModal(img.src);
-                    img.style.cursor = "pointer";
-                    gallery.appendChild(img);
+                    
+                    // Add Label Badge
+                    const badge = document.createElement('span');
+                    badge.innerText = frameLabel;
+                    badge.style.position = "absolute";
+                    badge.style.bottom = "8px";
+                    badge.style.right = "8px";
+                    badge.style.background = frameColor;
+                    badge.style.color = "#fff";
+                    badge.style.fontSize = "0.7rem";
+                    badge.style.padding = "2px 6px";
+                    badge.style.borderRadius = "4px";
+                    badge.style.fontWeight = "bold";
+                    badge.style.pointerEvents = "none";
+
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(badge);
+                    gallery.appendChild(wrapper);
                 });
             } else {
-                gallery.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #9ca3af;">No suspicious frames detected.</p>`;
+                gallery.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #9ca3af; font-style: italic;">No suspicious artifacts detected.</p>`;
             }
         }
 
-        // 3. Verification Results
+        // Verification Results (Google Search)
         const transcriptBox = document.getElementById('video-transcript-container');
         if(transcriptBox) {
             transcriptBox.innerHTML = "";
             
-            // Header
+            // Search Header
             const searchHeader = document.createElement('h4');
-            searchHeader.style.marginTop = "20px";
+            searchHeader.style.marginTop = "0";
             searchHeader.style.color = "#374151";
-            searchHeader.innerHTML = `🔎 Content Verification <span style="font-size:0.8em; color:#666; font-weight:normal;">(via Google Search)</span>`;
+            searchHeader.innerHTML = `🔎 Content Verification`;
             transcriptBox.appendChild(searchHeader);
 
-            // Banner
+            // Verdict Banner
             const statusDiv = document.createElement('div');
-            statusDiv.style.padding = "10px";
-            statusDiv.style.borderRadius = "6px";
-            statusDiv.style.marginBottom = "10px";
+            statusDiv.style.padding = "12px";
+            statusDiv.style.borderRadius = "8px";
+            statusDiv.style.marginBottom = "15px";
             statusDiv.style.fontWeight = "bold";
             
             if (data.search_verdict === "DEBUNKED") {
@@ -246,22 +324,23 @@ function displayAnalysis(data) {
             }
             transcriptBox.appendChild(statusDiv);
 
-            // Evidence List
+            // Evidence Links
             if (data.evidence && data.evidence.length > 0) {
                 const list = document.createElement('div');
                 data.evidence.forEach(item => {
                     const row = document.createElement('div');
-                    row.style.marginBottom = "8px";
-                    row.style.padding = "8px";
-                    row.style.borderLeft = "3px solid #ddd";
+                    row.style.marginBottom = "10px";
+                    row.style.padding = "10px";
+                    row.style.borderLeft = "4px solid #ddd";
                     row.style.backgroundColor = "#f9fafb";
+                    row.style.borderRadius = "0 8px 8px 0";
                     
                     let icon = "🔗";
                     if(item.status === "DEBUNKED") icon = "❌";
                     if(item.status === "VERIFIED") icon = "✅";
 
                     row.innerHTML = `
-                        <div style="font-size: 0.9rem; font-weight: 600;">
+                        <div style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">
                             ${icon} <a href="${item.link}" target="_blank" style="text-decoration:none; color:#2563eb;">${item.title}</a>
                         </div>
                         <div style="font-size: 0.8rem; color: #666;">
@@ -282,93 +361,115 @@ function displayAnalysis(data) {
 
     } else {
         // === TEXT MODE ===
+        // (Hide forensic card if strictly text mode, or adapt it)
+        if(forensicContainer) forensicContainer.style.display = 'none';
+        document.getElementById('scoreBox').style.display = 'block'; // Show old box for text
+        document.getElementById('classifications').style.display = 'block';
+
         if(videoContainer) videoContainer.style.display = 'none';
         if(textContainer) textContainer.style.display = 'block';
 
         const resultContainer = document.getElementById('result-container');
         if(resultContainer) resultContainer.innerHTML = data.lime_html || data.news_text;
-
-        const sourcesList = document.getElementById('sources-list');
+        
+        // ... (Keep existing text mode sources logic) ...
+         const sourcesList = document.getElementById('sources-list');
         if(sourcesList) {
             sourcesList.innerHTML = '';
             if (data.supporting_articles && data.supporting_articles.length > 0) {
                 data.supporting_articles.forEach(article => {
                     const div = document.createElement('div');
                     div.innerHTML = `
-                        <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee; border-radius: 6px;">
+                        <div style="margin-bottom: 10px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
                             <a href="${article.link}" target="_blank" style="color: #2563eb; font-weight: 600;">${article.title}</a>
-                            <div style="font-size: 0.8rem; color: #666;">${article.displayLink}</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">${article.displayLink}</div>
                         </div>`;
                     sourcesList.appendChild(div);
                 });
             } else {
-                sourcesList.innerHTML = '<p style="color:#999;">No supporting sources found.</p>';
+                sourcesList.innerHTML = '<p style="color:#94a3b8; font-style: italic;">No specific supporting sources found.</p>';
             }
         }
     }
 }
 
 // =========================================================
-// 5. ADD TO HISTORY (UPDATED FOR VIDEO)
+// 5. ADD TO HISTORY (SAFE VERSION - NO IMAGES)
 // =========================================================
 function addToHistory(data) {
-    let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
+    try {
+        let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
 
-    // Determine type
-    let itemType = 'text';
-    const content = data.input_text || data.news_text || "";
-    if (content.trim().startsWith('http') && (content.includes('youtube') || content.includes('youtu.be') || content.includes('tiktok'))) {
-        itemType = 'video';
-    }
+        // Determine type
+        let itemType = 'text';
+        const content = data.input_text || data.news_text || "";
+        if (content.trim().startsWith('http') && (content.includes('youtube') || content.includes('youtu.be') || content.includes('tiktok') || content.includes('facebook'))) {
+            itemType = 'video';
+        }
 
-    const snapshot = {
-        id: Date.now(),
-        timestamp: data.timestamp || new Date().toLocaleString(),
-        type: itemType,
-        input_text: content,
-        score_label: data.score_label,
-        classification_text: data.classification_text,
-        model_confidence: data.model_confidence,
-        colors: data.colors,
-        
-        // Save Text Mode Data
-        lime_html: data.lime_html,
-        supporting_articles: data.supporting_articles,
+        const snapshot = {
+            id: Date.now(),
+            timestamp: new Date().toLocaleString(),
+            type: itemType,
+            input_text: content,
+            score_label: data.score_label,
+            classification_text: data.classification_text,
+            model_confidence: data.model_confidence,
+            colors: data.colors,
+            
+            // Text Mode Data
+            lime_html: data.lime_html,
+            supporting_articles: data.supporting_articles,
 
-        // Save Video Mode Data (NEW)
-        suspicious_frames: data.suspicious_frames,
-        interpretation: data.interpretation,
-        search_verdict: data.search_verdict,
-        search_reason: data.search_reason,
-        evidence: data.evidence,
+            // Video Mode Data
+            // CRITICAL FIX: We save an empty array for frames to prevent "Quota Exceeded" error.
+            // Images are too big for LocalStorage.
+            suspicious_frames: [], 
+            interpretation: data.interpretation,
+            search_verdict: data.search_verdict,
+            search_reason: data.search_reason,
+            evidence: data.evidence,
 
-        isFavorite: false 
-    };
+            isFavorite: false 
+        };
 
-    history.unshift(snapshot);
+        history.unshift(snapshot);
 
-    // Limit to 20 items (keep favorites)
-    if (history.length > 20) {
-        let indexToRemove = -1;
-        for (let i = history.length - 1; i >= 0; i--) {
-            if (!history[i].isFavorite) {
-                indexToRemove = i;
-                break;
+        // Strict Limit: Keep only last 15 items to save space
+        if (history.length > 15) {
+            let indexToRemove = -1;
+            for (let i = history.length - 1; i >= 0; i--) {
+                if (!history[i].isFavorite) {
+                    indexToRemove = i;
+                    break;
+                }
+            }
+            if (indexToRemove !== -1) {
+                history.splice(indexToRemove, 1);
+            } else {
+                history.pop();
             }
         }
-        if (indexToRemove !== -1) {
-            history.splice(indexToRemove, 1);
-        } else {
-            history.pop();
+
+        localStorage.setItem('credibility_history', JSON.stringify(history));
+        filterHistoryItems(); // Refresh list immediately
+        
+    } catch (e) {
+        console.warn("History Quota Exceeded. Clearing old non-favorite items...");
+        // Emergency cleanup if it still fails
+        try {
+            let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
+            // Keep only favorites
+            history = history.filter(item => item.isFavorite);
+            localStorage.setItem('credibility_history', JSON.stringify(history));
+        } catch (err) {
+            console.error("Could not save history:", err);
         }
     }
-
-    localStorage.setItem('credibility_history', JSON.stringify(history));
-    filterHistoryItems(); // Refresh list immediately
 }
 
 // =========================================================
-// 6. FILTER LOGIC (SMARTER VERSION)
+// 6. FILTER LOGIC
 // =========================================================
 window.filterHistoryItems = function() {
     const searchInput = document.getElementById('history-search-input');
@@ -382,22 +483,9 @@ window.filterHistoryItems = function() {
     if (category !== 'all') {
         history = history.filter(item => {
             const label = (item.score_label || "").toLowerCase();
-            
-            // INTELLIGENT TYPE DETECTION (Fixes old data showing up wrong)
-            let type = item.type;
-            if (!type) {
-                const txt = item.input_text || "";
-                if (txt.includes('youtube.com') || txt.includes('youtu.be') || txt.includes('tiktok.com')) {
-                    type = 'video';
-                } else {
-                    type = 'text';
-                }
-            }
+            let type = item.type || 'text';
 
             if (category === 'saved') return item.isFavorite === true;
-            if (category === 'real') return label.includes('high') || label.includes('real') || label.includes('credible') || label.includes('verified');
-            if (category === 'fake') return label.includes('low') || label.includes('fake') || label.includes('debunked');
-            if (category === 'uncertain') return label.includes('uncertain');
             if (category === 'text') return type === 'text';
             if (category === 'video') return type === 'video';
             return true;
@@ -414,6 +502,7 @@ window.filterHistoryItems = function() {
 
     renderHistory(history);
 };
+
 // =========================================================
 // 7. RENDER HISTORY
 // =========================================================
@@ -426,7 +515,6 @@ function renderHistory(itemsToRender = null) {
         history = itemsToRender;
     } else {
         history = JSON.parse(localStorage.getItem('credibility_history')) || [];
-        // Sort: Favorites first
         history.sort((a, b) => (b.isFavorite === true) - (a.isFavorite === true));
     }
 
@@ -444,12 +532,14 @@ function renderHistory(itemsToRender = null) {
         
         const isLocked = item.isFavorite;
         const starClass = isLocked ? 'star-active' : 'star-inactive';
-        const deleteClass = isLocked ? 'delete-disabled' : 'delete-btn';
-        
-        // Icon for Type
+        const starIcon = isLocked ? '⭐' : '☆';
         const typeIcon = item.type === 'video' ? '🎥' : '📄';
 
-        div.onclick = () => restoreSession(item.id);
+        div.onclick = (e) => {
+            // Prevent triggering if clicked on buttons
+            if(e.target.tagName === 'BUTTON') return;
+            restoreSession(item.id);
+        };
 
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -457,7 +547,6 @@ function renderHistory(itemsToRender = null) {
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span style="font-size:1.1em;">${typeIcon}</span>
                         <strong style="color:#333;">${item.score_label}</strong>
-                        ${isLocked ? '<span style="font-size:12px;">⭐</span>' : ''}
                     </div>
                     <div style="font-size:0.75rem; color:#888; margin-top:4px;">${item.timestamp}</div>
                     <div style="font-size:0.8rem; color:#555; margin-top:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -471,11 +560,11 @@ function renderHistory(itemsToRender = null) {
             </div>
 
             <div class="history-actions" style="margin-top:10px; display:flex; gap:10px; border-top:1px solid #eee; padding-top:8px;">
-                <button onclick="toggleFavorite(event, ${item.id})" class="action-btn ${starClass}">
-                    Save
+                <button onclick="toggleFavorite(event, ${item.id})" style="border:none; background:none; cursor:pointer; color:${isLocked ? '#f59e0b' : '#64748b'}; font-weight:600;">
+                    ${starIcon} Save
                 </button>
-                <button onclick="deleteItem(event, ${item.id})" class="action-btn ${deleteClass}">
-                    Delete
+                <button onclick="deleteItem(event, ${item.id})" style="border:none; background:none; cursor:pointer; color:#ef4444;">
+                    🗑️ Delete
                 </button>
             </div>
         `;
@@ -484,25 +573,20 @@ function renderHistory(itemsToRender = null) {
 }
 
 // =========================================================
-// 8. ACTIONS
+// 8. RESTORE & ACTIONS
 // =========================================================
 window.restoreSession = function(id) {
     const history = JSON.parse(localStorage.getItem('credibility_history')) || [];
     const item = history.find(x => x.id === id);
 
     if (item) {
-        // Reconstruct the full data object
         const data = {
             score_label: item.score_label,
             classification_text: item.classification_text,
             model_confidence: item.model_confidence,
             colors: item.colors,
-            
-            // Text Mode
             lime_html: item.lime_html,
             supporting_articles: item.supporting_articles,
-
-            // Video Mode
             suspicious_frames: item.suspicious_frames,
             interpretation: item.interpretation,
             search_verdict: item.search_verdict,
@@ -510,23 +594,19 @@ window.restoreSession = function(id) {
             evidence: item.evidence
         };
         
-        // Update Inputs
         if(item.type === 'video') {
              const vInput = document.getElementById('videoUrlInput');
              if(vInput) vInput.value = item.input_text;
-             // Trigger Video Tab
              const vidTab = document.querySelector('.tab[data-mode="video"]');
              if(vidTab) vidTab.click();
         } else {
              const tInput = document.getElementById('userInput');
              if(tInput) tInput.value = item.input_text;
-             // Trigger Text Tab
              const textTab = document.querySelector('.tab[data-mode="text"]');
              if(textTab) textTab.click();
         }
 
         displayAnalysis(data);
-        
         document.getElementById('history-modal-overlay').classList.remove('modal-active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -548,7 +628,7 @@ window.deleteItem = function(event, id) {
     let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
     const item = history.find(x => x.id === id);
     if (item && item.isFavorite) {
-        alert("This item is saved! Unsave it first if you want to delete it.");
+        alert("This item is saved! Unsave it first to delete.");
         return; 
     }
     if(!confirm("Delete this analysis?")) return;
@@ -576,7 +656,7 @@ if (videoInput && previewCard) {
         previewCard.style.display = 'block';
         document.getElementById('preview-title').innerText = "Fetching details...";
         document.getElementById('preview-author').innerText = "...";
-        document.getElementById('preview-thumb').src = "https://via.placeholder.com/120x90?text=Loading"; 
+        document.getElementById('preview-thumb').src = "https://via.placeholder.com/140x100?text=Loading"; 
 
         clearTimeout(debounceTimer);
 
@@ -610,8 +690,7 @@ if (videoInput && previewCard) {
                 }
             } catch (err) {
                 document.getElementById('preview-title').innerText = "❌ Video not found or invalid URL";
-                document.getElementById('preview-thumb').src = "https://via.placeholder.com/120x90?text=Error";
-                document.getElementById('preview-author').innerText = "Error";
+                document.getElementById('preview-thumb').src = "https://via.placeholder.com/140x100?text=Error";
             }
         }, 600); 
     });

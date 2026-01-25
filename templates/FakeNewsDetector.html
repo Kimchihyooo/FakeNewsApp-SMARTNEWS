@@ -6,86 +6,7 @@
     <title>CredibilityScan Detector</title>
     
     <link rel="stylesheet" href="../static/css/FakeNewsDetectorStyle.CSS" />
-    
     <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Oswald:wght@200..700&family=Rubik:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
-    <style>
-        /* --- LEGEND BOXES --- */
-        .legend-item { display: flex; align-items: center; margin-bottom: 8px; }
-        .legend-color-box { width: 20px; height: 20px; display: inline-block; border-radius: 4px; margin-right: 10px; border: 1px solid rgba(0,0,0,0.1); }
-        .legend-good { background-color: #dcfce7 !important; }
-        .legend-bad { background-color: #fee2e2 !important; }
-
-        /* --- LIME HIGHLIGHTS --- */
-        .lime-good { background-color: #dcfce7 !important; color: #166534 !important; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
-        .lime-bad { background-color: #fee2e2 !important; color: #991b1b !important; padding: 2px 4px; border-radius: 4px; font-weight: 500; }
-
-        /* --- SCANNER ANIMATION --- */
-        @keyframes scan-beam { 0% { background-position: 0 -200px; } 100% { background-position: 0 calc(100% + 200px); } }
-        .scanning {
-            background-image: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(37,99,235,0.2) 50%, rgba(255,255,255,0) 100%) !important;
-            background-color: #ffffff !important;
-            background-size: 100% 200px !important;
-            background-repeat: no-repeat !important;
-            animation: scan-beam 2s linear infinite !important;
-            border-color: #2563eb !important;
-            box-shadow: 0 0 15px rgba(37, 99, 235, 0.2) !important;
-            transition: all 0.3s ease;
-        }
-
-        /* --- VIDEO GALLERY --- */
-        .video-error-box { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
-        .transcription-box { max-height: 150px; overflow-y: auto; background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #e9ecef; font-family: monospace; font-size: 0.9rem; color: #343a40; line-height: 1.5; margin-top: 8px; }
-
-        /* --- IMAGE MODAL (LIGHTBOX) STYLES --- */
-        .image-modal-overlay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 2000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .image-modal-content {
-            margin: auto;
-            display: block;
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 4px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
-            animation: zoom 0.3s;
-        }
-
-        .image-modal-close {
-            position: absolute;
-            top: 20px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-            cursor: pointer;
-            z-index: 2001;
-        }
-
-        .image-modal-close:hover,
-        .image-modal-close:focus {
-            color: #bbb;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        @keyframes zoom {
-            from {transform:scale(0.8); opacity: 0;}
-            to {transform:scale(1); opacity: 1;}
-        }
-    </style>
 </head>
 <body>
 
@@ -107,44 +28,44 @@
 
             <div class="input-column">
                 <div class="input-tab-bar" role="tablist" aria-label="Input mode tabs">
-                    <button class="tab tab-active" data-mode="text" type="button" aria-selected="true">Text</button>
-                    <button class="tab" data-mode="video" type="button" aria-selected="false">Video</button>
+                    <button class="tab tab-active" data-mode="text" type="button">Text Article</button>
+                    <button class="tab" data-mode="video" type="button">Video Link</button>
                 </div>
 
                 <form id="analyzeForm" class="form" action="/analyze" method="post">
                     <div class="mode mode-text">
+                        <label class="detector-label">News Content</label>
                         <textarea id="userInput" name="news_text" class="detector-textarea" 
-                            placeholder="Paste your news article text here to analyze..." required></textarea>
-                        <div id="word-counts" class="word-count">0 words</div>
-                        <button type="submit" class="detector-btn" id="btntext" style="margin-top: 20px;">Analyze</button>
+                            placeholder="Paste the title and content of the article here..." required></textarea>
+                        <div id="word-counts" class="word-count" style="text-align: right; margin-top: 5px; color: #64748b; font-size: 0.9rem;">0 words</div>
+                        <button type="submit" class="detector-btn" id="btntext">Analyze Credibility</button>
                     </div>
                 
-<div class="mode mode-video" style="display:none;">
-    <label for="video-url" class="detector-label">Video URL</label>
-    
-    <input id="videoUrlInput" name="video_url" type="url" class="detector-textarea" 
-        placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" />
-    
-    <div id="video-preview-card" style="display: none; margin-top: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-        <div style="display: flex;">
-            <div style="width: 120px; height: 90px; background: #eee; flex-shrink: 0; position: relative;">
-                <img id="preview-thumb" src="" style="width: 100%; height: 100%; object-fit: cover;" alt="Thumbnail">
-                <span id="preview-duration" style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: #fff; font-size: 0.7rem; padding: 2px 4px; border-radius: 3px;">0:00</span>
-            </div>
-            <div style="padding: 10px; display: flex; flex-direction: column; justify-content: center;">
-                <h4 id="preview-title" style="margin: 0 0 5px 0; font-size: 0.95rem; color: #333; line-height: 1.3; max-height: 2.6em; overflow: hidden; display: -webkit-box;  -webkit-box-orient: vertical;">Loading Title...</h4>
-                <div style="font-size: 0.8rem; color: #666;">
-                    <span id="preview-author">Author</span> • <span id="preview-platform">Platform</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
+                    <div class="mode mode-video" style="display:none;">
+                        <label class="detector-label">Video URL</label>
+                        <input id="videoUrlInput" name="video_url" type="url" class="detector-textarea" 
+                            style="min-height: 60px; height: 60px;"
+                            placeholder="Paste YouTube, TikTok, or Facebook link..." autocomplete="off" />
+                        
+                        <div id="video-preview-card" style="display: none;">
+                            <div style="display: flex;">
+                                <div style="width: 140px; height: 100px; background: #f1f5f9; flex-shrink: 0; position: relative;">
+                                    <img id="preview-thumb" src="" style="width: 100%; height: 100%; object-fit: cover;" alt="Thumbnail">
+                                    <span id="preview-duration" style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">0:00</span>
+                                </div>
+                                <div style="padding: 15px; display: flex; flex-direction: column; justify-content: center;">
+                                    <h4 id="preview-title" style="margin: 0 0 5px 0; font-size: 1rem; color: #333; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">Loading...</h4>
+                                    <div style="font-size: 0.85rem; color: #64748b;">
+                                        <span id="preview-author">Author</span> • <span id="preview-platform">Platform</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    <button type="submit" class="detector-btn" id="btnvid" style="margin-top: 10px;">Analyze Video</button>
-</div>
+                        <button type="submit" class="detector-btn" id="btnvid">Analyze Video</button>
+                    </div>
 
-                    <div id="timer-display" style="display:none; text-align:center; margin-top:15px; font-family: monospace; font-size: 0.95rem; color: #666;">
+                    <div id="timer-display" style="display:none; text-align:center; margin-top:15px; font-family: monospace; font-size: 0.95rem; color: #64748b;">
                         Processing: 0.00s
                     </div>
                 </form>
@@ -152,63 +73,62 @@
 
             <div class="results-column">
 
-                <button type="button" class="history-trigger-btn" id="history-trigger-btn">View Recent Analysis</button>
+                <button type="button" class="history-trigger-btn" id="history-trigger-btn">
+                    <span>🕒</span> View Recent Analysis
+                </button>
 
                 <div id="results-placeholder" class="results-placeholder">
-                    <h3>Results will appear here</h3>
-                    <p>Enter your text or video URL on the left and click "Analyze" to see the credibility assessment.</p>
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <h3 style="color:#64748b; margin-top: 15px;">Ready to Scan</h3>
+                    <p style="color:#94a3b8; max-width: 300px; margin: 0 auto;">Enter content on the left to begin the deepfake and text verification process.</p>
                 </div>
 
                 <div id="results-area" style="display: none;">
-                    <div class="results-content">
-                        <h2 style="font-family: 'Rubik', sans-serif; font-weight: 600; margin-top: 0;">Analysis Result</h2>
+                    
+                    <div class="score-box animate-enter delay-1" id="scoreBox">
+                        <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: inherit; opacity: 0.8; margin-bottom: 5px;">Verdict</div>
+                        <h3 class="score" id="verdict-label">--</h3>
+                    </div>
 
-                        <div class="score-box" id="scoreBox" style="background-color: #f8f9fa; padding: 24px; border-radius: 8px; margin-bottom: 20px;">
-                            <h3 class="score" id="verdict-label" style="font-size: 2.25rem; margin-bottom: 8px;">--</h3>
+                    <div class="classification animate-enter delay-2" id="classifications">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 8px; color: #475569;">
+                            <span>AI Confidence</span>
+                            <strong id="confidence-score">0%</strong>
                         </div>
-
-                        <div class="classification" id="classifications" style="background-color: #f0f0f0; border-left: 5px solid #ccc; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px;">
-                                <span>Model Confidence:</span>
-                                <strong id="confidence-score">0%</strong>
-                            </div>
-                            <div style="background-color: rgba(0,0,0,0.1); height: 10px; border-radius: 5px; overflow: hidden;">
-                                <div id="confidence-bar" style="width: 0%; height: 100%; background-color: #666; transition: width 1s ease-out;"></div>
-                            </div>
+                        <div class="confidence-track">
+                            <div id="confidence-bar"></div>
                         </div>
+                    </div>
 
+                    <div class="animate-enter delay-3">
+                        <h4 style="margin: 0 0 10px 0; color: #334155; font-family: 'Rubik', sans-serif;">Detailed Analysis</h4>
+                        
                         <div id="text-results-container">
-                            <div id="result-container" class="detector-textarea" style="overflow-y: auto; line-height: 1.6; height: auto; min-height: 200px; background: white; border: 1px solid #ddd;"></div>
+                            <div id="result-container" style="font-size: 0.95rem; line-height: 1.7; color: #334155;"></div>
                             
-                            <div class="legend-box" style="margin-top: 10px;">
+                            <div class="legend-box">
                                 <div class="legend-item">
                                     <div class="legend-color-box legend-bad"></div>
                                     <span>Sentences flagged as highly suspicious.</span>
                                 </div>
                             </div>
 
-                            <div class="sources" style="margin-top: 20px;">
-                                <h3>Supporting Sources</h3>
+                            <div class="sources animate-enter delay-4" style="margin-top: 25px;">
+                                <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Supporting Sources</h3>
                                 <div id="sources-list"></div>
                             </div>
                         </div>
 
-<div id="video-results-container" style="display: none;">
-    
-    <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
-        
-        <p id="video-interpretation" style="color: #4b5563; line-height: 1.6; margin-bottom: 0;">Analysis pending...</p>
-    </div>
-
-    <h4 style="color: #374151; margin-bottom: 10px;">📸 Suspicious Frames (Click to Expand)</h4>
-    <div id="frame-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px;">
-        </div>
-
-    <div id="video-transcript-container" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-        </div>
-
-</div>
-
+                        <div id="video-results-container" style="display: none;">
+                            <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                                <p id="video-interpretation" style="color: #4b5563; margin: 0; line-height: 1.6;">Analysis pending...</p>
+                            </div>
+                            
+                            <h5 style="color: #64748b; margin-bottom: 10px;">Suspicious Frames (Click to Expand)</h5>
+                            <div id="frame-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;"></div>
+                            
+                            <div id="video-transcript-container" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;"></div>
+                        </div>
                     </div>
                 </div> 
             </div> 
@@ -218,26 +138,23 @@
     <div class="modal-overlay" id="history-modal-overlay">
         <div class="modal-content">
             <div class="history-container">
-                <div class="modal-header" style="flex-direction: column; align-items: stretch; gap: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3>Recent Analysis</h3>
-                        <button class="modal-close-btn" id="history-close-btn">&times;</button>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <select id="history-filter-select" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                            <option value="all">All History</option>
-                            <option value="saved">⭐ Saved/Favorite</option>
-                            <option value="real">Verdicts: Real / Credible</option>
-                            <option value="fake">Verdicts: Fake / Low Credibility</option>
-                            <option value="uncertain">Verdicts: Uncertain</option>
-                            <option value="text">Type: Text Articles</option>
-                            <option value="video">Type: Videos</option>
-                        </select>
-                        <input type="text" id="history-search-input" placeholder="Search..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin:0;">Recent Analysis</h3>
+                    <button id="history-close-btn" style="background:none; border:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
                 </div>
+                
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <select id="history-filter-select" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; width: 40%;">
+                        <option value="all">All History</option>
+                        <option value="saved">⭐ Saved</option>
+                        <option value="text">Text Articles</option>
+                        <option value="video">Videos</option>
+                    </select>
+                    <input type="text" id="history-search-input" placeholder="Search keywords..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+
                 <div id="history-list" class="history-list">
-                    <p class="history-empty">Your analysis history will appear here.</p>
+                    <p class="history-empty" style="text-align: center; color: #999;">Your analysis history will appear here.</p>
                 </div>
             </div>
         </div>
@@ -248,74 +165,53 @@
         <img class="image-modal-content" id="image-modal-img">
     </div>
 
+    <script src="../static/js/main.js"></script>
+
     <script>
     (function(){
-        // TAB SWITCHING
-        const bar = document.querySelector('.input-tab-bar');
-        const tabs = Array.from(document.querySelectorAll('.tab'));
+        // Simple Tab Logic Initializer for UI
+        const tabs = document.querySelectorAll('.tab');
         const textMode = document.querySelector('.mode-text');
         const videoMode = document.querySelector('.mode-video');
         const analyzeForm = document.getElementById('analyzeForm');
         const textInput = document.getElementById('userInput');
         const videoInput = document.getElementById('videoUrlInput');
 
-        if(bar && tabs.length){
-            function setMode(mode){
-                tabs.forEach(t => {
-                    const active = t.getAttribute('data-mode') === mode;
-                    t.classList.toggle('tab-active', active);
-                });
+        tabs.forEach(t => {
+            t.addEventListener('click', () => {
+                tabs.forEach(x => x.classList.remove('tab-active'));
+                t.classList.add('tab-active');
+                
+                const mode = t.getAttribute('data-mode');
                 if(mode === 'video'){
                     textMode.style.display = 'none';
                     videoMode.style.display = 'block';
                     analyzeForm.setAttribute('action', '/analyze-video'); 
-                    if(textInput) textInput.required = false;
-                    if(videoInput) videoInput.required = true;
+                    textInput.required = false;
+                    videoInput.required = true;
                 } else { 
                     textMode.style.display = 'block';
                     videoMode.style.display = 'none';
                     analyzeForm.setAttribute('action', '/analyze'); 
-                    if(textInput) textInput.required = true;
-                    if(videoInput) videoInput.required = false;
+                    textInput.required = true;
+                    videoInput.required = false;
                 }
-            }
-            tabs.forEach(t => t.addEventListener('click', () => setMode(t.getAttribute('data-mode'))));
-            setMode('text');
-        }
-
-        // HISTORY MODAL TOGGLE
-        const historyTrigger = document.getElementById('history-trigger-btn');
-        const modalOverlay = document.getElementById('history-modal-overlay');
-        const modalCloseBtn = document.getElementById('history-close-btn');
-
-        if (historyTrigger && modalOverlay) {
-            historyTrigger.addEventListener('click', () => modalOverlay.classList.add('modal-active'));
-            modalCloseBtn.addEventListener('click', () => modalOverlay.classList.remove('modal-active'));
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) modalOverlay.classList.remove('modal-active');
             });
-        }
+        });
 
-        // WORD COUNTER
-        const countDisplay = document.getElementById('word-counts');
-        const btnText = document.getElementById('btntext'); 
-        if(textInput && countDisplay) {
-            textInput.addEventListener('input', () => {
-                const count = textInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-                countDisplay.innerText = `${count} / 1000 words`;
-                if (count > 250) {
-                    countDisplay.style.color = "red";
-                    btnText.disabled = true;
-                } else {
-                    countDisplay.style.color = "#666";
-                    btnText.disabled = false;
-                }
+        // History Modal Trigger
+        const histBtn = document.getElementById('history-trigger-btn');
+        const histModal = document.getElementById('history-modal-overlay');
+        const histClose = document.getElementById('history-close-btn');
+        
+        if(histBtn && histModal) {
+            histBtn.addEventListener('click', () => histModal.classList.add('modal-active'));
+            histClose.addEventListener('click', () => histModal.classList.remove('modal-active'));
+            histModal.addEventListener('click', (e) => {
+                if(e.target === histModal) histModal.classList.remove('modal-active');
             });
         }
     })();
     </script>
-
-    <script src="../static/js/main.js"></script>
-
 </body>
 </html>
