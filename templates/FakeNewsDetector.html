@@ -193,21 +193,21 @@
                             </div>
                         </div>
 
-                        <div id="video-results-container" style="display: none;">
-                            
-                            <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
-                                <p id="video-interpretation" style="color: #4b5563; line-height: 1.6; margin-bottom: 0;">Analysis pending...</p>
-                            </div>
+<div id="video-results-container" style="display: none;">
+    
+    <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+        
+        <p id="video-interpretation" style="color: #4b5563; line-height: 1.6; margin-bottom: 0;">Analysis pending...</p>
+    </div>
 
-                            <h4 style="color: #374151; margin-bottom: 10px;">Suspicious Frames (Click to Expand)</h4>
-                            <div id="frame-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px;">
-                                </div>
+    <h4 style="color: #374151; margin-bottom: 10px;">📸 Suspicious Frames (Click to Expand)</h4>
+    <div id="frame-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        </div>
 
-                            <details style="margin-top: 10px; border: 1px solid #eee; border-radius: 5px; padding: 10px;">
-                                <summary style="cursor: pointer; font-weight: 500; color: #666;">View Full Transcript</summary>
-                                <div id="video-transcript" class="transcription-box"></div>
-                            </details>
-                        </div>
+    <div id="video-transcript-container" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+        </div>
+
+</div>
 
                     </div>
                 </div> 
@@ -226,8 +226,12 @@
                     <div style="display: flex; gap: 8px;">
                         <select id="history-filter-select" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                             <option value="all">All History</option>
-                            <option value="saved">⭐ Saved</option>
-                            <option value="video">Videos</option>
+                            <option value="saved">⭐ Saved/Favorite</option>
+                            <option value="real">Verdicts: Real / Credible</option>
+                            <option value="fake">Verdicts: Fake / Low Credibility</option>
+                            <option value="uncertain">Verdicts: Uncertain</option>
+                            <option value="text">Type: Text Articles</option>
+                            <option value="video">Type: Videos</option>
                         </select>
                         <input type="text" id="history-search-input" placeholder="Search..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                     </div>
@@ -298,7 +302,7 @@
         if(textInput && countDisplay) {
             textInput.addEventListener('input', () => {
                 const count = textInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-                countDisplay.innerText = `${count} / 250 words`;
+                countDisplay.innerText = `${count} / 1000 words`;
                 if (count > 250) {
                     countDisplay.style.color = "red";
                     btnText.disabled = true;
