@@ -279,6 +279,81 @@ nav a:hover {
     background: rgba(147, 197, 253, 0.5);
 }
 
+
+
+/* --- FEATURES SECTION --- */
+.features-section {
+    padding: 100px 10%;
+    background-color: #fcfafa; /* Clean white to contrast with the colorful Hero */
+    text-align: center;
+}
+
+.features-header h2 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.features-header p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 60px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.features-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    flex: 1;
+    min-width: 280px; /* Prevents squishing on small screens */
+    background: #f9fbff;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15); /* Blue glow on hover */
+}
+
+.icon-box {
+    background-color: #e0eaff;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 25px auto; /* Centers the icon */
+}
+
+.feature-card h3 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1rem;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+
 /*HOW IT WORKS SECTION*/
 /* --- BEHIND THE SCENES SECTION --- */
 .bts-section {
@@ -409,6 +484,56 @@ nav a:hover {
 .bts-item:nth-child(5) { animation-delay: 1.0s; }
 .bts-item:nth-child(6) { animation-delay: 1.2s; }
 
+/* --- FOOTER --- */
+.site-footer {
+    background-color: #080505; /* Matching your dark text color for contrast */
+    color: #fff;
+    padding: 60px 10% 20px 10%;
+    font-family: 'Rubik', sans-serif;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 40px;
+}
+
+.footer-logo h2 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 1.8rem;
+    margin: 0 0 10px 0;
+}
+
+.footer-logo p {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.footer-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #3B82F6;
+}
+
+.footer-bottom {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
 /* --- RESPONSIVE DESIGN (MOBILE) --- */
 @media (max-width: 768px) {
     .bts-item, .bts-item.reverse {
@@ -423,6 +548,15 @@ nav a:hover {
 
     .bts-header h1 {
         font-size: 2.2rem;
+    }
+    .features-header h2 {
+        font-size: 2.2rem;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
     }
 }
 
