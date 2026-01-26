@@ -486,8 +486,8 @@ nav a:hover {
 
 /* --- FOOTER --- */
 .site-footer {
-    background-color: #080505; /* Matching your dark text color for contrast */
-    color: #fff;
+    background-color: #88b2eb; /* Matching your dark text color for contrast */
+    color: #000000;
     padding: 60px 10% 20px 10%;
     font-family: 'Rubik', sans-serif;
 }
@@ -508,7 +508,7 @@ nav a:hover {
 }
 
 .footer-logo p {
-    color: #9ca3af;
+    color: #222222;
     font-size: 0.9rem;
     margin: 0;
 }
@@ -519,19 +519,19 @@ nav a:hover {
 }
 
 .footer-links a {
-    color: #fff;
+    color: #000000;
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .footer-links a:hover {
-    color: #3B82F6;
+    color: #32425c;
 }
 
 .footer-bottom {
     text-align: center;
     font-size: 0.85rem;
-    color: #6b7280;
+    color: #232425;
 }
 
 /* --- RESPONSIVE DESIGN (MOBILE) --- */
