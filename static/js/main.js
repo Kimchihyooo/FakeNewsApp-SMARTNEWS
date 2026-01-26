@@ -150,256 +150,204 @@ function displayError(message) {
 }
 
 // =========================================================
-// 4. DISPLAY ANALYSIS (UPDATED: FORENSIC CARD)
+// 4. DISPLAY ANALYSIS (FINAL FIXED VERSION)
 // =========================================================
 function displayAnalysis(data) {
     const resultsArea = document.getElementById('results-area');
     const placeholder = document.getElementById('results-placeholder');
     
-    // 1. Hide placeholder, Show results
-    placeholder.style.display = 'none';
-    resultsArea.style.display = 'block';
+    // 1. Show Results Area / Hide Placeholder
+    if(placeholder) placeholder.style.display = 'none';
+    if(resultsArea) resultsArea.style.display = 'block';
 
-    // 2. Hide old generic boxes (We are replacing them)
-    document.getElementById('scoreBox').style.display = 'none';
-    document.getElementById('classifications').style.display = 'none';
+    // 2. Hide Legacy External Containers (Cleanup)
+    const oldScore = document.getElementById('scoreBox');
+    if(oldScore) oldScore.style.display = 'none';
+    const oldClass = document.getElementById('classifications');
+    if(oldClass) oldClass.style.display = 'none';
+    const oldTextResults = document.getElementById('text-results-container');
+    if(oldTextResults) oldTextResults.style.display = 'none';
+    const oldVideoResults = document.getElementById('video-results-container');
+    if(oldVideoResults) oldVideoResults.style.display = 'none';
 
-    // 3. GENERATE FORENSIC REPORT CARD
+    // 3. Setup Variables
+    const isVideo = data.suspicious_frames !== undefined;
     let themeColor = "#3b82f6"; // Default Blue
+    let verdictLabel = data.score_label || "Processing..."; 
     let isReal = false;
-    
-    if (data.score_label.toLowerCase().includes("real") || data.score_label.toLowerCase().includes("verified")) {
+
+    // Color Logic
+    const labelLower = verdictLabel.toLowerCase();
+    if (labelLower.includes("real") || labelLower.includes("high credibility") || labelLower.includes("verified")) {
         themeColor = "#166534"; // Green
         isReal = true;
-    } else if (data.score_label.toLowerCase().includes("fake") || data.score_label.toLowerCase().includes("deepfake")) {
-        themeColor = "#b91c1c"; // Red
-    } else if (data.score_label.toLowerCase().includes("debunked")) {
+    } else if (labelLower.includes("fake") || labelLower.includes("low credibility")) {
         themeColor = "#b91c1c"; // Red
     } else {
-        themeColor = "#d97706"; // Orange/Uncertain
+        themeColor = "#d97706"; // Orange
     }
 
-    // Determine Frame Label
-    const frameLabel = isReal ? "Artifact" : "Manipulation";
-    const frameClass = isReal ? "frame-artifact" : "frame-fake";
-    const frameColor = isReal ? "#f59e0b" : "#ef4444";
+    // 4. GET VIDEO METADATA (Author/Platform)
+    // We grab this from the preview card which we know is already populated
+    let videoMetaHTML = "";
+    if (isVideo) {
+        const author = document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : "Unknown";
+        const platform = document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : "Platform";
+        
+        videoMetaHTML = `
+            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Source Channel</div>
+                    <div style="font-weight:600; color:#334155; font-size:1rem;">${author}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Platform</div>
+                    <div style="font-weight:600; color:#334155; font-size:1rem;">${platform}</div>
+                </div>
+            </div>
+        `;
+    }
 
-    // --- NEW: PREPARE VERIFICATION BADGE FOR INSIDE THE CARD ---
+    // 5. BUILD FRAME GALLERY (IMAGES)
+    let framesHTML = "";
+    if (isVideo && data.suspicious_frames && data.suspicious_frames.length > 0) {
+        let images = "";
+        data.suspicious_frames.forEach(b64 => {
+            // We verify the base64 string isn't empty
+            if(b64) {
+                images += `<img src="data:image/jpeg;base64,${b64}" 
+                    style="width: 100px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s;" 
+                    onclick="openImageModal(this.src)" 
+                    onmouseover="this.style.transform='scale(1.05)'" 
+                    onmouseout="this.style.transform='scale(1)'" />`;
+            }
+        });
+
+        framesHTML = `
+            <div style="margin-top: 20px;">
+                <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
+                    ${isReal ? 'Analyzed Frames (Sample)' : '⚠️ Anomalies Detected'}
+                </h5>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    ${images}
+                </div>
+            </div>
+        `;
+    } else if (isVideo) {
+         framesHTML = `<div style="margin-top:20px; color:#94a3b8; font-style:italic; font-size:0.9rem;">No anomalies detected in video frames.</div>`;
+    }
+
+    // 6. BUILD EVIDENCE / SOURCES LIST
+    let evidenceHTML = "";
+    const evidenceList = data.evidence || data.supporting_articles || [];
+    
+    if (evidenceList.length > 0) {
+        evidenceHTML += `
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
+                <h5 style="color: #111827; font-weight: 700; font-size: 1.05rem; margin-bottom: 15px; display:flex; align-items:center; gap:8px;">
+                    <span>📚</span> Supporting Sources
+                </h5>
+        `;
+        evidenceList.forEach(item => {
+            evidenceHTML += `
+                <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #e5e7eb;">
+                    <a href="${item.link}" target="_blank" style="font-weight: 600; color: #1a0dab; text-decoration: none; display:block; margin-bottom:2px;">
+                        ${item.title}
+                    </a>
+                    <div style="font-size: 0.85rem; color: #6b7280;">
+                        ${item.website || item.displayLink || "Source"}
+                    </div>
+                </div>
+            `;
+        });
+        evidenceHTML += `</div>`;
+    }
+
+    // 7. BUILD LEGEND (For Text Mode)
+    let legendHTML = "";
+    if (!isVideo && data.lime_html && data.lime_html.includes('lime-bad')) {
+        legendHTML = `
+            <div style="margin-top: 15px; margin-bottom: 20px; padding: 10px 12px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #991b1b;">
+                <div style="width: 16px; height: 16px; background-color: #fca5a5; border: 1px solid #ef4444; border-radius: 3px;"></div>
+                <span>Sentences flagged as highly suspicious.</span>
+            </div>
+        `;
+    }
+
+    // 8. BUILD GRID STATS
+    let gridHTML = "";
+    if (isVideo) {
+        gridHTML = `
+            <div class="forensic-stat"><h5>Visual Check</h5><p>${data.suspicious_frames.length > 0 ? (isReal ? 'Pass' : 'Fail') : 'Clean'}</p></div>
+            <div class="forensic-stat"><h5>Metadata</h5><p>${data.search_verdict || "Checked"}</p></div>
+            <div class="forensic-stat"><h5>Anomalies</h5><p>${data.suspicious_frames.length} Frames</p></div>
+        `;
+    } else {
+        gridHTML = `
+            <div class="forensic-stat"><h5>Type</h5><p>Text Article</p></div>
+            <div class="forensic-stat"><h5>Fact Check</h5><p style="color:${evidenceList.length > 0 ? '#166534':'#64748b'}">${evidenceList.length > 0 ? 'Evidence Found' : 'No Matches'}</p></div>
+            <div class="forensic-stat"><h5>Sources</h5><p>${evidenceList.length} Links</p></div>
+        `;
+    }
+
+    // 9. BUILD FINAL CARD HTML
+    const displayConf = data.model_confidence ? Math.round(parseFloat(data.model_confidence)) + "%" : "--";
+    
+    // Video verification badge
     let sourceBadge = "";
-    if (data.search_verdict === "VERIFIED" || data.search_verdict === "OFFICIAL SOURCE") {
-        sourceBadge = `
-            <div style="background-color: #dcfce7; color: #14532d; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-weight: 600; border: 1px solid #bbf7d0; display:flex; align-items:center; gap:8px;">
-                <span style="font-size:1.2em;">✅</span>
-                <span>${data.search_reason || "Source verified as official channel."}</span>
-            </div>`;
-    } else if (data.search_verdict === "DEBUNKED") {
-        sourceBadge = `
-            <div style="background-color: #fee2e2; color: #991b1b; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-weight: 600; border: 1px solid #fca5a5; display:flex; align-items:center; gap:8px;">
-                <span style="font-size:1.2em;">🚨</span>
-                <span>${data.search_reason || "Flagged by fact-checkers as false."}</span>
-            </div>`;
+    if (isVideo && data.search_verdict === "VERIFIED") {
+        sourceBadge = `<div style="background:#dcfce7; color:#14532d; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">✅ Source Verified</div>`;
     }
 
-    // Build the HTML
     const reportHTML = `
         <div class="forensic-card">
             <div class="forensic-header" style="border-left: 6px solid ${themeColor};">
                 <div class="forensic-verdict-box">
-                    <h4>Authenticity Verdict</h4>
-                    <h2 style="color: ${themeColor};">${data.score_label}</h2>
+                    <h4>Verdict</h4>
+                    <h2 style="color: ${themeColor};">${verdictLabel}</h2>
                 </div>
                 <div class="forensic-score-circle">
-                    ${data.model_confidence ? `
-                        <div class="forensic-score-val">${Math.round(data.model_confidence)}%</div>
-                        <div class="forensic-score-label">Confidence</div>
-                    ` : `
-                        <div class="forensic-score-val" style="font-size:1.5rem;">--</div>
-                        <div class="forensic-score-label">Skipped</div>
-                    `}
+                    <div class="forensic-score-val">${displayConf}</div>
+                    <div class="forensic-score-label">Confidence</div>
                 </div>
             </div>
             
             <div class="forensic-grid">
-                <div class="forensic-stat">
-                    <h5>Visual Check</h5>
-                    <p style="color: ${data.scan_skipped ? '#64748b' : (data.suspicious_frames && data.suspicious_frames.length > 0 ? (isReal ? '#d97706' : '#b91c1c') : '#166534')}">
-                        ${data.scan_skipped ? '--' : (data.suspicious_frames && data.suspicious_frames.length > 0 ? (isReal ? 'Pass with Noise)' : 'Fail') : 'Clean')}
-                    </p>
-                </div>
-                <div class="forensic-stat">
-                    <h5>Metadata</h5>
-                    <p style="color: ${data.search_verdict === 'VERIFIED' || data.search_verdict === 'OFFICIAL SOURCE' ? '#166534' : '#64748b'}">
-                        ${data.search_verdict || 'N/A'}
-                    </p>
-                </div>
-                <div class="forensic-stat">
-                    <h5>Anomalies</h5>
-                    <p>${data.suspicious_frames ? data.suspicious_frames.length : 0} Frames</p>
-                </div>
+                ${gridHTML}
             </div>
             
             <div class="forensic-analysis-text">
+                ${videoMetaHTML}
+
                 ${sourceBadge}
                 
-                ${data.interpretation || "No detailed interpretation available."}
+                <div style="color: #374151; line-height: 1.8; font-size: 1.05rem; margin-bottom: 10px;">
+                    ${data.lime_html || data.news_text || data.interpretation || "No content."}
+                </div>
+
+                ${legendHTML}
+
+                ${framesHTML}
+
+                ${evidenceHTML}
             </div>
         </div>
     `;
 
-    // Inject into a container (We reuse text-results-container for positioning, or insert before it)
-    let forensicContainer = document.getElementById('forensic-report-container');
-    if (!forensicContainer) {
-        forensicContainer = document.createElement('div');
-        forensicContainer.id = 'forensic-report-container';
-        // Insert before the detailed tabs
-        const parent = document.getElementById('text-results-container').parentNode;
-        parent.insertBefore(forensicContainer, document.getElementById('text-results-container'));
+    // 10. INJECT CARD
+    let container = document.getElementById('forensic-report-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'forensic-report-container';
+        resultsArea.insertBefore(container, resultsArea.firstChild);
     }
-    forensicContainer.innerHTML = reportHTML;
-    forensicContainer.style.display = 'block';
+    container.innerHTML = reportHTML;
+    container.style.display = 'block';
 
-    // 4. SWITCH MODE (Text vs Video Details)
-    const textContainer = document.getElementById('text-results-container');
-    const videoContainer = document.getElementById('video-results-container');
-
-    // CHECK: Video Mode if specific fields exist
-    if (data.suspicious_frames || data.evidence) {
-        // === VIDEO MODE ===
-        if(textContainer) textContainer.style.display = 'none';
-        if(videoContainer) videoContainer.style.display = 'block';
-
-        // Hide old interpretation box since it's now in the card
-        const oldInterp = document.getElementById('video-interpretation').parentNode;
-        if(oldInterp) oldInterp.style.display = 'none';
-
-        // Frame Gallery (Trustable Colors)
-        const gallery = document.getElementById('frame-gallery');
-        if(gallery) {
-            gallery.innerHTML = ""; 
-            if (data.suspicious_frames && data.suspicious_frames.length > 0) {
-                data.suspicious_frames.forEach(b64 => {
-                    const wrapper = document.createElement('div');
-                    wrapper.style.position = "relative";
-                    
-                    const img = document.createElement('img');
-                    img.src = "data:image/jpeg;base64," + b64;
-                    img.style.width = "100%";
-                    img.style.borderRadius = "8px";
-                    img.className = frameClass; // Apply Orange or Red class
-                    img.style.cursor = "zoom-in";
-                    img.onclick = () => openImageModal(img.src);
-                    
-                    // Add Label Badge
-                    const badge = document.createElement('span');
-                    badge.innerText = frameLabel;
-                    badge.style.position = "absolute";
-                    badge.style.bottom = "8px";
-                    badge.style.right = "8px";
-                    badge.style.background = frameColor;
-                    badge.style.color = "#fff";
-                    badge.style.fontSize = "0.7rem";
-                    badge.style.padding = "2px 6px";
-                    badge.style.borderRadius = "4px";
-                    badge.style.fontWeight = "bold";
-                    badge.style.pointerEvents = "none";
-
-                    wrapper.appendChild(img);
-                    wrapper.appendChild(badge);
-                    gallery.appendChild(wrapper);
-                });
-            } else {
-                gallery.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #9ca3af; font-style: italic;">No suspicious artifacts detected.</p>`;
-            }
-        }
-
-        // Verification Results (Google Search)
-        const transcriptBox = document.getElementById('video-transcript-container');
-            if(transcriptBox) {
-            transcriptBox.innerHTML = "";
-            
-            // 1. Simple Header
-            const searchHeader = document.createElement('h4');
-            searchHeader.style.marginTop = "0";
-            searchHeader.style.marginBottom = "15px";
-            searchHeader.style.color = "#374151";
-            searchHeader.style.borderBottom = "2px solid #e5e7eb";
-            searchHeader.style.paddingBottom = "10px";
-            searchHeader.innerHTML = `🔎 Related News & Evidence`;
-            transcriptBox.appendChild(searchHeader);
-
-            // 2. Evidence List (No Banners, Just Snippets)
-            if (data.evidence && data.evidence.length > 0) {
-                const list = document.createElement('div');
-                
-                data.evidence.forEach(item => {
-                    const row = document.createElement('div');
-                    row.style.marginBottom = "16px";
-                    row.style.paddingBottom = "16px";
-                    row.style.borderBottom = "1px solid #f3f4f6";
-                    
-                    // Simple clean layout: Title -> Site -> Snippet
-                    row.innerHTML = `
-                        <div style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4;">
-                            <a href="${item.link}" target="_blank" style="text-decoration:none; color:#1a0dab;">
-                                ${item.title}
-                            </a>
-                        </div>
-                        <div style="font-size: 0.85rem; color: #166534; margin-bottom: 6px;">
-                            ${item.website}
-                        </div>
-                        <div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5;">
-                            ${item.snippet || "No snippet available."}
-                        </div>
-                    `;
-                    list.appendChild(row);
-                });
-                transcriptBox.appendChild(list);
-            } else {
-                // Empty State
-                const noEv = document.createElement('div');
-                noEv.style.color = "#6b7280";
-                noEv.style.fontStyle = "italic";
-                noEv.style.padding = "20px";
-                noEv.style.textAlign = "center";
-                noEv.style.backgroundColor = "#f9fafb";
-                noEv.style.borderRadius = "8px";
-                noEv.innerText = "No related news reports found for this video.";
-                transcriptBox.appendChild(noEv);
-            }
-        }
-
-    } else {
-        // === TEXT MODE ===
-        // (Hide forensic card if strictly text mode, or adapt it)
-        if(forensicContainer) forensicContainer.style.display = 'none';
-        document.getElementById('scoreBox').style.display = 'block'; // Show old box for text
-        document.getElementById('classifications').style.display = 'block';
-
-        if(videoContainer) videoContainer.style.display = 'none';
-        if(textContainer) textContainer.style.display = 'block';
-
-        const resultContainer = document.getElementById('result-container');
-        if(resultContainer) resultContainer.innerHTML = data.lime_html || data.news_text;
-        
-        // ... (Keep existing text mode sources logic) ...
-         const sourcesList = document.getElementById('sources-list');
-        if(sourcesList) {
-            sourcesList.innerHTML = '';
-            if (data.supporting_articles && data.supporting_articles.length > 0) {
-                data.supporting_articles.forEach(article => {
-                    const div = document.createElement('div');
-                    div.innerHTML = `
-                        <div style="margin-bottom: 10px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <a href="${article.link}" target="_blank" style="color: #2563eb; font-weight: 600;">${article.title}</a>
-                            <div style="font-size: 0.8rem; color: #64748b;">${article.displayLink}</div>
-                        </div>`;
-                    sourcesList.appendChild(div);
-                });
-            } else {
-                sourcesList.innerHTML = '<p style="color:#94a3b8; font-style: italic;">No specific supporting sources found.</p>';
-            }
-        }
-    }
+    // 11. SCROLL
+    setTimeout(() => {
+        resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
 }
 
 // =========================================================
