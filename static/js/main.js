@@ -202,8 +202,8 @@ function displayAnalysis(data) {
             <div class="forensic-grid">
                 <div class="forensic-stat">
                     <h5>Visual Check</h5>
-                    <p style="color: ${data.suspicious_frames && data.suspicious_frames.length > 5 ? '#d97706' : '#166534'}">
-                        ${data.suspicious_frames && data.suspicious_frames.length > 0 ? (isReal ? 'Pass with noise' : 'Fail') : 'Clean'}
+                    <p style="color: ${data.scan_skipped ? '#64748b' : (data.suspicious_frames && data.suspicious_frames.length > 0 ? (isReal ? '#d97706' : '#b91c1c') : '#166534')}">
+                        ${data.scan_skipped ? '--' : (data.suspicious_frames && data.suspicious_frames.length > 0 ? (isReal ? 'Pass with Noise)' : 'Fail') : 'Clean')}
                     </p>
                 </div>
                 <div class="forensic-stat">
