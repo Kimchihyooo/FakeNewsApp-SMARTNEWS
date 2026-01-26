@@ -169,44 +169,66 @@
 
     <script>
     (function(){
-        // Simple Tab Logic Initializer for UI
+        // UI Elements
         const tabs = document.querySelectorAll('.tab');
         const textMode = document.querySelector('.mode-text');
         const videoMode = document.querySelector('.mode-video');
         const analyzeForm = document.getElementById('analyzeForm');
+        
+        // Inputs
         const textInput = document.getElementById('userInput');
         const videoInput = document.getElementById('videoUrlInput');
+        
+        // Results & Previews (To Clear)
+        const resultsArea = document.getElementById('results-area');
+        const placeholder = document.getElementById('results-placeholder');
+        const videoPreview = document.getElementById('video-preview-card');
 
         tabs.forEach(t => {
             t.addEventListener('click', () => {
+                // 1. Activate Tab Visuals
                 tabs.forEach(x => x.classList.remove('tab-active'));
                 t.classList.add('tab-active');
                 
+                // 2. CLEAR ALL INPUTS
+                if(textInput) textInput.value = "";
+                if(videoInput) videoInput.value = "";
+
+                // 3. RESET RESULTS AREA (Hide old results, show placeholder)
+                if(resultsArea) resultsArea.style.display = 'none';
+                if(placeholder) placeholder.style.display = 'block';
+                
+                // 4. RESET VIDEO PREVIEW CARD
+                if(videoPreview) videoPreview.style.display = 'none';
+                
+                // 5. SWITCH MODES
                 const mode = t.getAttribute('data-mode');
                 if(mode === 'video'){
                     textMode.style.display = 'none';
                     videoMode.style.display = 'block';
                     analyzeForm.setAttribute('action', '/analyze-video'); 
-                    textInput.required = false;
-                    videoInput.required = true;
+                    
+                    if(textInput) textInput.required = false;
+                    if(videoInput) videoInput.required = true;
                 } else { 
                     textMode.style.display = 'block';
                     videoMode.style.display = 'none';
                     analyzeForm.setAttribute('action', '/analyze'); 
-                    textInput.required = true;
-                    videoInput.required = false;
+                    
+                    if(textInput) textInput.required = true;
+                    if(videoInput) videoInput.required = false;
                 }
             });
         });
 
-        // History Modal Trigger
+        // History Modal Logic (Kept as is)
         const histBtn = document.getElementById('history-trigger-btn');
         const histModal = document.getElementById('history-modal-overlay');
         const histClose = document.getElementById('history-close-btn');
         
         if(histBtn && histModal) {
             histBtn.addEventListener('click', () => histModal.classList.add('modal-active'));
-            histClose.addEventListener('click', () => histModal.classList.remove('modal-active'));
+            if(histClose) histClose.addEventListener('click', () => histModal.classList.remove('modal-active'));
             histModal.addEventListener('click', (e) => {
                 if(e.target === histModal) histModal.classList.remove('modal-active');
             });
