@@ -6,7 +6,7 @@
 }
 @font-face{
     font-family: 'Recoleta';
-    src: url('../font/Recoleta-RegularDEMO.otf') format('opentype');
+    src: url('../font/Recoleta-RegularDEMO.otf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -63,14 +63,12 @@ body {
     margin: auto;
 }
 
-nav a{
+nav a {
     text-decoration: none;
     color: #080505;
     margin-left: 50px;
     font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
     font-weight: normal;
-    font-style: normal;
     border-radius: 8px;
     padding: 8px 16px;
     transition: background 0.3s, color 0.3s;
