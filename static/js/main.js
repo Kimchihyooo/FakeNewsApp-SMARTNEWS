@@ -25,6 +25,49 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === imgModal) imgModal.style.display = "none";
         };
     }
+
+    // 4. WORD COUNTER WITH 1000 WORD CAP
+    const wordInput = document.getElementById('userInput');
+    const wordCountDisplay = document.getElementById('word-counts');
+    const analyzeBtn = document.getElementById('btntext'); // The button to disable
+
+    if (wordInput && wordCountDisplay) {
+        const updateCount = () => {
+            const text = wordInput.value.trim();
+            // Split by whitespace to count words accurately
+            const count = text ? text.split(/\s+/).length : 0;
+            
+            // Update the display text
+            wordCountDisplay.innerText = `${count} / 1000 words`;
+
+            // LOGIC: Check if limit is exceeded
+            if (count > 1000) {
+                // Limit Exceeded: Red text + Disable Button
+                wordCountDisplay.style.color = "#dc2626"; // Red
+                wordCountDisplay.style.fontWeight = "bold";
+                
+                if(analyzeBtn) {
+                    analyzeBtn.disabled = true;
+                    analyzeBtn.style.opacity = "0.5";
+                    analyzeBtn.style.cursor = "not-allowed";
+                    analyzeBtn.title = "Please reduce text to under 1000 words";
+                }
+            } else {
+                // Within Limit: Normal text + Enable Button
+                wordCountDisplay.style.color = "#64748b"; // Gray
+                wordCountDisplay.style.fontWeight = "normal";
+                
+                if(analyzeBtn) {
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.style.opacity = "1";
+                    analyzeBtn.style.cursor = "pointer";
+                    analyzeBtn.title = "";
+                }
+            }
+        };
+
+        wordInput.addEventListener('input', updateCount);
+    }
 });
 
 // =========================================================
