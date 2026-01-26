@@ -498,7 +498,7 @@ nav a:hover {
     border: 3px solid #ef4444 !important; /* Red for manipulation */
 }
 /* --- RESPONSIVE --- */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .main-content-wrapper {
         flex-direction: column;
     }
@@ -518,19 +518,24 @@ nav a:hover {
     .nav-toggle-label { display: block; }
     .nav-menu {
         display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
         width: 100%;
-        z-index: 999;
+        background-color: #ffffff;
+        padding: 20px 0;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        position: absolute; /* Detach from flow */
+        top: 70px; /* Push below navbar */
+        left: 0;
         flex-direction: column;
         align-items: center;
-        background-color: #ffffff;
-        padding-top: 10px;
-        box-shadow: 0 20px 20px -10px rgba(0,0,0,0.05);
     }
+
     .nav-toggle:checked ~ .nav-menu { display: flex; }
-    nav a { margin: 5px 0; width: 90%; text-align: center; margin-left: 0; }
+    nav a {
+        margin: 10px 0; /* Vertical spacing for links */
+        width: 100%;
+        text-align: center;
+        display: block;
+    }
 
     .forensic-grid {
     display: grid;
