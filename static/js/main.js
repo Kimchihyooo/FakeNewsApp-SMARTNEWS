@@ -165,11 +165,10 @@ function displayAnalysis(data) {
     document.getElementById('classifications').style.display = 'none';
 
     // 3. GENERATE FORENSIC REPORT CARD
-    // Determine Theme Colors based on Verdict
     let themeColor = "#3b82f6"; // Default Blue
     let isReal = false;
     
-    if (data.score_label.toLowerCase().includes("real")) {
+    if (data.score_label.toLowerCase().includes("real") || data.score_label.toLowerCase().includes("verified")) {
         themeColor = "#166534"; // Green
         isReal = true;
     } else if (data.score_label.toLowerCase().includes("fake") || data.score_label.toLowerCase().includes("deepfake")) {
@@ -180,10 +179,26 @@ function displayAnalysis(data) {
         themeColor = "#d97706"; // Orange/Uncertain
     }
 
-    // Determine Frame Label (Trust Signal)
+    // Determine Frame Label
     const frameLabel = isReal ? "Artifact" : "Manipulation";
     const frameClass = isReal ? "frame-artifact" : "frame-fake";
     const frameColor = isReal ? "#f59e0b" : "#ef4444";
+
+    // --- NEW: PREPARE VERIFICATION BADGE FOR INSIDE THE CARD ---
+    let sourceBadge = "";
+    if (data.search_verdict === "VERIFIED" || data.search_verdict === "OFFICIAL SOURCE") {
+        sourceBadge = `
+            <div style="background-color: #dcfce7; color: #14532d; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-weight: 600; border: 1px solid #bbf7d0; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:1.2em;">✅</span>
+                <span>${data.search_reason || "Source verified as official channel."}</span>
+            </div>`;
+    } else if (data.search_verdict === "DEBUNKED") {
+        sourceBadge = `
+            <div style="background-color: #fee2e2; color: #991b1b; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-weight: 600; border: 1px solid #fca5a5; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:1.2em;">🚨</span>
+                <span>${data.search_reason || "Flagged by fact-checkers as false."}</span>
+            </div>`;
+    }
 
     // Build the HTML
     const reportHTML = `
@@ -194,8 +209,13 @@ function displayAnalysis(data) {
                     <h2 style="color: ${themeColor};">${data.score_label}</h2>
                 </div>
                 <div class="forensic-score-circle">
-                    <div class="forensic-score-val">${Math.round(data.model_confidence)}%</div>
-                    <div class="forensic-score-label">Confidence</div>
+                    ${data.model_confidence ? `
+                        <div class="forensic-score-val">${Math.round(data.model_confidence)}%</div>
+                        <div class="forensic-score-label">Confidence</div>
+                    ` : `
+                        <div class="forensic-score-val" style="font-size:1.5rem;">--</div>
+                        <div class="forensic-score-label">Skipped</div>
+                    `}
                 </div>
             </div>
             
@@ -208,7 +228,7 @@ function displayAnalysis(data) {
                 </div>
                 <div class="forensic-stat">
                     <h5>Metadata</h5>
-                    <p style="color: ${data.search_verdict === 'VERIFIED' ? '#166534' : '#64748b'}">
+                    <p style="color: ${data.search_verdict === 'VERIFIED' || data.search_verdict === 'OFFICIAL SOURCE' ? '#166534' : '#64748b'}">
                         ${data.search_verdict || 'N/A'}
                     </p>
                 </div>
@@ -219,6 +239,8 @@ function displayAnalysis(data) {
             </div>
             
             <div class="forensic-analysis-text">
+                ${sourceBadge}
+                
                 ${data.interpretation || "No detailed interpretation available."}
             </div>
         </div>
@@ -292,69 +314,56 @@ function displayAnalysis(data) {
 
         // Verification Results (Google Search)
         const transcriptBox = document.getElementById('video-transcript-container');
-        if(transcriptBox) {
+            if(transcriptBox) {
             transcriptBox.innerHTML = "";
             
-            // Search Header
+            // 1. Simple Header
             const searchHeader = document.createElement('h4');
             searchHeader.style.marginTop = "0";
+            searchHeader.style.marginBottom = "15px";
             searchHeader.style.color = "#374151";
-            searchHeader.innerHTML = `🔎 Content Verification`;
+            searchHeader.style.borderBottom = "2px solid #e5e7eb";
+            searchHeader.style.paddingBottom = "10px";
+            searchHeader.innerHTML = `🔎 Related News & Evidence`;
             transcriptBox.appendChild(searchHeader);
 
-            // Verdict Banner
-            const statusDiv = document.createElement('div');
-            statusDiv.style.padding = "12px";
-            statusDiv.style.borderRadius = "8px";
-            statusDiv.style.marginBottom = "15px";
-            statusDiv.style.fontWeight = "bold";
-            
-            if (data.search_verdict === "DEBUNKED") {
-                statusDiv.style.backgroundColor = "#fee2e2";
-                statusDiv.style.color = "#b91c1c";
-                statusDiv.innerHTML = `🚩 DEBUNKED: ${data.search_reason || ''}`;
-            } else if (data.search_verdict === "VERIFIED") {
-                statusDiv.style.backgroundColor = "#dcfce7";
-                statusDiv.style.color = "#166534";
-                statusDiv.innerHTML = `✅ VERIFIED: ${data.search_reason || ''}`;
-            } else {
-                statusDiv.style.backgroundColor = "#f3f4f6";
-                statusDiv.style.color = "#4b5563";
-                statusDiv.innerHTML = `❓ ${data.search_verdict || 'Uncertain'}: ${data.search_reason || ''}`;
-            }
-            transcriptBox.appendChild(statusDiv);
-
-            // Evidence Links
+            // 2. Evidence List (No Banners, Just Snippets)
             if (data.evidence && data.evidence.length > 0) {
                 const list = document.createElement('div');
+                
                 data.evidence.forEach(item => {
                     const row = document.createElement('div');
-                    row.style.marginBottom = "10px";
-                    row.style.padding = "10px";
-                    row.style.borderLeft = "4px solid #ddd";
-                    row.style.backgroundColor = "#f9fafb";
-                    row.style.borderRadius = "0 8px 8px 0";
+                    row.style.marginBottom = "16px";
+                    row.style.paddingBottom = "16px";
+                    row.style.borderBottom = "1px solid #f3f4f6";
                     
-                    let icon = "🔗";
-                    if(item.status === "DEBUNKED") icon = "❌";
-                    if(item.status === "VERIFIED") icon = "✅";
-
+                    // Simple clean layout: Title -> Site -> Snippet
                     row.innerHTML = `
-                        <div style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">
-                            ${icon} <a href="${item.link}" target="_blank" style="text-decoration:none; color:#2563eb;">${item.title}</a>
+                        <div style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4;">
+                            <a href="${item.link}" target="_blank" style="text-decoration:none; color:#1a0dab;">
+                                ${item.title}
+                            </a>
                         </div>
-                        <div style="font-size: 0.8rem; color: #666;">
-                            ${item.website} • <span style="font-style:italic;">${item.status}</span>
+                        <div style="font-size: 0.85rem; color: #166534; margin-bottom: 6px;">
+                            ${item.website}
+                        </div>
+                        <div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5;">
+                            ${item.snippet || "No snippet available."}
                         </div>
                     `;
                     list.appendChild(row);
                 });
                 transcriptBox.appendChild(list);
             } else {
-                const noEv = document.createElement('p');
-                noEv.style.color = "#888";
+                // Empty State
+                const noEv = document.createElement('div');
+                noEv.style.color = "#6b7280";
                 noEv.style.fontStyle = "italic";
-                noEv.innerText = "No matching news reports found for this video title.";
+                noEv.style.padding = "20px";
+                noEv.style.textAlign = "center";
+                noEv.style.backgroundColor = "#f9fafb";
+                noEv.style.borderRadius = "8px";
+                noEv.innerText = "No related news reports found for this video.";
                 transcriptBox.appendChild(noEv);
             }
         }
