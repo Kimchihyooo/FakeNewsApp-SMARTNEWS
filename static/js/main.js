@@ -150,7 +150,7 @@ function displayError(message) {
 }
 
 // =========================================================
-// 4. DISPLAY ANALYSIS (FINAL FIXED VERSION)
+// 4. DISPLAY ANALYSIS (WITH PROGRESS BAR)
 // =========================================================
 function displayAnalysis(data) {
     const resultsArea = document.getElementById('results-area');
@@ -160,7 +160,7 @@ function displayAnalysis(data) {
     if(placeholder) placeholder.style.display = 'none';
     if(resultsArea) resultsArea.style.display = 'block';
 
-    // 2. Hide Legacy External Containers (Cleanup)
+    // 2. Hide Legacy External Containers
     const oldScore = document.getElementById('scoreBox');
     if(oldScore) oldScore.style.display = 'none';
     const oldClass = document.getElementById('classifications');
@@ -187,8 +187,11 @@ function displayAnalysis(data) {
         themeColor = "#d97706"; // Orange
     }
 
-    // 4. GET VIDEO METADATA (Author/Platform)
-    // We grab this from the preview card which we know is already populated
+    // 4. PREPARE DATA & CONFIDENCE BAR
+    const confValue = data.model_confidence ? Math.round(parseFloat(data.model_confidence)) : 0;
+    const displayConf = confValue + "%";
+
+    // 5. GET VIDEO METADATA
     let videoMetaHTML = "";
     if (isVideo) {
         const author = document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : "Unknown";
@@ -208,12 +211,11 @@ function displayAnalysis(data) {
         `;
     }
 
-    // 5. BUILD FRAME GALLERY (IMAGES)
+    // 6. BUILD FRAME GALLERY
     let framesHTML = "";
     if (isVideo && data.suspicious_frames && data.suspicious_frames.length > 0) {
         let images = "";
         data.suspicious_frames.forEach(b64 => {
-            // We verify the base64 string isn't empty
             if(b64) {
                 images += `<img src="data:image/jpeg;base64,${b64}" 
                     style="width: 100px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s;" 
@@ -222,25 +224,21 @@ function displayAnalysis(data) {
                     onmouseout="this.style.transform='scale(1)'" />`;
             }
         });
-
         framesHTML = `
             <div style="margin-top: 20px;">
                 <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
                     ${isReal ? 'Analyzed Frames (Sample)' : '⚠️ Anomalies Detected'}
                 </h5>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    ${images}
-                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">${images}</div>
             </div>
         `;
     } else if (isVideo) {
          framesHTML = `<div style="margin-top:20px; color:#94a3b8; font-style:italic; font-size:0.9rem;">No anomalies detected in video frames.</div>`;
     }
 
-    // 6. BUILD EVIDENCE / SOURCES LIST
+    // 7. BUILD EVIDENCE LIST
     let evidenceHTML = "";
     const evidenceList = data.evidence || data.supporting_articles || [];
-    
     if (evidenceList.length > 0) {
         evidenceHTML += `
             <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
@@ -263,7 +261,7 @@ function displayAnalysis(data) {
         evidenceHTML += `</div>`;
     }
 
-    // 7. BUILD LEGEND (For Text Mode)
+    // 8. BUILD LEGEND
     let legendHTML = "";
     if (!isVideo && data.lime_html && data.lime_html.includes('lime-bad')) {
         legendHTML = `
@@ -274,7 +272,7 @@ function displayAnalysis(data) {
         `;
     }
 
-    // 8. BUILD GRID STATS
+    // 9. BUILD GRID STATS
     let gridHTML = "";
     if (isVideo) {
         gridHTML = `
@@ -290,10 +288,7 @@ function displayAnalysis(data) {
         `;
     }
 
-    // 9. BUILD FINAL CARD HTML
-    const displayConf = data.model_confidence ? Math.round(parseFloat(data.model_confidence)) + "%" : "--";
-    
-    // Video verification badge
+    // 10. BUILD FINAL CARD HTML (WITH PROGRESS BAR)
     let sourceBadge = "";
     if (isVideo && data.search_verdict === "VERIFIED") {
         sourceBadge = `<div style="background:#dcfce7; color:#14532d; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">✅ Source Verified</div>`;
@@ -301,14 +296,21 @@ function displayAnalysis(data) {
 
     const reportHTML = `
         <div class="forensic-card">
-            <div class="forensic-header" style="border-left: 6px solid ${themeColor};">
-                <div class="forensic-verdict-box">
-                    <h4>Verdict</h4>
-                    <h2 style="color: ${themeColor};">${verdictLabel}</h2>
+            <div class="forensic-header" style="border-left: 6px solid ${themeColor}; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="forensic-verdict-box">
+                        <h4>Verdict</h4>
+                        <h2 style="color: ${themeColor}; margin: 0;">${verdictLabel}</h2>
+                    </div>
+                    <div class="forensic-score-circle" style="text-align: right;">
+                        <div class="forensic-score-val" style="font-size: 2rem; font-weight: 700; color: ${themeColor}; line-height: 1;">${displayConf}</div>
+                        <div class="forensic-score-label" style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-top: 5px;">Confidence</div>
+                    </div>
                 </div>
-                <div class="forensic-score-circle">
-                    <div class="forensic-score-val">${displayConf}</div>
-                    <div class="forensic-score-label">Confidence</div>
+
+                <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden;">
+                    <div style="width: ${confValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
                 </div>
             </div>
             
@@ -318,7 +320,6 @@ function displayAnalysis(data) {
             
             <div class="forensic-analysis-text">
                 ${videoMetaHTML}
-
                 ${sourceBadge}
                 
                 <div style="color: #374151; line-height: 1.8; font-size: 1.05rem; margin-bottom: 10px;">
@@ -326,15 +327,13 @@ function displayAnalysis(data) {
                 </div>
 
                 ${legendHTML}
-
                 ${framesHTML}
-
                 ${evidenceHTML}
             </div>
         </div>
     `;
 
-    // 10. INJECT CARD
+    // 11. INJECT CARD
     let container = document.getElementById('forensic-report-container');
     if (!container) {
         container = document.createElement('div');
@@ -344,7 +343,7 @@ function displayAnalysis(data) {
     container.innerHTML = reportHTML;
     container.style.display = 'block';
 
-    // 11. SCROLL
+    // 12. SCROLL
     setTimeout(() => {
         resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
