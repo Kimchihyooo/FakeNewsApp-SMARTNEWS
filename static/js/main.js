@@ -98,6 +98,7 @@ if (form) {
         const videoTab = document.querySelector('.tab[data-mode="video"]');
         const isVideoMode = videoTab && videoTab.classList.contains('tab-active');
 
+        // This determines which box (Text or Video) gets the animation
         const activeInput = isVideoMode 
             ? document.getElementById('videoUrlInput') 
             : document.getElementById('userInput');
@@ -108,6 +109,9 @@ if (form) {
         // B. START VISUAL EFFECTS
         const startTime = Date.now(); 
         let timerInterval = null;
+
+        // --- NEW: Add Scanning Class ---
+        if(activeInput) activeInput.classList.add('scanning-effect');
 
         activeBtn.innerText = "Analyzing..."; 
         activeBtn.disabled = true;
@@ -145,7 +149,7 @@ if (form) {
             addToHistory(data);
 
         } catch (error) {
-            displayError(error.message); // Use the helper to show error in UI
+            displayError(error.message); 
             console.error(error);
         } finally {
             if (timerInterval) clearInterval(timerInterval);
@@ -154,6 +158,9 @@ if (form) {
                 const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
                 timerDisplay.innerText = `Process finished (${totalTime}s)`;
             }
+
+            // --- NEW: Remove Scanning Class ---
+            if(activeInput) activeInput.classList.remove('scanning-effect');
 
             activeBtn.innerText = originalText;
             activeBtn.disabled = false;

@@ -320,7 +320,55 @@ nav a:hover {
     border-radius: 10px;
 }
 
+/* --- FOOTER --- */
+.site-footer {
+    background-color: #080505; /* Matching your dark text color for contrast */
+    color: #fff;
+    padding: 60px 10% 20px 10%;
+    font-family: 'Rubik', sans-serif;
+}
 
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 40px;
+}
+
+.footer-logo h2 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 1.8rem;
+    margin: 0 0 10px 0;
+}
+
+.footer-logo p {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.footer-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #3B82F6;
+}
+
+.footer-bottom {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
 
 
 /* === ANIMATIONS === */
@@ -476,5 +524,11 @@ nav a:hover {
     
     .step-action {
         justify-content: center; /* Centers the button content */
+    }
+
+        .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
     }
 }
