@@ -48,7 +48,7 @@ body {
 }
 
 .logo h1 {
-    font-size: 0.9rem;
+    font-size: 1.3rem;
     margin: 0;
     font-family: "Recoleta", sans-serif;
     font-optical-sizing: auto;
@@ -191,7 +191,7 @@ nav a:hover {
 /* Keyframes for Typing */
 @keyframes typing {
   from { width: 0 }
-  to { width: 100% }
+  to { width: 120% }
 }
 
 @keyframes blink-caret {

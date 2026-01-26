@@ -18,75 +18,43 @@ body {
     background-color: #f9fbff;
     color: #080505;
 }
+
+
 /* Navbar */
+/* Find your .navbar class and add position: relative */
 .navbar {
-    display: flex;
-    position: fixed;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;      /* Ensures it fills the entire page width */
-    left: 0;          /* Makes sure the fixed position spans from the left edge */
-    top: 0;           /* Anchors it to the top */
-    padding: 30px 30px;
-    box-sizing: border-box;
-    background-color: #ffffff;
-    box-shadow: 0 30px 30px rgba(0,0,0,0.05);
-    z-index: 1000;    /* Stays above content */
-}
-
-.logo {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-}
-
-.logo h1 {
-    font-size: 1.0rem;
-    margin: 5px 0 0;
-    /* MODIFIED - Matched font to other pages for consistency */
-    font-family: "Recoleta", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    
-}
-
-.logo p {
-    font-size: 0.8rem;
-    color: #080505;
-    margin: auto;
-}
-
-/* Nav Menu Wrapper */
-/* Navbar */
-.navbar {
-    /* MODIFIED - Cleaned up conflicting rules */
-    height: 80px; 
+    height: 80px;
+    padding: 20px 30px; /* Note: Your code had two paddings; this one wins */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    left: 0;
-    top: 0;      
-    padding: 20px 30px;
+    /* left: 0; top: 0;  <-- These were doing nothing before */
+    
+    /* === ADD THIS === */
+    position: relative; 
+    /* ================ */
+    
     box-sizing: border-box;
     background-color: #ffffff;
     box-shadow: 0 30px 30px rgba(0,0,0,0.05);
-    z-index: 1000;
+    z-index: 1000;   
 }
+
 .logo {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
 }
 
-
 .logo h1 {
-    font-size: 1.0rem;
-    margin: 5px 0 0;
+    font-size: 1.3rem;
+    margin: 0;
     font-family: "Recoleta", sans-serif;
     font-optical-sizing: auto;
     font-weight: 600;
+
 }
 
 .logo p {
@@ -94,7 +62,6 @@ body {
     color: #080505;
     margin: auto;
 }
-
 
 nav a{
     text-decoration: none;
@@ -114,41 +81,43 @@ nav a:hover {
     border-radius: 8px;
     background: #f3f4f6;
 }
+
 /* === NEW HAMBURGER MENU STYLES === */
 .nav-toggle {
   display: none; /* Hide checkbox */
 }
 
 .nav-toggle-label {
-    display: none; /* Hide hamburger label on desktop */
-    cursor: pointer;
-    width: 30px;
-    height: 25px;
-    position: relative;
-    z-index: 1001; 
+  display: none; /* Hide hamburger label on desktop */
+  cursor: pointer;
+  width: 30px;
+  height: 25px;
+  position: relative;
+  /* Ensure it's on top in mobile view if needed */
+  z-index: 1001; 
 }
 
 /* Hamburger Icon Lines */
 .nav-toggle-label span,
 .nav-toggle-label span::before,
 .nav-toggle-label span::after {
-    display: block;
-    background-color: #080505;
-    height: 3px;
-    width: 100%;
-    border-radius: 2px;
-    position: absolute;
-    transition: all 0.3s ease-in-out;
+  display: block;
+  background-color: #080505;
+  height: 3px;
+  width: 100%;
+  border-radius: 2px;
+  position: absolute;
+  transition: all 0.3s ease-in-out;
 }
 
 .nav-toggle-label span::before {
-    content: '';
-    top: -8px;
+  content: '';
+  top: -8px;
 }
 
 .nav-toggle-label span::after {
-    content: '';
-    top: 8px;
+  content: '';
+  top: 8px;
 }
 
 /* Hamburger Animation on Click (transform to 'X') */
@@ -157,15 +126,16 @@ nav a:hover {
 }
 
 .nav-toggle:checked ~ .nav-toggle-label span::before {
-    transform: rotate(45deg);
-    top: 0;
+  transform: rotate(45deg);
+  top: 0;
 }
 
 .nav-toggle:checked ~ .nav-toggle-label span::after {
-    transform: rotate(-45deg);
-    top: 0;
+  transform: rotate(-45deg);
+  top: 0;
 }
 /* === END HAMBURGER STYLES === */
+
 
 .tutorial-wrapper{
     display: flex;
