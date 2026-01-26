@@ -6,8 +6,10 @@
     <title>How it Works - CredibilityScan</title>
     <link rel="icon" type="image/png" href="../static/logo.png">
     <link rel="stylesheet" href="../static/css/aboutdevstyle.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
+    
 </head>
 <body>
 
@@ -24,6 +26,9 @@
                 <a href="/">Home</a>
                 <a href="detector">Detector</a>
                 <a href="about">How to Use?</a>
+                <span id="ph-clock" style="margin-left: 20px; font-weight: 600; color: #2563eb; font-size: 0.9rem; white-space: nowrap;">
+                    Loading Time...
+                </span>
             </div>
         </nav>
     </header>
@@ -209,6 +214,35 @@
         document.querySelectorAll('.reveal').forEach((el) => {
             observer.observe(el);
         });
+        
+        (function() {
+            const clockElement = document.getElementById('ph-clock');
+            if (!clockElement) return;
+
+            function updateClock() {
+                const now = new Date();
+                try {
+                    const options = { 
+                        timeZone: 'Asia/Manila', 
+                        weekday: 'short', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: true
+                    };
+                    clockElement.innerText = "🇵🇭 " + now.toLocaleString('en-US', options);
+                } catch (e) {
+                    clockElement.innerText = new Date().toLocaleTimeString(); // Fallback
+                }
+            }
+            
+            // Run immediately, then every second
+            updateClock();
+            setInterval(updateClock, 1000);
+        })();
     </script>
 </body>
 </html>

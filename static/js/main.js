@@ -701,3 +701,4 @@ if (videoInput && previewCard) {
         }, 600); 
     });
 }
+
