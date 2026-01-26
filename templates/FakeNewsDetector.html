@@ -38,7 +38,7 @@
                         <textarea id="userInput" name="news_text" class="detector-textarea" 
                             placeholder="Paste the title and content of the article here..." required></textarea>
                         <div id="word-counts" class="word-count" style="text-align: right; margin-top: 5px; color: #64748b; font-size: 0.9rem;">0 words</div>
-                        <button type="submit" class="detector-btn" id="btntext">Analyze Credibility</button>
+                        <button type="submit" class="detector-btn" id="btntext">Analyze</button>
                     </div>
                 
                     <div class="mode mode-video" style="display:none;">
@@ -183,6 +183,7 @@
         const resultsArea = document.getElementById('results-area');
         const placeholder = document.getElementById('results-placeholder');
         const videoPreview = document.getElementById('video-preview-card');
+        const wordCountDisplay = document.getElementById('word-counts'); // NEW SELECTOR
 
         tabs.forEach(t => {
             t.addEventListener('click', () => {
@@ -191,7 +192,11 @@
                 t.classList.add('tab-active');
                 
                 // 2. CLEAR ALL INPUTS
-                if(textInput) textInput.value = "";
+                if(textInput) {
+                    textInput.value = "";
+                    // NEW: Reset Word Count to 0
+                    if(wordCountDisplay) wordCountDisplay.innerText = "0 words";
+                }
                 if(videoInput) videoInput.value = "";
 
                 // 3. RESET RESULTS AREA (Hide old results, show placeholder)
@@ -221,7 +226,7 @@
             });
         });
 
-        // History Modal Logic (Kept as is)
+        // History Modal Logic
         const histBtn = document.getElementById('history-trigger-btn');
         const histModal = document.getElementById('history-modal-overlay');
         const histClose = document.getElementById('history-close-btn');
