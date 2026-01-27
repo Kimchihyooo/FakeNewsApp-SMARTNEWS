@@ -138,16 +138,117 @@ nav a:hover {
 
 /* --- HERO SECTION LAYOUT --- */
 .hero {
-    display: flex; /* Enables Split Screen */
-    align-items: center; /* Vertically centers items */
-    justify-content: space-between; /* Pushes Text left, Image right */
-    padding: 80px 10%; /* More breathing room */
-    height: 90vh; /* Takes up most of the screen */
-    background: linear-gradient(180deg, #88b2eb 0%, #fcfafa 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px 10%;
+    height: 90vh;
+    
+    /* 1. Base Sky Color */
+    background-color: #a7c5eb; /* A soft blue base */
+    background-image: linear-gradient(180deg, #88b2eb 0%, #fcfafa 100%);
+    
     position: relative;
-    overflow: hidden; /* Keeps background shapes inside */
+    overflow: hidden;
+    z-index: 1;
+}
+/* --- AURORA CONTAINER --- */
+.aurora-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Behind the text */
+    overflow: hidden;
+    filter: blur(60px); /* This creates the soft, diffuse light look */
+    opacity: 0.8;
 }
 
+/* --- SHARED LIGHT STYLES --- */
+.aurora-light {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.9;
+    /* Changed from 15s to 6s for faster default speed */
+    animation: aurora-flow 6s infinite alternate; 
+}
+
+/* --- INDIVIDUAL LIGHT LAYERS --- */
+
+/* Light 1: Primary blue/cyan */
+.light-1 {
+    background: radial-gradient(circle, rgba(136, 178, 235, 1) 0%, rgba(255,255,255,0) 70%);
+    width: 80vw;
+    height: 60vh;
+    top: -20%;
+    left: -10%;
+    /* Changed from 12s to 5s */
+    animation-duration: 1s; 
+    opacity: 0.9;
+}
+
+/* Light 2: Softer purple/white */
+.light-2 {
+    background: radial-gradient(circle, rgba(230, 240, 255, 0.8) 0%, rgba(255,255,255,0) 60%);
+    width: 70vw;
+    height: 50vh;
+    top: -10%;
+    right: -10%;
+    /* Changed from 18s to 7s */
+    animation-duration: 2s; 
+    animation-direction: alternate-reverse;
+    opacity: 0.9;
+}
+
+/* Light 3: Wandering deep blue */
+.light-3 {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, rgba(255,255,255,0) 60%);
+    width: 60vw;
+    height: 40vh;
+    bottom: 20%;
+    left: 20%;
+    animation-name: aurora-float;
+    /* Changed from 20s to 8s */
+    animation-duration: 3s; 
+    opacity: 0.9;
+}
+
+/* Light 4: Small bright shimmer */
+.light-4 {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255,255,255,0) 70%);
+    width: 40vw;
+    height: 30vh;
+    top: 10%;
+    left: 40%;
+    /* Changed from 15s to 6s */
+    animation-duration: 4s; 
+    opacity: 0.9;
+}
+/* --- ANIMATIONS --- */
+
+/* Horizontal expansion and contraction (breathing) */
+@keyframes aurora-flow {
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.2) translate(5%, 2%);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1.1) translate(-5%, 5%);
+        opacity: 0.9;
+    }
+}
+
+/* Vertical floating for variation */
+@keyframes aurora-float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(10%, -10%) rotate(10deg); }
+    100% { transform: translate(-5%, 5%) rotate(-5deg); }
+}
 /* --- LEFT SIDE: TEXT --- */
 .hero-text {
     flex: 1; /* Takes 50% width */
@@ -374,6 +475,14 @@ nav a:hover {
     margin-bottom: 10px;
 }
 
+.bts-head h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    color: #333;
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
+
 .bts-header p {
     font-family: 'Rubik', sans-serif;
     font-size: 1.2rem;
@@ -394,8 +503,6 @@ nav a:hover {
     align-items: center;
     justify-content: space-between;
     gap: 50px;
-    opacity: 0; /* Hidden for animation */
-    animation: fadeInSlide 1s forwards; /* Trigger animation */
 }
 
 /* Reverse layout for even items (Asymmetry) */
@@ -483,6 +590,27 @@ nav a:hover {
 .bts-item:nth-child(4) { animation-delay: 0.8s; }
 .bts-item:nth-child(5) { animation-delay: 1.0s; }
 .bts-item:nth-child(6) { animation-delay: 1.2s; }
+
+
+/* --- SCROLL ANIMATION CLASSES --- */
+
+/* Initial State: Hidden and slightly pushed down */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(50px); /* Slides up from 50px down */
+    transition: all 0.8s ease-out; /* Smooth transition */
+}
+
+/* Visible State: Fully opaque and back to original position */
+.scroll-reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Optional: Add delays if you want items to appear one after another */
+/* This will affect the feature cards and bts items */
+.scroll-reveal:nth-child(2) { transition-delay: 0.1s; }
+.scroll-reveal:nth-child(3) { transition-delay: 0.2s; }
 
 /* --- FOOTER --- */
 .site-footer {
