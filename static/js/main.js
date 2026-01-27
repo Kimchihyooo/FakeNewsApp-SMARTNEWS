@@ -200,46 +200,54 @@ function displayError(message) {
 }
 
 // =========================================================
-// 4. DISPLAY ANALYSIS (WITH PROGRESS BAR)
+// 4. DISPLAY ANALYSIS (UPDATED)
 // =========================================================
 function displayAnalysis(data) {
     const resultsArea = document.getElementById('results-area');
     const placeholder = document.getElementById('results-placeholder');
     
-    // 1. Show Results Area / Hide Placeholder
     if(placeholder) placeholder.style.display = 'none';
     if(resultsArea) resultsArea.style.display = 'block';
 
-    // 2. Hide Legacy External Containers
-    const oldScore = document.getElementById('scoreBox');
-    if(oldScore) oldScore.style.display = 'none';
-    const oldClass = document.getElementById('classifications');
-    if(oldClass) oldClass.style.display = 'none';
-    const oldTextResults = document.getElementById('text-results-container');
-    if(oldTextResults) oldTextResults.style.display = 'none';
-    const oldVideoResults = document.getElementById('video-results-container');
-    if(oldVideoResults) oldVideoResults.style.display = 'none';
+    // Hide old containers
+    const containers = ['scoreBox', 'classifications', 'text-results-container', 'video-results-container'];
+    containers.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
 
     // 3. Setup Variables
     const isVideo = data.suspicious_frames !== undefined;
-    let themeColor = "#3b82f6"; // Default Blue
+    let themeColor = "#3b82f6"; 
     let verdictLabel = data.score_label || "Processing..."; 
     let isReal = false;
-
-    // Color Logic
     const labelLower = verdictLabel.toLowerCase();
-    if (labelLower.includes("real") || labelLower.includes("high credibility") || labelLower.includes("verified")) {
+    
+    // --- COLOR LOGIC ---
+    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("high credibility")) {
         themeColor = "#166534"; // Green
         isReal = true;
-    } else if (labelLower.includes("fake") || labelLower.includes("low credibility")) {
+    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("low credibility")) {
         themeColor = "#b91c1c"; // Red
+    } else if (labelLower.includes("unknown source")) {
+        themeColor = "#d97706"; // Orange
     } else {
         themeColor = "#d97706"; // Orange
     }
 
-    // 4. PREPARE DATA & CONFIDENCE BAR
-    const confValue = data.model_confidence ? Math.round(parseFloat(data.model_confidence)) : 0;
-    const displayConf = confValue + "%";
+    // --- CONFIDENCE LOGIC: Show '- -' if null or skipped ---
+    const rawConf = data.model_confidence;
+    let displayConf = "- - "; // Default
+    let barValue = 0;
+
+    // Only parse if it's NOT null, NOT undefined, and NOT "None"
+    if (rawConf !== null && rawConf !== undefined && rawConf !== "None") {
+        const parsed = parseFloat(rawConf);
+        if (!isNaN(parsed)) {
+            barValue = Math.round(parsed);
+            displayConf = barValue + "%";
+        }
+    }
 
     // 5. GET VIDEO METADATA
     let videoMetaHTML = "";
@@ -282,13 +290,14 @@ function displayAnalysis(data) {
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">${images}</div>
             </div>
         `;
-    } else if (isVideo) {
+    } else if (isVideo && !data.scan_skipped) {
          framesHTML = `<div style="margin-top:20px; color:#94a3b8; font-style:italic; font-size:0.9rem;">No anomalies detected in video frames.</div>`;
     }
 
     // 7. BUILD EVIDENCE LIST
     let evidenceHTML = "";
     const evidenceList = data.evidence || data.supporting_articles || [];
+    
     if (evidenceList.length > 0) {
         evidenceHTML += `
             <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
@@ -297,51 +306,89 @@ function displayAnalysis(data) {
                 </h5>
         `;
         evidenceList.forEach(item => {
+            let sourceName = item.website || item.displayLink || "Source";
             evidenceHTML += `
-                <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #e5e7eb;">
-                    <a href="${item.link}" target="_blank" style="font-weight: 600; color: #1a0dab; text-decoration: none; display:block; margin-bottom:2px;">
-                        ${item.title}
-                    </a>
-                    <div style="font-size: 0.85rem; color: #6b7280;">
-                        ${item.website || item.displayLink || "Source"}
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+                    <div style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4;">
+                        <a href="${item.link}" target="_blank" style="text-decoration:none; color:#1a0dab;">
+                            ${item.title}
+                        </a>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #166534; margin-bottom: 6px;">
+                        ${sourceName}
+                    </div>
+                    <div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5;">
+                        ${item.snippet || "No preview text available."}
                     </div>
                 </div>
             `;
         });
         evidenceHTML += `</div>`;
-    }
-
-    // 8. BUILD LEGEND
-    let legendHTML = "";
-    if (!isVideo && data.lime_html && data.lime_html.includes('lime-bad')) {
-        legendHTML = `
-            <div style="margin-top: 15px; margin-bottom: 20px; padding: 10px 12px; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #991b1b;">
-                <div style="width: 16px; height: 16px; background-color: #fca5a5; border: 1px solid #ef4444; border-radius: 3px;"></div>
-                <span>Sentences flagged as highly suspicious.</span>
+    } else {
+        evidenceHTML += `
+            <div style="margin-top: 20px; padding: 20px; text-align: center; color: #6b7280; background: #f9fafb; border-radius: 8px;">
+                No matching news reports found.
             </div>
         `;
     }
 
-    // 9. BUILD GRID STATS
+    // 8. BUILD GRID STATS (FIXED FOR SKIPPED SCANS)
     let gridHTML = "";
     if (isVideo) {
+        let visualCheckText = "Clean";
+        let visualCheckColor = "#166534"; // Green
+
+        // Explicitly check for skipped scan
+        if (data.scan_skipped === true) {
+            visualCheckText = "- - ";
+            visualCheckColor = "#64748b"; // Gray
+        } else if (data.suspicious_frames && data.suspicious_frames.length > 0) {
+            if (isReal) {
+                visualCheckText = "Pass (Noise)";
+                visualCheckColor = "#d97706"; 
+            } else {
+                visualCheckText = "Fail";
+                visualCheckColor = "#b91c1c"; 
+            }
+        }
+
+        // Anomalies text logic
+        let anomaliesText = (data.suspicious_frames ? data.suspicious_frames.length : 0) + " Frames";
+        if (data.scan_skipped === true) {
+             anomaliesText = "- - ";
+        }
+
         gridHTML = `
-            <div class="forensic-stat"><h5>Visual Check</h5><p>${data.suspicious_frames.length > 0 ? (isReal ? 'Pass' : 'Fail') : 'Clean'}</p></div>
-            <div class="forensic-stat"><h5>Metadata</h5><p>${data.search_verdict || "Checked"}</p></div>
-            <div class="forensic-stat"><h5>Anomalies</h5><p>${data.suspicious_frames.length} Frames</p></div>
+            <div class="forensic-stat">
+                <h5>Visual Check</h5>
+                <p style="color: ${visualCheckColor}">${visualCheckText}</p>
+            </div>
+            <div class="forensic-stat">
+                <h5>Metadata</h5>
+                <p style="color: ${data.search_verdict === 'VERIFIED' ? '#166534' : '#64748b'}">
+                    ${data.search_verdict || "Checked"}
+                </p>
+            </div>
+            <div class="forensic-stat">
+                <h5>Anomalies</h5>
+                <p>${anomaliesText}</p>
+            </div>
         `;
     } else {
+        const articleCount = evidenceList.length;
         gridHTML = `
             <div class="forensic-stat"><h5>Type</h5><p>Text Article</p></div>
-            <div class="forensic-stat"><h5>Fact Check</h5><p style="color:${evidenceList.length > 0 ? '#166534':'#64748b'}">${evidenceList.length > 0 ? 'Evidence Found' : 'No Matches'}</p></div>
-            <div class="forensic-stat"><h5>Sources</h5><p>${evidenceList.length} Links</p></div>
+            <div class="forensic-stat"><h5>Fact Check</h5><p style="color:${articleCount > 0 ? '#166534':'#64748b'}">${articleCount > 0 ? 'Evidence Found' : 'No Matches'}</p></div>
+            <div class="forensic-stat"><h5>Sources</h5><p>${articleCount} Links</p></div>
         `;
     }
 
-    // 10. BUILD FINAL CARD HTML (WITH PROGRESS BAR)
+    // 9. BUILD FINAL CARD HTML
     let sourceBadge = "";
     if (isVideo && data.search_verdict === "VERIFIED") {
         sourceBadge = `<div style="background:#dcfce7; color:#14532d; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">✅ Source Verified</div>`;
+    } else if (isVideo && !data.scan_skipped && verdictLabel === "UNKNOWN SOURCE") {
+         sourceBadge = `<div style="background:#fff7ed; color:#c2410c; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">⚠️ Unknown Source</div>`;
     }
 
     const reportHTML = `
@@ -360,7 +407,7 @@ function displayAnalysis(data) {
                 </div>
 
                 <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden;">
-                    <div style="width: ${confValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
+                    <div style="width: ${barValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
                 </div>
             </div>
             
@@ -376,14 +423,13 @@ function displayAnalysis(data) {
                     ${data.lime_html || data.news_text || data.interpretation || "No content."}
                 </div>
 
-                ${legendHTML}
                 ${framesHTML}
                 ${evidenceHTML}
             </div>
         </div>
     `;
 
-    // 11. INJECT CARD
+    // 10. INJECT CARD
     let container = document.getElementById('forensic-report-container');
     if (!container) {
         container = document.createElement('div');
@@ -393,12 +439,11 @@ function displayAnalysis(data) {
     container.innerHTML = reportHTML;
     container.style.display = 'block';
 
-    // 12. SCROLL
+    // 11. SCROLL
     setTimeout(() => {
         resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
 }
-
 // =========================================================
 // 5. ADD TO HISTORY (SAFE VERSION - NO IMAGES)
 // =========================================================
