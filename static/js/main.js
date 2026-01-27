@@ -206,6 +206,7 @@ function displayAnalysis(data) {
     const resultsArea = document.getElementById('results-area');
     const placeholder = document.getElementById('results-placeholder');
     
+    
     if(placeholder) placeholder.style.display = 'none';
     if(resultsArea) resultsArea.style.display = 'block';
 
@@ -443,6 +444,80 @@ function displayAnalysis(data) {
     setTimeout(() => {
         resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
+
+    // --- NEW: Handle Bias Detection ---
+    // --- NEW: Handle Bias Detection Logic (Stacked Bar) ---
+    const biasContainer = document.getElementById('bias-container');
+    
+    // Segments
+    const segLeft = document.getElementById('bias-seg-left');
+    const segCenter = document.getElementById('bias-seg-center');
+    const segRight = document.getElementById('bias-seg-right');
+    
+    // Labels inside segments
+    const txtLeft = segLeft ? segLeft.querySelector('.bias-text') : null;
+    const txtCenter = segCenter ? segCenter.querySelector('.bias-text') : null;
+    const txtRight = segRight ? segRight.querySelector('.bias-text') : null;
+
+    // Legend Labels
+    const legLeft = document.getElementById('bias-legend-left');
+    const legCenter = document.getElementById('bias-legend-center');
+    const legRight = document.getElementById('bias-legend-right');
+    const dominantLabel = document.getElementById('bias-dominant-label');
+
+    // 1. Reset Visibility
+    if (biasContainer) biasContainer.style.display = 'none';
+
+    // 2. Check Conditions (Text Mode Only + Bias Data Exists)
+    if (data.bias_data && !data.suspicious_frames) {
+        if (biasContainer) biasContainer.style.display = 'block';
+        
+        const scores = data.bias_data.all_scores || {};
+        let domLabel = data.bias_data.label;
+        const domConf = data.bias_data.confidence;
+
+        // Get values (Default to 0 if missing)
+        // Ensure keys match what Python sends (Case sensitive!)
+        const pLeft = scores['Left'] || scores['left'] || scores['0'] || 0;
+        const pCenter = scores['Center'] || scores['center'] || scores['1'] || 0;
+        const pRight = scores['Right'] || scores['right'] || scores['2'] || 0;
+
+        // Optional: Fix the label if it shows as a number (e.g., "1")
+        if (domLabel == '0') domLabel = "Left";
+        if (domLabel == '1') domLabel = "Center";
+        if (domLabel == '2') domLabel = "Right";
+
+        // 3. Set Widths
+        if (segLeft) segLeft.style.width = `${pLeft}%`;
+        if (segCenter) segCenter.style.width = `${pCenter}%`;
+        if (segRight) segRight.style.width = `${pRight}%`;
+
+        // 4. Set Text inside Bar (Hide if percentage is too small to fit text)
+        if (txtLeft) txtLeft.innerText = pLeft > 8 ? `${Math.round(pLeft)}%` : '';
+        if (txtCenter) txtCenter.innerText = pCenter > 8 ? `${Math.round(pCenter)}%` : '';
+        if (txtRight) txtRight.innerText = pRight > 8 ? `${Math.round(pRight)}%` : '';
+
+        // 5. Update Legend & Header
+        if (legLeft) legLeft.innerText = `Left: ${pLeft}%`;
+        if (legCenter) legCenter.innerText = `Center: ${pCenter}%`;
+        if (legRight) legRight.innerText = `Right: ${pRight}%`;
+        
+        if (dominantLabel) {
+            dominantLabel.innerText = `${domLabel} (${domConf}%)`;
+            // Color code the dominant label
+            const dLow = String(domLabel).toLowerCase();
+            
+            if (dLow.includes('left') || dLow === '0') {
+                dominantLabel.style.color = "#3b82f6"; // Blue
+            } 
+            else if (dLow.includes('right') || dLow === '2') {
+                dominantLabel.style.color = "#ef4444"; // Red
+            } 
+            else {
+                dominantLabel.style.color = "#a855f7"; // Purple (Center)
+            }
+        }
+    }
 }
 // =========================================================
 // 5. ADD TO HISTORY (SAFE VERSION - NO IMAGES)

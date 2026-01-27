@@ -128,6 +128,39 @@
                         </div>
                     </div>
 
+<div id="bias-container" class="animate-enter delay-2" style="display: none; margin-top: 25px; padding-top: 15px; border-top: 1px solid #f1f5f9;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+        <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
+            Bias Distribution
+        </div>
+        <div id="bias-dominant-label" style="font-weight: 700; font-size: 1rem; color: #334155;">--</div>
+    </div>
+
+    <div style="display: flex; width: 100%; height: 24px; background: #e2e8f0; border-radius: 6px; overflow: hidden;">
+        
+        <div id="bias-seg-left" style="width: 0%; background-color: #3b82f6; transition: width 0.8s; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span class="bias-text" style="color: white; font-size: 0.75rem; font-weight: 600; white-space: nowrap; padding: 0 4px;"></span>
+        </div>
+        
+        <div id="bias-seg-center" style="width: 0%; background-color: #a855f7; transition: width 0.8s; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span class="bias-text" style="color: white; font-size: 0.75rem; font-weight: 600; white-space: nowrap; padding: 0 4px;"></span>
+        </div>
+        
+        <div id="bias-seg-right" style="width: 0%; background-color: #ef4444; transition: width 0.8s; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span class="bias-text" style="color: white; font-size: 0.75rem; font-weight: 600; white-space: nowrap; padding: 0 4px;"></span>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.75rem; color: #64748b;">
+        <span id="bias-legend-left">Left: 0%</span>
+        <span id="bias-legend-center">Center: 0%</span>
+        <span id="bias-legend-right">Right: 0%</span>
+    </div>
+
+    <div style="margin-bottom: 20px;"></div>
+</div>
+
                     <div class="animate-enter delay-3">
                         <h4 style="margin: 0 0 10px 0; color: #334155; font-family: 'Rubik', sans-serif;"></h4>
                         
