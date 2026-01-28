@@ -16,8 +16,12 @@ ultralytics
 numpy 
 yt-dlp 
 itsdangerous 
-transfomers
+transformers
 nltk
 re
+scipy
+requests
+starlette
+python-multipart
 
 
