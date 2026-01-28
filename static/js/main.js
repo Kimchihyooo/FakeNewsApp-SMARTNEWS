@@ -1,7 +1,7 @@
 // static/js/main.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize History
+    // 1. Initialize History (Load the list immediately)
     if (typeof renderHistory === 'function') renderHistory();
 
     // 2. Initialize Filters
@@ -12,6 +12,23 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', filterHistoryItems);
     }
     if (filterSelect) {
+        // --- NEW: Automatically Add Result Filters ---
+        const optionsToAdd = [
+            { value: 'verified', text: '✅ Verified / Real' },
+            { value: 'fake', text: '⚠️ Fake / Deepfake' },
+            { value: 'uncertain', text: '❓ Uncertain / Unknown' }
+        ];
+        
+        optionsToAdd.forEach(opt => {
+            // Only add if it doesn't exist yet (prevents duplicates)
+            if (!filterSelect.querySelector(`option[value="${opt.value}"]`)) {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.innerText = opt.text;
+                filterSelect.appendChild(option);
+            }
+        });
+        
         filterSelect.addEventListener('change', filterHistoryItems);
     }
 
@@ -26,46 +43,60 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // 4. WORD COUNTER WITH 1000 WORD CAP
+    // 4. FIX: FORCE OPEN HISTORY MODAL
+    const histBtn = document.getElementById('history-trigger-btn');
+    const histModal = document.getElementById('history-modal-overlay');
+    const histClose = document.getElementById('history-close-btn');
+    
+    if(histBtn && histModal) {
+        histBtn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            histModal.classList.add('modal-active');
+            histModal.style.display = "flex"; 
+            if (typeof filterHistoryItems === 'function') filterHistoryItems();
+        });
+        
+        const closeModal = () => {
+            histModal.classList.remove('modal-active');
+            histModal.style.display = "none"; 
+        };
+
+        if(histClose) histClose.addEventListener('click', closeModal);
+        histModal.addEventListener('click', (e) => {
+            if(e.target === histModal) closeModal();
+        });
+    }
+
+    // 5. WORD COUNTER
     const wordInput = document.getElementById('userInput');
     const wordCountDisplay = document.getElementById('word-counts');
-    const analyzeBtn = document.getElementById('btntext'); // The button to disable
+    const analyzeBtn = document.getElementById('btntext'); 
 
     if (wordInput && wordCountDisplay) {
         const updateCount = () => {
             const text = wordInput.value.trim();
-            // Split by whitespace to count words accurately
             const count = text ? text.split(/\s+/).length : 0;
             
-            // Update the display text
             wordCountDisplay.innerText = `${count} / 1000 words`;
 
-            // LOGIC: Check if limit is exceeded
             if (count > 1000) {
-                // Limit Exceeded: Red text + Disable Button
-                wordCountDisplay.style.color = "#dc2626"; // Red
+                wordCountDisplay.style.color = "#dc2626"; 
                 wordCountDisplay.style.fontWeight = "bold";
-                
                 if(analyzeBtn) {
                     analyzeBtn.disabled = true;
                     analyzeBtn.style.opacity = "0.5";
                     analyzeBtn.style.cursor = "not-allowed";
-                    analyzeBtn.title = "Please reduce text to under 1000 words";
                 }
             } else {
-                // Within Limit: Normal text + Enable Button
-                wordCountDisplay.style.color = "#64748b"; // Gray
+                wordCountDisplay.style.color = "#64748b"; 
                 wordCountDisplay.style.fontWeight = "normal";
-                
                 if(analyzeBtn) {
                     analyzeBtn.disabled = false;
                     analyzeBtn.style.opacity = "1";
                     analyzeBtn.style.cursor = "pointer";
-                    analyzeBtn.title = "";
                 }
             }
         };
-
         wordInput.addEventListener('input', updateCount);
     }
 });
@@ -94,11 +125,9 @@ if (form) {
         const btnVid = document.getElementById('btnvid');
         const timerDisplay = document.getElementById('timer-display');
         
-        // A. FIND ACTIVE ELEMENTS
         const videoTab = document.querySelector('.tab[data-mode="video"]');
         const isVideoMode = videoTab && videoTab.classList.contains('tab-active');
 
-        // This determines which box (Text or Video) gets the animation
         const activeInput = isVideoMode 
             ? document.getElementById('videoUrlInput') 
             : document.getElementById('userInput');
@@ -106,11 +135,9 @@ if (form) {
         const activeBtn = isVideoMode ? btnVid : btnText;
         const originalText = activeBtn.innerText;
 
-        // B. START VISUAL EFFECTS
         const startTime = Date.now(); 
         let timerInterval = null;
 
-        // --- NEW: Add Scanning Class ---
         if(activeInput) activeInput.classList.add('scanning-effect');
 
         activeBtn.innerText = "Analyzing..."; 
@@ -142,10 +169,7 @@ if (form) {
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            // 1. SHOW RESULTS (With Animation)
             displayAnalysis(data);
-
-            // 2. SAVE TO HISTORY
             addToHistory(data);
 
         } catch (error) {
@@ -153,13 +177,10 @@ if (form) {
             console.error(error);
         } finally {
             if (timerInterval) clearInterval(timerInterval);
-            
             if (timerDisplay) {
                 const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
                 timerDisplay.innerText = `Process finished (${totalTime}s)`;
             }
-
-            // --- NEW: Remove Scanning Class ---
             if(activeInput) activeInput.classList.remove('scanning-effect');
 
             activeBtn.innerText = originalText;
@@ -179,15 +200,12 @@ function displayError(message) {
     placeholder.style.display = 'none';
     resultsArea.style.display = 'block';
 
-    // Hide normal results
     document.getElementById('scoreBox').style.display = 'none';
     document.getElementById('classifications').style.display = 'none';
     
-    // Show Error Box in result container
     const resultContainer = document.getElementById('text-results-container');
     const videoContainer = document.getElementById('video-results-container');
     
-    // Reset views
     if(videoContainer) videoContainer.style.display = 'none';
     resultContainer.style.display = 'block';
     
@@ -200,48 +218,51 @@ function displayError(message) {
 }
 
 // =========================================================
-// 4. DISPLAY ANALYSIS (UPDATED)
+// 4. DISPLAY ANALYSIS
 // =========================================================
 function displayAnalysis(data) {
     const resultsArea = document.getElementById('results-area');
     const placeholder = document.getElementById('results-placeholder');
     
-    
     if(placeholder) placeholder.style.display = 'none';
     if(resultsArea) resultsArea.style.display = 'block';
 
-    // Hide old containers
     const containers = ['scoreBox', 'classifications', 'text-results-container', 'video-results-container'];
     containers.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.style.display = 'none';
     });
 
-    // 3. Setup Variables
-    const isVideo = data.suspicious_frames !== undefined;
+    // Detect if Video
+    let isVideo = false;
+    if (data.type) {
+        isVideo = (data.type === 'video');
+    } else {
+        // Fallback for Live Analysis
+        isVideo = (data.suspicious_frames !== undefined || data.scan_skipped !== undefined);
+    }
+
     let themeColor = "#3b82f6"; 
     let verdictLabel = data.score_label || "Processing..."; 
     let isReal = false;
     const labelLower = verdictLabel.toLowerCase();
     
-    // --- COLOR LOGIC ---
     if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("high credibility")) {
-        themeColor = "#166534"; // Green
+        themeColor = "#166534"; 
         isReal = true;
     } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("low credibility")) {
-        themeColor = "#b91c1c"; // Red
+        themeColor = "#b91c1c"; 
     } else if (labelLower.includes("unknown source")) {
-        themeColor = "#d97706"; // Orange
+        themeColor = "#d97706"; 
     } else {
-        themeColor = "#d97706"; // Orange
+        themeColor = "#d97706"; 
     }
 
-    // --- CONFIDENCE LOGIC: Show '- -' if null or skipped ---
+    // Confidence
     const rawConf = data.model_confidence;
-    let displayConf = "- - "; // Default
+    let displayConf = "- - "; 
     let barValue = 0;
 
-    // Only parse if it's NOT null, NOT undefined, and NOT "None"
     if (rawConf !== null && rawConf !== undefined && rawConf !== "None") {
         const parsed = parseFloat(rawConf);
         if (!isNaN(parsed)) {
@@ -250,11 +271,11 @@ function displayAnalysis(data) {
         }
     }
 
-    // 5. GET VIDEO METADATA
+    // --- METADATA ---
     let videoMetaHTML = "";
     if (isVideo) {
-        const author = document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : "Unknown";
-        const platform = document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : "Platform";
+        const author = data.author || (document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : "Unknown");
+        const platform = data.platform || (document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : "Platform");
         
         videoMetaHTML = `
             <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
@@ -270,35 +291,48 @@ function displayAnalysis(data) {
         `;
     }
 
-    // 6. BUILD FRAME GALLERY
+    // --- FRAMES ---
+    const actualFrameCount = (data.frame_count !== undefined) 
+        ? data.frame_count 
+        : (data.suspicious_frames ? data.suspicious_frames.length : 0);
+
     let framesHTML = "";
-    if (isVideo && data.suspicious_frames && data.suspicious_frames.length > 0) {
-        let images = "";
-        data.suspicious_frames.forEach(b64 => {
-            if(b64) {
-                images += `<img src="data:image/jpeg;base64,${b64}" 
-                    style="width: 100px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s;" 
-                    onclick="openImageModal(this.src)" 
-                    onmouseover="this.style.transform='scale(1.05)'" 
-                    onmouseout="this.style.transform='scale(1)'" />`;
-            }
-        });
-        framesHTML = `
-            <div style="margin-top: 20px;">
-                <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
-                    ${isReal ? 'Analyzed Frames (Sample)' : '⚠️ Anomalies Detected'}
-                </h5>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">${images}</div>
-            </div>
-        `;
-    } else if (isVideo && !data.scan_skipped) {
-         framesHTML = `<div style="margin-top:20px; color:#94a3b8; font-style:italic; font-size:0.9rem;">No anomalies detected in video frames.</div>`;
+    
+    if (isVideo) {
+        if (data.suspicious_frames && data.suspicious_frames.length > 0) {
+            let images = "";
+            data.suspicious_frames.forEach(b64 => {
+                if(b64) {
+                    images += `<img src="data:image/jpeg;base64,${b64}" 
+                        style="width: 100px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s;" 
+                        onclick="openImageModal(this.src)" 
+                        onmouseover="this.style.transform='scale(1.05)'" 
+                        onmouseout="this.style.transform='scale(1)'" />`;
+                }
+            });
+            framesHTML = `
+                <div style="margin-top: 20px;">
+                    <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
+                        ${isReal ? 'Analyzed Frames (Sample)' : '⚠️ Anomalies Detected'}
+                    </h5>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">${images}</div>
+                </div>
+            `;
+        } else if (actualFrameCount > 0) {
+            framesHTML = `
+                <div style="margin-top: 20px; padding: 15px; background: #fff7ed; border: 1px dashed #fdba74; border-radius: 6px; color: #9a3412; font-size: 0.9rem;">
+                    <strong>Note:</strong> ${actualFrameCount} anomalies were detected during the live scan. 
+                    <br><span style="font-size:0.8rem; opacity:0.8;">(Images were not saved in history to save storage space).</span>
+                </div>
+            `;
+        } else if (!data.scan_skipped) {
+            framesHTML = `<div style="margin-top:20px; color:#94a3b8; font-style:italic; font-size:0.9rem;">No anomalies detected in video frames.</div>`;
+        }
     }
 
-    // 7. BUILD EVIDENCE LIST
+    // --- EVIDENCE ---
     let evidenceHTML = "";
     const evidenceList = data.evidence || data.supporting_articles || [];
-    
     if (evidenceList.length > 0) {
         evidenceHTML += `
             <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
@@ -333,17 +367,16 @@ function displayAnalysis(data) {
         `;
     }
 
-    // 8. BUILD GRID STATS (FIXED FOR SKIPPED SCANS)
+    // --- GRID STATS (FIXED: Correctly handles Skipped vs Clean) ---
     let gridHTML = "";
     if (isVideo) {
         let visualCheckText = "Clean";
-        let visualCheckColor = "#166534"; // Green
+        let visualCheckColor = "#166534"; 
 
-        // Explicitly check for skipped scan
         if (data.scan_skipped === true) {
             visualCheckText = "- - ";
-            visualCheckColor = "#64748b"; // Gray
-        } else if (data.suspicious_frames && data.suspicious_frames.length > 0) {
+            visualCheckColor = "#64748b"; 
+        } else if (actualFrameCount > 0) {
             if (isReal) {
                 visualCheckText = "Pass (Noise)";
                 visualCheckColor = "#d97706"; 
@@ -353,8 +386,7 @@ function displayAnalysis(data) {
             }
         }
 
-        // Anomalies text logic
-        let anomaliesText = (data.suspicious_frames ? data.suspicious_frames.length : 0) + " Frames";
+        let anomaliesText = actualFrameCount + " Frames";
         if (data.scan_skipped === true) {
              anomaliesText = "- - ";
         }
@@ -384,7 +416,7 @@ function displayAnalysis(data) {
         `;
     }
 
-    // 9. BUILD FINAL CARD HTML
+    // --- BADGE ---
     let sourceBadge = "";
     if (isVideo && data.search_verdict === "VERIFIED") {
         sourceBadge = `<div style="background:#dcfce7; color:#14532d; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">✅ Source Verified</div>`;
@@ -395,7 +427,6 @@ function displayAnalysis(data) {
     const reportHTML = `
         <div class="forensic-card">
             <div class="forensic-header" style="border-left: 6px solid ${themeColor}; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px;">
-                
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="forensic-verdict-box">
                         <h4>Verdict</h4>
@@ -406,7 +437,6 @@ function displayAnalysis(data) {
                         <div class="forensic-score-label" style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-top: 5px;">Confidence</div>
                     </div>
                 </div>
-
                 <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden;">
                     <div style="width: ${barValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
                 </div>
@@ -430,7 +460,6 @@ function displayAnalysis(data) {
         </div>
     `;
 
-    // 10. INJECT CARD
     let container = document.getElementById('forensic-report-container');
     if (!container) {
         container = document.createElement('div');
@@ -440,162 +469,151 @@ function displayAnalysis(data) {
     container.innerHTML = reportHTML;
     container.style.display = 'block';
 
-    // 11. SCROLL
     setTimeout(() => {
         resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
 
-    // --- NEW: Handle Bias Detection ---
-    // --- NEW: Handle Bias Detection Logic (Stacked Bar) ---
+    // --- BIAS CHART ---
     const biasContainer = document.getElementById('bias-container');
-    
-    // Segments
     const segLeft = document.getElementById('bias-seg-left');
     const segCenter = document.getElementById('bias-seg-center');
     const segRight = document.getElementById('bias-seg-right');
-    
-    // Labels inside segments
     const txtLeft = segLeft ? segLeft.querySelector('.bias-text') : null;
     const txtCenter = segCenter ? segCenter.querySelector('.bias-text') : null;
     const txtRight = segRight ? segRight.querySelector('.bias-text') : null;
-
-    // Legend Labels
     const legLeft = document.getElementById('bias-legend-left');
     const legCenter = document.getElementById('bias-legend-center');
     const legRight = document.getElementById('bias-legend-right');
     const dominantLabel = document.getElementById('bias-dominant-label');
 
-    // 1. Reset Visibility
     if (biasContainer) biasContainer.style.display = 'none';
 
-    // 2. Check Conditions (Text Mode Only + Bias Data Exists)
-    if (data.bias_data && !data.suspicious_frames) {
+    if (data.bias_data && !isVideo) {
         if (biasContainer) biasContainer.style.display = 'block';
         
         const scores = data.bias_data.all_scores || {};
         let domLabel = data.bias_data.label;
         const domConf = data.bias_data.confidence;
 
-        // Get values (Default to 0 if missing)
-        // Ensure keys match what Python sends (Case sensitive!)
         const pLeft = scores['Left'] || scores['left'] || scores['0'] || 0;
         const pCenter = scores['Center'] || scores['center'] || scores['1'] || 0;
         const pRight = scores['Right'] || scores['right'] || scores['2'] || 0;
 
-        // Optional: Fix the label if it shows as a number (e.g., "1")
         if (domLabel == '0') domLabel = "Left";
         if (domLabel == '1') domLabel = "Center";
         if (domLabel == '2') domLabel = "Right";
 
-        // 3. Set Widths
         if (segLeft) segLeft.style.width = `${pLeft}%`;
         if (segCenter) segCenter.style.width = `${pCenter}%`;
         if (segRight) segRight.style.width = `${pRight}%`;
 
-        // 4. Set Text inside Bar (Hide if percentage is too small to fit text)
         if (txtLeft) txtLeft.innerText = pLeft > 8 ? `${Math.round(pLeft)}%` : '';
         if (txtCenter) txtCenter.innerText = pCenter > 8 ? `${Math.round(pCenter)}%` : '';
         if (txtRight) txtRight.innerText = pRight > 8 ? `${Math.round(pRight)}%` : '';
 
-        // 5. Update Legend & Header
         if (legLeft) legLeft.innerText = `Left: ${pLeft}%`;
         if (legCenter) legCenter.innerText = `Center: ${pCenter}%`;
         if (legRight) legRight.innerText = `Right: ${pRight}%`;
         
         if (dominantLabel) {
             dominantLabel.innerText = `${domLabel} (${domConf}%)`;
-            // Color code the dominant label
             const dLow = String(domLabel).toLowerCase();
-            
-            if (dLow.includes('left') || dLow === '0') {
-                dominantLabel.style.color = "#3b82f6"; // Blue
-            } 
-            else if (dLow.includes('right') || dLow === '2') {
-                dominantLabel.style.color = "#ef4444"; // Red
-            } 
-            else {
-                dominantLabel.style.color = "#a855f7"; // Purple (Center)
-            }
+            if (dLow.includes('left') || dLow === '0') dominantLabel.style.color = "#3b82f6";
+            else if (dLow.includes('right') || dLow === '2') dominantLabel.style.color = "#ef4444";
+            else dominantLabel.style.color = "#a855f7";
         }
     }
 }
+
 // =========================================================
-// 5. ADD TO HISTORY (SAFE VERSION - NO IMAGES)
+// 5. ADD TO HISTORY (FIXED: Saves Scan Skipped Status)
 // =========================================================
 function addToHistory(data) {
+    // 1. Prepare Base Object
+    let itemType = 'text';
+    const content = data.input_text || data.news_text || "";
+    if (content.trim().startsWith('http') && (content.includes('youtube') || content.includes('youtu.be') || content.includes('tiktok') || content.includes('facebook'))) {
+        itemType = 'video';
+    }
+
+    // Determine Frame Count for Metadata
+    const totalFrames = data.suspicious_frames ? data.suspicious_frames.length : 0;
+
+    const baseSnapshot = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        type: itemType,
+        input_text: content,
+        score_label: data.score_label,
+        classification_text: data.classification_text,
+        model_confidence: data.model_confidence,
+        colors: data.colors,
+        
+        // Metadata
+        frame_count: totalFrames,
+        scan_skipped: data.scan_skipped, // --- FIX: Save Skipped Status ---
+        
+        lime_html: data.lime_html,
+        supporting_articles: data.supporting_articles,
+        bias_data: data.bias_data,
+        interpretation: data.interpretation,
+        search_verdict: data.search_verdict,
+        search_reason: data.search_reason,
+        evidence: data.evidence,
+        author: document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : (data.author || "Unknown"),
+        platform: document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : (data.platform || "Platform"),
+        isFavorite: false 
+    };
+
+    let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
+
+    // 2. Try to save with 3 images
     try {
-        let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
-
-        // Determine type
-        let itemType = 'text';
-        const content = data.input_text || data.news_text || "";
-        if (content.trim().startsWith('http') && (content.includes('youtube') || content.includes('youtu.be') || content.includes('tiktok') || content.includes('facebook'))) {
-            itemType = 'video';
-        }
-
-        const snapshot = {
-            id: Date.now(),
-            timestamp: new Date().toLocaleString(),
-            type: itemType,
-            input_text: content,
-            score_label: data.score_label,
-            classification_text: data.classification_text,
-            model_confidence: data.model_confidence,
-            colors: data.colors,
-            
-            // Text Mode Data
-            lime_html: data.lime_html,
-            supporting_articles: data.supporting_articles,
-
-            // Video Mode Data
-            // CRITICAL FIX: We save an empty array for frames to prevent "Quota Exceeded" error.
-            // Images are too big for LocalStorage.
-            suspicious_frames: [], 
-            interpretation: data.interpretation,
-            search_verdict: data.search_verdict,
-            search_reason: data.search_reason,
-            evidence: data.evidence,
-
-            isFavorite: false 
+        const fullSnapshot = { 
+            ...baseSnapshot, 
+            suspicious_frames: data.suspicious_frames ? data.suspicious_frames.slice(0, 3) : [] 
         };
-
-        history.unshift(snapshot);
-
-        // Strict Limit: Keep only last 15 items to save space
+        
+        history.unshift(fullSnapshot);
+        
+        // Trim old items
         if (history.length > 15) {
             let indexToRemove = -1;
             for (let i = history.length - 1; i >= 0; i--) {
-                if (!history[i].isFavorite) {
-                    indexToRemove = i;
-                    break;
-                }
+                if (!history[i].isFavorite) { indexToRemove = i; break; }
             }
-            if (indexToRemove !== -1) {
-                history.splice(indexToRemove, 1);
-            } else {
-                history.pop();
-            }
+            if (indexToRemove !== -1) history.splice(indexToRemove, 1);
+            else history.pop();
         }
 
         localStorage.setItem('credibility_history', JSON.stringify(history));
-        filterHistoryItems(); // Refresh list immediately
-        
+    
     } catch (e) {
-        console.warn("History Quota Exceeded. Clearing old non-favorite items...");
-        // Emergency cleanup if it still fails
+        // 3. FALLBACK: Quota Exceeded? Save WITHOUT images.
+        console.warn("Storage full! Saving history without images.");
+        
+        if(history[0] && history[0].id === baseSnapshot.id) history.shift();
+
+        const lightSnapshot = { 
+            ...baseSnapshot, 
+            suspicious_frames: [] // Empty array
+        };
+        
+        history.unshift(lightSnapshot);
+        
         try {
-            let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
-            // Keep only favorites
-            history = history.filter(item => item.isFavorite);
+            while(history.length > 10) history.pop();
             localStorage.setItem('credibility_history', JSON.stringify(history));
-        } catch (err) {
-            console.error("Could not save history:", err);
+        } catch(err2) {
+            console.error("Critical Storage Error", err2);
         }
     }
+    
+    filterHistoryItems(); 
 }
 
 // =========================================================
-// 6. FILTER LOGIC
+// 6. FILTER LOGIC (UPDATED: Added Result-Based Filters)
 // =========================================================
 window.filterHistoryItems = function() {
     const searchInput = document.getElementById('history-search-input');
@@ -608,12 +626,25 @@ window.filterHistoryItems = function() {
 
     if (category !== 'all') {
         history = history.filter(item => {
-            const label = (item.score_label || "").toLowerCase();
             let type = item.type || 'text';
+            let label = item.score_label ? item.score_label.toLowerCase() : "";
 
+            // Standard Filters
             if (category === 'saved') return item.isFavorite === true;
             if (category === 'text') return type === 'text';
             if (category === 'video') return type === 'video';
+            
+            // --- NEW: Result Based Filters ---
+            if (category === 'verified') {
+                return label.includes('verified') || label.includes('real') || label.includes('high');
+            }
+            if (category === 'fake') {
+                return label.includes('fake') || label.includes('low') || label.includes('debunked');
+            }
+            if (category === 'uncertain') {
+                return label.includes('uncertain') || label.includes('unknown');
+            }
+
             return true;
         });
     }
@@ -657,12 +688,10 @@ function renderHistory(itemsToRender = null) {
         div.className = 'history-item';
         
         const isLocked = item.isFavorite;
-        const starClass = isLocked ? 'star-active' : 'star-inactive';
         const starIcon = isLocked ? '⭐' : '☆';
         const typeIcon = item.type === 'video' ? '🎥' : '📄';
 
         div.onclick = (e) => {
-            // Prevent triggering if clicked on buttons
             if(e.target.tagName === 'BUTTON') return;
             restoreSession(item.id);
         };
@@ -707,17 +736,9 @@ window.restoreSession = function(id) {
 
     if (item) {
         const data = {
-            score_label: item.score_label,
-            classification_text: item.classification_text,
-            model_confidence: item.model_confidence,
-            colors: item.colors,
-            lime_html: item.lime_html,
-            supporting_articles: item.supporting_articles,
-            suspicious_frames: item.suspicious_frames,
-            interpretation: item.interpretation,
-            search_verdict: item.search_verdict,
-            search_reason: item.search_reason,
-            evidence: item.evidence
+            ...item,
+            suspicious_frames: item.suspicious_frames || [],
+            frame_count: item.frame_count 
         };
         
         if(item.type === 'video') {
@@ -733,7 +754,13 @@ window.restoreSession = function(id) {
         }
 
         displayAnalysis(data);
-        document.getElementById('history-modal-overlay').classList.remove('modal-active');
+        
+        const modal = document.getElementById('history-modal-overlay');
+        if(modal) {
+             modal.classList.remove('modal-active');
+             modal.style.display = 'none';
+        }
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 };
@@ -821,4 +848,3 @@ if (videoInput && previewCard) {
         }, 600); 
     });
 }
-
