@@ -18,7 +18,6 @@ yt-dlp
 itsdangerous 
 transformers
 nltk
-re
 scipy
 requests
 starlette
