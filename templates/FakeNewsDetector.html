@@ -30,11 +30,54 @@
     0% { background-position: 0 -150px; }
     100% { background-position: 0 calc(100% + 150px); }
 }
+
+#custom-loader-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(15, 23, 42, 0.9) !important;
+            backdrop-filter: blur(8px) !important;
+            z-index: 999999 !important;
+            display: none; /* Changed by JS */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white !important;
+            font-family: sans-serif !important;
+        }
+
+        .custom-spinner-ring {
+            width: 65px !important;
+            height: 65px !important;
+            border: 6px solid rgba(255, 255, 255, 0.1) !important; 
+            border-top: 6px solid #3b82f6 !important; 
+            border-radius: 50% !important;
+            animation: force-spin 1s linear infinite !important; 
+            margin-bottom: 20px !important;
+            box-sizing: border-box !important;
+        }
+
+        @keyframes force-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body.loading-active {
+            overflow: hidden !important;
+        }
 </style>
 
 </head>
 <body>
-
+<div id="custom-loader-overlay">
+        <div class="custom-spinner-ring"></div>
+        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">Analyzing Content...</div>
+        <div id="loading-timer" style="font-family: monospace; color: #94a3b8; font-size: 1rem;">Processing: 0.00s</div>
+        <div style="width: 280px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 25px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
+            <div id="loading-progress-bar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.4s ease; box-shadow: 0 0 15px #3b82f6;"></div>
+        </div>
+    </div>
     <header class="navbar">
         <div class="logo"><h1>CredibilityScan</h1></div>
         <input type="checkbox" id="nav-toggle" class="nav-toggle">

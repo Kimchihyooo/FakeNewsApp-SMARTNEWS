@@ -1,5 +1,30 @@
 // static/js/main.js
 
+// =========================================
+// NEW LOADING OVERLAY FUNCTION
+// =========================================
+function toggleLoadingState(isLoading) {
+    const overlay = document.getElementById('custom-loader-overlay'); // Updated ID
+    const bar = document.getElementById('loading-progress-bar');
+
+    if (!overlay) return; 
+
+    if (isLoading) {
+        overlay.style.setProperty('display', 'flex', 'important');
+        document.body.classList.add('loading-active');
+        
+        if (bar) {
+            bar.style.width = '5%';
+            setTimeout(() => { bar.style.width = '30%'; }, 1500);
+            setTimeout(() => { bar.style.width = '65%'; }, 4000);
+        }
+    } else {
+        overlay.style.setProperty('display', 'none', 'important');
+        document.body.classList.remove('loading-active');
+        if (bar) bar.style.width = '0%'; 
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof renderHistory === 'function') renderHistory();
 
@@ -123,25 +148,20 @@ function openImageModal(imgElement, confidenceScore) {
 // NEW SIMPLE MODAL (For Timeline Graph)
 // =========================================
 function openSimpleGraphModal(imgSrc) {
-    // 1. Create overlay
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed; inset:0; background:rgba(15, 23, 42, 0.9); z-index:10000; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:20px; backdrop-filter:blur(4px);';
 
-    // 2. Create image container (white border effect)
     const imgContainer = document.createElement('div');
     imgContainer.style.cssText = 'max-width:95%; max-height:90%; background:#fff; padding:8px; border-radius:8px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);';
 
-    // 3. Create the large image
     const img = document.createElement('img');
     img.src = imgSrc;
     img.style.cssText = 'width:100%; height:auto; display:block; border-radius:4px; object-fit:contain; max-height: 85vh;';
 
-    // 4. Assemble
     imgContainer.appendChild(img);
     overlay.appendChild(imgContainer);
     document.body.appendChild(overlay);
 
-    // 5. Close on click
     overlay.onclick = () => {
         document.body.removeChild(overlay);
     };
@@ -159,9 +179,11 @@ if (form) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault(); 
 
+        // 1. SHOW THE LOADING OVERLAY IMMEDIATELY
+        toggleLoadingState(true);
+
         const btnText = document.getElementById('btntext');
         const btnVid = document.getElementById('btnvid');
-        const timerDisplay = document.getElementById('timer-display');
         
         const videoTab = document.querySelector('.tab[data-mode="video"]');
         const isVideoMode = videoTab && videoTab.classList.contains('tab-active');
@@ -174,7 +196,13 @@ if (form) {
         const originalText = activeBtn.innerText;
 
         const startTime = Date.now(); 
-        let timerInterval = null;
+        const loadingTimerText = document.getElementById('loading-timer');
+        
+        // 2. START THE TIMER ANIMATION
+        let timerInterval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            if(loadingTimerText) loadingTimerText.innerText = `Processing: ${elapsed.toFixed(2)}s`;
+        }, 50);
 
         if(activeInput) activeInput.classList.add('scanning-effect');
 
@@ -182,15 +210,6 @@ if (form) {
         activeBtn.disabled = true;
         activeBtn.style.opacity = "0.7";
         
-        if(timerDisplay) {
-            timerDisplay.style.display = 'block';
-            timerDisplay.innerText = "Processing: 0.00s";
-            timerInterval = setInterval(() => {
-                const elapsed = (Date.now() - startTime) / 1000;
-                timerDisplay.innerText = `Processing: ${elapsed.toFixed(2)}s`;
-            }, 50);
-        }
-
         const formData = new FormData(form);
 
         try {
@@ -214,11 +233,10 @@ if (form) {
             displayError(error.message); 
             console.error(error);
         } finally {
-            if (timerInterval) clearInterval(timerInterval);
-            if (timerDisplay) {
-                const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
-                timerDisplay.innerText = `Process finished (${totalTime}s)`;
-            }
+            // 3. STOP TIMER AND HIDE OVERLAY
+            clearInterval(timerInterval);
+            toggleLoadingState(false); 
+            
             if(activeInput) activeInput.classList.remove('scanning-effect');
 
             activeBtn.innerText = originalText;
@@ -272,8 +290,26 @@ function displayAnalysis(data) {
         isVideo = (data.suspicious_frames !== undefined || data.scan_skipped !== undefined);
     }
 
-    let themeColor = "#3b82f6"; 
+    const actualFrameCount = (data.frame_count !== undefined) 
+        ? data.frame_count 
+        : (data.suspicious_frames ? data.suspicious_frames.length : 0);
+
     let verdictLabel = data.score_label || "Processing..."; 
+    const isVerifiedSource = data.search_verdict === "VERIFIED";
+
+    // --- DYNAMIC THRESHOLD OVERRIDE ---
+    if (isVideo && verdictLabel.toLowerCase().includes("deepfake")) {
+        if (actualFrameCount < 45) {
+            if (isVerifiedSource) {
+                verdictLabel = "LIKELY REAL (NOISE DETECTED)";
+            } else {
+                verdictLabel = "INCONCLUSIVE / SUSPICIOUS";
+            }
+            data.score_label = verdictLabel; 
+        }
+    }
+
+    let themeColor = "#3b82f6"; 
     let isReal = false;
     const labelLower = verdictLabel.toLowerCase();
     
@@ -282,9 +318,7 @@ function displayAnalysis(data) {
         isReal = true;
     } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("low credibility")) {
         themeColor = "#b91c1c"; 
-    } else if (labelLower.includes("unknown source")) {
-        themeColor = "#d97706"; 
-    } else {
+    } else if (labelLower.includes("inconclusive") || labelLower.includes("suspicious") || labelLower.includes("unknown")) {
         themeColor = "#d97706"; 
     }
 
@@ -302,7 +336,6 @@ function displayAnalysis(data) {
 
     let videoMetaHTML = "";
     if (isVideo) {
-        // --- FIX: Extract metadata directly from the pre-populated preview card ---
         let author = data.author;
         let platform = data.platform;
 
@@ -330,7 +363,6 @@ function displayAnalysis(data) {
         `;
     }
 
-    // --- TIMELINE GRAPH (UPDATED ONCLICK) ---
     let timelineHTML = "";
     if (isVideo && data.timeline_graph) {
         timelineHTML = `
@@ -431,30 +463,23 @@ function displayAnalysis(data) {
         `;
     }
 
-    const actualFrameCount = (data.frame_count !== undefined) 
-        ? data.frame_count 
-        : (data.suspicious_frames ? data.suspicious_frames.length : 0);
-
-let gridHTML = "";
+    let gridHTML = "";
     if (isVideo) {
-        // Default to Clean (Green)
         let visualCheckText = "Clean";
-        let visualCheckColor = "#166534"; // Green
+        let visualCheckColor = "#166534"; 
         let anomaliesText = "0 Frames";
-        let anomaliesColor = "#334155"; // Dark Gray
+        let anomaliesColor = "#334155"; 
 
-        // 1. If it's a DEEPFAKE (isReal is false)
         if (!isReal) {
             visualCheckText = "Failed";
-            visualCheckColor = "#b91c1c"; // Red
+            visualCheckColor = "#b91c1c"; 
             anomaliesText = `${actualFrameCount} Frames`;
-            anomaliesColor = "#b91c1c"; // Red
+            anomaliesColor = "#b91c1c"; 
         } 
-        // 2. If it's REAL, but has NOISE frames
         else if (data.suspicious_frames && data.suspicious_frames.length > 0) {
             visualCheckText = "Pass";
-            visualCheckColor = "#d97706"; // Yellow
-            anomaliesText = "0 Frames"; // Golden Rule: Noise is 0 anomalies
+            visualCheckColor = "#d97706"; 
+            anomaliesText = "0 Frames"; 
         }
 
         gridHTML = `
@@ -489,7 +514,6 @@ let gridHTML = "";
          sourceBadge = `<div style="background:#fff7ed; color:#c2410c; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">⚠️ Unknown Source</div>`;
     }
 
-    // --- RESTORED: Dynamic Image Gallery for Forensic Frames ---
     let frameGalleryHTML = "";
     if (isVideo && data.suspicious_frames && data.suspicious_frames.length > 0) {
         const frameImages = data.suspicious_frames.map((base64Img) => {
@@ -637,7 +661,7 @@ function addToHistory(data) {
         frame_count: totalFrames,
         scan_skipped: data.scan_skipped, 
         
-        // --- ADD THIS LINE TO SAVE THE GRAPH ---
+        // --- ADDED: SAVE GRAPH ---
         timeline_graph: data.timeline_graph, 
         
         lime_html: data.lime_html,
