@@ -340,8 +340,48 @@ function displayAnalysis(data) {
                     <span>📚</span> Supporting Sources
                 </h5>
         `;
-        evidenceList.forEach(item => {
+evidenceList.forEach((item, index) => {
             let sourceName = item.website || item.displayLink || "Source";
+            const uniqueId = `match-details-${index}`; // Unique ID for specific toggle
+
+            // --- 1. Prepare Highlighted Context ---
+            const contextText = item.matched_context || "No specific sentence match found.";
+            // Use the helper function we added
+            const highlightedContext = typeof highlightKeywords === 'function' 
+                ? highlightKeywords(contextText, item.matched_keywords) 
+                : contextText;
+
+            // --- 2. Build the Toggle Button & Hidden Box ---
+            let transparencyHTML = "";
+            let toggleBtnHTML = "";
+
+            // Only show if we have a valid relevance score
+            if (item.relevance_score && item.relevance_score > 0) {
+                // The "Why?" Link (Toggle)
+                toggleBtnHTML = `
+                    <button onclick="document.getElementById('${uniqueId}').style.display = (document.getElementById('${uniqueId}').style.display === 'none' ? 'block' : 'none')" 
+                        style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 0; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;">
+                        <span style="font-size: 1rem;">🔍</span> Explain Relevance (${item.relevance_score}% Match)
+                    </button>
+                `;
+
+                // The Hidden Box (Contains the Highlighted Text)
+                transparencyHTML = `
+                    <div id="${uniqueId}" style="display: none; margin-top: 10px; background: #f8fafc; padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.85rem;">
+                        <div style="margin-bottom: 6px; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Matched Sentence from Input:
+                        </div>
+                        <div style="color: #334155; line-height: 1.6; font-style: italic; background: white; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                            "${highlightedContext}"
+                        </div>
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: #64748b;">
+                            <strong>Matched Keywords:</strong> ${item.matched_keywords ? item.matched_keywords.join(', ') : 'None'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- 3. Assemble the Final HTML ---
             evidenceHTML += `
                 <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
                     <div style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4;">
@@ -355,6 +395,9 @@ function displayAnalysis(data) {
                     <div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5;">
                         ${item.snippet || "No preview text available."}
                     </div>
+                    
+                    ${toggleBtnHTML}
+                    ${transparencyHTML}
                 </div>
             `;
         });
@@ -847,4 +890,18 @@ if (videoInput && previewCard) {
             }
         }, 600); 
     });
+
+    // =========================================================
+// 10. HELPER: HIGHLIGHT KEYWORDS (NEW)
+// =========================================================
+function highlightKeywords(text, keywords) {
+    if (!keywords || keywords.length === 0) return text;
+    
+    // Sort keywords by length (longest first) to prevent partial replacement issues
+    const sortedKeys = keywords.slice().sort((a, b) => b.length - a.length);
+    const pattern = new RegExp(`(${sortedKeys.join('|')})`, 'gi');
+    
+    // Replace with a yellow highlight span
+    return text.replace(pattern, '<span style="background-color: #fef08a; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px;">$1</span>');
+}
 }
