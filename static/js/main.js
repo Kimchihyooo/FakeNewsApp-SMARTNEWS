@@ -1,10 +1,8 @@
 // static/js/main.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize History (Load the list immediately)
     if (typeof renderHistory === 'function') renderHistory();
 
-    // 2. Initialize Filters
     const searchInput = document.getElementById('history-search-input');
     const filterSelect = document.getElementById('history-filter-select');
 
@@ -12,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', filterHistoryItems);
     }
     if (filterSelect) {
-        // --- NEW: Automatically Add Result Filters ---
         const optionsToAdd = [
             { value: 'verified', text: '✅ Verified / Real' },
             { value: 'fake', text: '⚠️ Fake / Deepfake' },
@@ -20,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         
         optionsToAdd.forEach(opt => {
-            // Only add if it doesn't exist yet (prevents duplicates)
             if (!filterSelect.querySelector(`option[value="${opt.value}"]`)) {
                 const option = document.createElement('option');
                 option.value = opt.value;
@@ -32,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filterSelect.addEventListener('change', filterHistoryItems);
     }
 
-    // 3. Initialize Image Modal Logic
     const imgModal = document.getElementById('image-modal-overlay');
     const imgClose = document.getElementById('image-modal-close');
     
@@ -43,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // 4. FIX: FORCE OPEN HISTORY MODAL
     const histBtn = document.getElementById('history-trigger-btn');
     const histModal = document.getElementById('history-modal-overlay');
     const histClose = document.getElementById('history-close-btn');
@@ -67,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. WORD COUNTER
     const wordInput = document.getElementById('userInput');
     const wordCountDisplay = document.getElementById('word-counts');
     const analyzeBtn = document.getElementById('btntext'); 
@@ -101,21 +94,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// =========================================================
-// 1. HELPER: OPEN IMAGE MODAL
-// =========================================================
-function openImageModal(src) {
+// =========================================
+// EXISTING ADVANCED MODAL (For Frames)
+// =========================================
+function openImageModal(imgElement, confidenceScore) {
     const modal = document.getElementById('image-modal-overlay');
-    const modalImg = document.getElementById('image-modal-img');
-    if (modal && modalImg) {
+    const originalImg = document.getElementById('modal-original-img');
+    const zoomImg = document.getElementById('modal-zoom-img');
+    const scoreDisplay = document.getElementById('modal-score');
+    
+    if (modal && originalImg && zoomImg) {
+        const src = imgElement.src;
+        originalImg.src = src;
+        zoomImg.src = src;
+        
+        if(scoreDisplay) {
+            scoreDisplay.innerText = `${Math.round(confidenceScore)}%`;
+            if (confidenceScore > 85) scoreDisplay.style.color = "#ef4444"; 
+            else if (confidenceScore > 60) scoreDisplay.style.color = "#f59e0b"; 
+            else scoreDisplay.style.color = "#166534"; 
+        }
+        
         modal.style.display = "flex";
-        modalImg.src = src;
     }
 }
 
-// =========================================================
-// 2. FORM SUBMIT
-// =========================================================
+// =========================================
+// NEW SIMPLE MODAL (For Timeline Graph)
+// =========================================
+function openSimpleGraphModal(imgSrc) {
+    // 1. Create overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(15, 23, 42, 0.9); z-index:10000; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:20px; backdrop-filter:blur(4px);';
+
+    // 2. Create image container (white border effect)
+    const imgContainer = document.createElement('div');
+    imgContainer.style.cssText = 'max-width:95%; max-height:90%; background:#fff; padding:8px; border-radius:8px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);';
+
+    // 3. Create the large image
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.style.cssText = 'width:100%; height:auto; display:block; border-radius:4px; object-fit:contain; max-height: 85vh;';
+
+    // 4. Assemble
+    imgContainer.appendChild(img);
+    overlay.appendChild(imgContainer);
+    document.body.appendChild(overlay);
+
+    // 5. Close on click
+    overlay.onclick = () => {
+        document.body.removeChild(overlay);
+    };
+}
+
+function highlightKeywords(text, keywords) {
+    if (!keywords || keywords.length === 0) return text;
+    const sortedKeys = keywords.slice().sort((a, b) => b.length - a.length);
+    const pattern = new RegExp(`(${sortedKeys.join('|')})`, 'gi');
+    return text.replace(pattern, '<span style="background-color: #fef08a; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px;">$1</span>');
+}
+
 const form = document.getElementById('analyzeForm');
 if (form) {
     form.addEventListener('submit', async (e) => {
@@ -190,9 +228,6 @@ if (form) {
     });
 }
 
-// =========================================================
-// 3. HELPER: DISPLAY ERROR
-// =========================================================
 function displayError(message) {
     const resultsArea = document.getElementById('results-area');
     const placeholder = document.getElementById('results-placeholder');
@@ -217,9 +252,6 @@ function displayError(message) {
     `;
 }
 
-// =========================================================
-// 4. DISPLAY ANALYSIS
-// =========================================================
 function displayAnalysis(data) {
     const resultsArea = document.getElementById('results-area');
     const placeholder = document.getElementById('results-placeholder');
@@ -233,12 +265,10 @@ function displayAnalysis(data) {
         if(el) el.style.display = 'none';
     });
 
-    // Detect if Video
     let isVideo = false;
     if (data.type) {
         isVideo = (data.type === 'video');
     } else {
-        // Fallback for Live Analysis
         isVideo = (data.suspicious_frames !== undefined || data.scan_skipped !== undefined);
     }
 
@@ -258,7 +288,6 @@ function displayAnalysis(data) {
         themeColor = "#d97706"; 
     }
 
-    // Confidence
     const rawConf = data.model_confidence;
     let displayConf = "- - "; 
     let barValue = 0;
@@ -271,66 +300,65 @@ function displayAnalysis(data) {
         }
     }
 
-    // --- METADATA ---
     let videoMetaHTML = "";
     if (isVideo) {
-        const author = data.author || (document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : "Unknown");
-        const platform = data.platform || (document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : "Platform");
+        // --- FIX: Extract metadata directly from the pre-populated preview card ---
+        let author = data.author;
+        let platform = data.platform;
+
+        const previewAuthorEl = document.getElementById('preview-author');
+        const previewPlatformEl = document.getElementById('preview-platform');
+
+        if (!author || author === "Unknown" || author === "...") {
+            author = previewAuthorEl ? previewAuthorEl.innerText : "Unknown";
+        }
+        if (!platform || platform === "Platform" || platform === "...") {
+            platform = previewPlatformEl ? previewPlatformEl.innerText : "Unknown";
+        }
         
         videoMetaHTML = `
             <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Source Channel</div>
-                    <div style="font-weight:600; color:#334155; font-size:1rem;">${author}</div>
+                    <div style="font-weight:600; color:#334155; font-size:1rem;">${author !== "..." ? author : "Could not fetch"}</div>
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Platform</div>
-                    <div style="font-weight:600; color:#334155; font-size:1rem;">${platform}</div>
+                    <div style="font-weight:600; color:#334155; font-size:1rem;">${platform !== "..." ? platform : "Could not fetch"}</div>
                 </div>
             </div>
         `;
     }
 
-    // --- FRAMES ---
-    const actualFrameCount = (data.frame_count !== undefined) 
-        ? data.frame_count 
-        : (data.suspicious_frames ? data.suspicious_frames.length : 0);
-
-    let framesHTML = "";
-    
-    if (isVideo) {
-        if (data.suspicious_frames && data.suspicious_frames.length > 0) {
-            let images = "";
-            data.suspicious_frames.forEach(b64 => {
-                if(b64) {
-                    images += `<img src="data:image/jpeg;base64,${b64}" 
-                        style="width: 100px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s;" 
-                        onclick="openImageModal(this.src)" 
-                        onmouseover="this.style.transform='scale(1.05)'" 
-                        onmouseout="this.style.transform='scale(1)'" />`;
-                }
-            });
-            framesHTML = `
-                <div style="margin-top: 20px;">
-                    <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
-                        ${isReal ? 'Analyzed Frames (Sample)' : '⚠️ Anomalies Detected'}
-                    </h5>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">${images}</div>
+    // --- TIMELINE GRAPH (UPDATED ONCLICK) ---
+    let timelineHTML = "";
+    if (isVideo && data.timeline_graph) {
+        timelineHTML = `
+            <div style="margin-top: 25px;">
+                <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
+                    ${isReal ? 'Frame Integrity Timeline' : '⚠️ Anomaly Detection Timeline'}
+                </h5>
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; overflow: hidden;">
+                    <img src="data:image/png;base64,${data.timeline_graph}" 
+                         style="width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.2s;" 
+                         alt="Deepfake Detection Timeline"
+                         onclick="openSimpleGraphModal(this.src)" 
+                         onmouseover="this.style.opacity='0.8'"
+                         onmouseout="this.style.opacity='1'">
                 </div>
-            `;
-        } else if (actualFrameCount > 0) {
-            framesHTML = `
-                <div style="margin-top: 20px; padding: 15px; background: #fff7ed; border: 1px dashed #fdba74; border-radius: 6px; color: #9a3412; font-size: 0.9rem;">
-                    <strong>Note:</strong> ${actualFrameCount} anomalies were detected during the live scan. 
-                    <br><span style="font-size:0.8rem; opacity:0.8;">(Images were not saved in history to save storage space).</span>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.75rem;">
+                    <div style="display: flex; gap: 12px; color: #475569;">
+                        <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#22c55e; border-radius:2px;"></span> Clean</span>
+                        <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#f59e0b; border-radius:2px;"></span> Noise</span>
+                        <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#ef4444; border-radius:2px;"></span> Deepfake</span>
+                    </div>
+                    <div style="color: #94a3b8; font-style: italic;">🔍 Click graph to expand</div>
                 </div>
-            `;
-        } else if (!data.scan_skipped) {
-            framesHTML = `<div style="margin-top:20px; color:#94a3b8; font-style:italic; font-size:0.9rem;">No anomalies detected in video frames.</div>`;
-        }
+            </div>
+        `;
     }
 
-    // --- EVIDENCE ---
     let evidenceHTML = "";
     const evidenceList = data.evidence || data.supporting_articles || [];
     if (evidenceList.length > 0) {
@@ -340,24 +368,19 @@ function displayAnalysis(data) {
                     <span>📚</span> Supporting Sources
                 </h5>
         `;
-evidenceList.forEach((item, index) => {
+        evidenceList.forEach((item, index) => {
             let sourceName = item.website || item.displayLink || "Source";
-            const uniqueId = `match-details-${index}`; // Unique ID for specific toggle
+            const uniqueId = `match-details-${index}`; 
 
-            // --- 1. Prepare Highlighted Context ---
             const contextText = item.matched_context || "No specific sentence match found.";
-            // Use the helper function we added
             const highlightedContext = typeof highlightKeywords === 'function' 
                 ? highlightKeywords(contextText, item.matched_keywords) 
                 : contextText;
 
-            // --- 2. Build the Toggle Button & Hidden Box ---
             let transparencyHTML = "";
             let toggleBtnHTML = "";
 
-            // Only show if we have a valid relevance score
             if (item.relevance_score && item.relevance_score > 0) {
-                // The "Why?" Link (Toggle)
                 toggleBtnHTML = `
                     <button onclick="document.getElementById('${uniqueId}').style.display = (document.getElementById('${uniqueId}').style.display === 'none' ? 'block' : 'none')" 
                         style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 0; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;">
@@ -365,7 +388,6 @@ evidenceList.forEach((item, index) => {
                     </button>
                 `;
 
-                // The Hidden Box (Contains the Highlighted Text)
                 transparencyHTML = `
                     <div id="${uniqueId}" style="display: none; margin-top: 10px; background: #f8fafc; padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.85rem;">
                         <div style="margin-bottom: 6px; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
@@ -381,7 +403,6 @@ evidenceList.forEach((item, index) => {
                 `;
             }
 
-            // --- 3. Assemble the Final HTML ---
             evidenceHTML += `
                 <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
                     <div style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4;">
@@ -410,34 +431,36 @@ evidenceList.forEach((item, index) => {
         `;
     }
 
-    // --- GRID STATS (FIXED: Correctly handles Skipped vs Clean) ---
-    let gridHTML = "";
+    const actualFrameCount = (data.frame_count !== undefined) 
+        ? data.frame_count 
+        : (data.suspicious_frames ? data.suspicious_frames.length : 0);
+
+let gridHTML = "";
     if (isVideo) {
+        // Default to Clean (Green)
         let visualCheckText = "Clean";
-        let visualCheckColor = "#166534"; 
+        let visualCheckColor = "#166534"; // Green
+        let anomaliesText = "0 Frames";
+        let anomaliesColor = "#334155"; // Dark Gray
 
-        if (data.scan_skipped === true) {
-            visualCheckText = "- - ";
-            visualCheckColor = "#64748b"; 
-        } else if (actualFrameCount > 0) {
-            if (isReal) {
-                visualCheckText = "Pass (Noise)";
-                visualCheckColor = "#d97706"; 
-            } else {
-                visualCheckText = "Fail";
-                visualCheckColor = "#b91c1c"; 
-            }
-        }
-
-        let anomaliesText = actualFrameCount + " Frames";
-        if (data.scan_skipped === true) {
-             anomaliesText = "- - ";
+        // 1. If it's a DEEPFAKE (isReal is false)
+        if (!isReal) {
+            visualCheckText = "Failed";
+            visualCheckColor = "#b91c1c"; // Red
+            anomaliesText = `${actualFrameCount} Frames`;
+            anomaliesColor = "#b91c1c"; // Red
+        } 
+        // 2. If it's REAL, but has NOISE frames
+        else if (data.suspicious_frames && data.suspicious_frames.length > 0) {
+            visualCheckText = "Pass";
+            visualCheckColor = "#d97706"; // Yellow
+            anomaliesText = "0 Frames"; // Golden Rule: Noise is 0 anomalies
         }
 
         gridHTML = `
             <div class="forensic-stat">
                 <h5>Visual Check</h5>
-                <p style="color: ${visualCheckColor}">${visualCheckText}</p>
+                <p style="color: ${visualCheckColor}; font-weight: 700;">${visualCheckText}</p>
             </div>
             <div class="forensic-stat">
                 <h5>Metadata</h5>
@@ -447,7 +470,7 @@ evidenceList.forEach((item, index) => {
             </div>
             <div class="forensic-stat">
                 <h5>Anomalies</h5>
-                <p>${anomaliesText}</p>
+                <p style="color: ${anomaliesColor}; font-weight: 700;">${anomaliesText}</p>
             </div>
         `;
     } else {
@@ -459,12 +482,38 @@ evidenceList.forEach((item, index) => {
         `;
     }
 
-    // --- BADGE ---
     let sourceBadge = "";
     if (isVideo && data.search_verdict === "VERIFIED") {
         sourceBadge = `<div style="background:#dcfce7; color:#14532d; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">✅ Source Verified</div>`;
     } else if (isVideo && !data.scan_skipped && verdictLabel === "UNKNOWN SOURCE") {
          sourceBadge = `<div style="background:#fff7ed; color:#c2410c; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:600;">⚠️ Unknown Source</div>`;
+    }
+
+    // --- RESTORED: Dynamic Image Gallery for Forensic Frames ---
+    let frameGalleryHTML = "";
+    if (isVideo && data.suspicious_frames && data.suspicious_frames.length > 0) {
+        const frameImages = data.suspicious_frames.map((base64Img) => {
+            const confidenceVal = data.model_confidence || 85; 
+            return `
+            <div style="cursor: pointer; overflow: hidden; border-radius: 8px; border: 2px solid #e2e8f0; transition: transform 0.2s, border-color 0.2s;" 
+                 onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='#f59e0b';" 
+                 onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#e2e8f0';">
+                <img src="data:image/jpeg;base64,${base64Img}" 
+                     alt="Suspicious Frame" 
+                     style="width: 100%; height: auto; display: block;"
+                     onclick="openImageModal(this, ${confidenceVal})">
+            </div>
+            `;
+        }).join('');
+
+        frameGalleryHTML = `
+            <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Visual Forensic Evidence</h5>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+                    ${frameImages}
+                </div>
+            </div>
+        `;
     }
 
     const reportHTML = `
@@ -474,10 +523,6 @@ evidenceList.forEach((item, index) => {
                     <div class="forensic-verdict-box">
                         <h4>Verdict</h4>
                         <h2 style="color: ${themeColor}; margin: 0;">${verdictLabel}</h2>
-                    </div>
-                    <div class="forensic-score-circle" style="text-align: right;">
-                        <div class="forensic-score-val" style="font-size: 2rem; font-weight: 700; color: ${themeColor}; line-height: 1;">${displayConf}</div>
-                        <div class="forensic-score-label" style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-top: 5px;">Confidence</div>
                     </div>
                 </div>
                 <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden;">
@@ -497,7 +542,10 @@ evidenceList.forEach((item, index) => {
                     ${data.lime_html || data.news_text || data.interpretation || "No content."}
                 </div>
 
-                ${framesHTML}
+                ${timelineHTML}
+
+                ${frameGalleryHTML}
+
                 ${evidenceHTML}
             </div>
         </div>
@@ -516,7 +564,6 @@ evidenceList.forEach((item, index) => {
         resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
 
-    // --- BIAS CHART ---
     const biasContainer = document.getElementById('bias-container');
     const segLeft = document.getElementById('bias-seg-left');
     const segCenter = document.getElementById('bias-seg-center');
@@ -568,18 +615,13 @@ evidenceList.forEach((item, index) => {
     }
 }
 
-// =========================================================
-// 5. ADD TO HISTORY (FIXED: Saves Scan Skipped Status)
-// =========================================================
 function addToHistory(data) {
-    // 1. Prepare Base Object
     let itemType = 'text';
     const content = data.input_text || data.news_text || "";
     if (content.trim().startsWith('http') && (content.includes('youtube') || content.includes('youtu.be') || content.includes('tiktok') || content.includes('facebook'))) {
         itemType = 'video';
     }
 
-    // Determine Frame Count for Metadata
     const totalFrames = data.suspicious_frames ? data.suspicious_frames.length : 0;
 
     const baseSnapshot = {
@@ -592,9 +634,8 @@ function addToHistory(data) {
         model_confidence: data.model_confidence,
         colors: data.colors,
         
-        // Metadata
         frame_count: totalFrames,
-        scan_skipped: data.scan_skipped, // --- FIX: Save Skipped Status ---
+        scan_skipped: data.scan_skipped, 
         
         lime_html: data.lime_html,
         supporting_articles: data.supporting_articles,
@@ -610,7 +651,6 @@ function addToHistory(data) {
 
     let history = JSON.parse(localStorage.getItem('credibility_history')) || [];
 
-    // 2. Try to save with 3 images
     try {
         const fullSnapshot = { 
             ...baseSnapshot, 
@@ -619,7 +659,6 @@ function addToHistory(data) {
         
         history.unshift(fullSnapshot);
         
-        // Trim old items
         if (history.length > 15) {
             let indexToRemove = -1;
             for (let i = history.length - 1; i >= 0; i--) {
@@ -632,14 +671,13 @@ function addToHistory(data) {
         localStorage.setItem('credibility_history', JSON.stringify(history));
     
     } catch (e) {
-        // 3. FALLBACK: Quota Exceeded? Save WITHOUT images.
         console.warn("Storage full! Saving history without images.");
         
         if(history[0] && history[0].id === baseSnapshot.id) history.shift();
 
         const lightSnapshot = { 
             ...baseSnapshot, 
-            suspicious_frames: [] // Empty array
+            suspicious_frames: [] 
         };
         
         history.unshift(lightSnapshot);
@@ -655,9 +693,6 @@ function addToHistory(data) {
     filterHistoryItems(); 
 }
 
-// =========================================================
-// 6. FILTER LOGIC (UPDATED: Added Result-Based Filters)
-// =========================================================
 window.filterHistoryItems = function() {
     const searchInput = document.getElementById('history-search-input');
     const filterSelect = document.getElementById('history-filter-select');
@@ -672,12 +707,10 @@ window.filterHistoryItems = function() {
             let type = item.type || 'text';
             let label = item.score_label ? item.score_label.toLowerCase() : "";
 
-            // Standard Filters
             if (category === 'saved') return item.isFavorite === true;
             if (category === 'text') return type === 'text';
             if (category === 'video') return type === 'video';
             
-            // --- NEW: Result Based Filters ---
             if (category === 'verified') {
                 return label.includes('verified') || label.includes('real') || label.includes('high');
             }
@@ -703,9 +736,6 @@ window.filterHistoryItems = function() {
     renderHistory(history);
 };
 
-// =========================================================
-// 7. RENDER HISTORY
-// =========================================================
 function renderHistory(itemsToRender = null) {
     const container = document.getElementById('history-list');
     if (!container) return;
@@ -770,9 +800,6 @@ function renderHistory(itemsToRender = null) {
     });
 }
 
-// =========================================================
-// 8. RESTORE & ACTIONS
-// =========================================================
 window.restoreSession = function(id) {
     const history = JSON.parse(localStorage.getItem('credibility_history')) || [];
     const item = history.find(x => x.id === id);
@@ -833,9 +860,6 @@ window.deleteItem = function(event, id) {
     filterHistoryItems(); 
 };
 
-// =========================================================
-// 9. AUTO-FETCH VIDEO METADATA
-// =========================================================
 const videoInput = document.getElementById('videoUrlInput');
 const previewCard = document.getElementById('video-preview-card');
 let debounceTimer;
@@ -890,18 +914,4 @@ if (videoInput && previewCard) {
             }
         }, 600); 
     });
-
-    // =========================================================
-// 10. HELPER: HIGHLIGHT KEYWORDS (NEW)
-// =========================================================
-function highlightKeywords(text, keywords) {
-    if (!keywords || keywords.length === 0) return text;
-    
-    // Sort keywords by length (longest first) to prevent partial replacement issues
-    const sortedKeys = keywords.slice().sort((a, b) => b.length - a.length);
-    const pattern = new RegExp(`(${sortedKeys.join('|')})`, 'gi');
-    
-    // Replace with a yellow highlight span
-    return text.replace(pattern, '<span style="background-color: #fef08a; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px;">$1</span>');
-}
 }
