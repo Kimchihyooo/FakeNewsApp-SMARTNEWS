@@ -637,6 +637,9 @@ function addToHistory(data) {
         frame_count: totalFrames,
         scan_skipped: data.scan_skipped, 
         
+        // --- ADD THIS LINE TO SAVE THE GRAPH ---
+        timeline_graph: data.timeline_graph, 
+        
         lime_html: data.lime_html,
         supporting_articles: data.supporting_articles,
         bias_data: data.bias_data,
@@ -781,10 +784,6 @@ function renderHistory(itemsToRender = null) {
                         ${item.input_text.substring(0, 50)}...
                     </div>
                 </div>
-                
-                <span style="font-size:0.8rem; background:#eee; padding:2px 6px; border-radius:4px; height:fit-content; white-space:nowrap;">
-                    ${item.model_confidence}%
-                </span>
             </div>
 
             <div class="history-actions" style="margin-top:10px; display:flex; gap:10px; border-top:1px solid #eee; padding-top:8px;">
