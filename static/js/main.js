@@ -313,10 +313,10 @@ function displayAnalysis(data) {
     let isReal = false;
     const labelLower = verdictLabel.toLowerCase();
     
-    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("high credibility")) {
+    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("Most Likely Real")) {
         themeColor = "#166534"; 
         isReal = true;
-    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("low credibility")) {
+    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("Most Likely Fake")) {
         themeColor = "#b91c1c"; 
     } else if (labelLower.includes("inconclusive") || labelLower.includes("suspicious") || labelLower.includes("unknown")) {
         themeColor = "#d97706"; 
