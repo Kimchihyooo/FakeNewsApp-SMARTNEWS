@@ -384,6 +384,29 @@ nav a:hover {
     background-color: #2563eb;
     transform: scale(1.05);
 }
+
+/* === DEMO VIDEO SECTION === */
+.demo-video-section {
+    text-align: center;
+    margin: 80px auto; /* Spacing above and below */
+    max-width: 900px;
+    padding: 0 20px;
+}
+
+.video-box {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden; /* Ensures video respects the rounded corners */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15); /* Soft shadow depth */
+    border: 5px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
+    background-color: #000; /* Fallback background */
+}
+
+.video-box video {
+    width: 100%;
+    height: auto;
+    display: block; /* Removes bottom spacing issues */
+}
 /* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
 
