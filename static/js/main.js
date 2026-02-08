@@ -520,12 +520,12 @@ function displayAnalysis(data) {
             const confidenceVal = data.model_confidence || 85; 
             return `
             <div style="cursor: pointer; overflow: hidden; border-radius: 8px; border: 2px solid #e2e8f0; transition: transform 0.2s, border-color 0.2s;" 
-                 onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='#f59e0b';" 
-                 onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#e2e8f0';">
+                onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='#f59e0b';" 
+                onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#e2e8f0';">
                 <img src="data:image/jpeg;base64,${base64Img}" 
-                     alt="Suspicious Frame" 
-                     style="width: 100%; height: auto; display: block;"
-                     onclick="openImageModal(this, ${confidenceVal})">
+                    alt="Suspicious Frame" 
+                    style="width: 100%; height: auto; display: block;"
+                    onclick="openImageModal(this, ${confidenceVal})">
             </div>
             `;
         }).join('');
@@ -548,8 +548,14 @@ function displayAnalysis(data) {
                         <h4>Verdict</h4>
                         <h2 style="color: ${themeColor}; margin: 0;">${verdictLabel}</h2>
                     </div>
+                    ${!isVideo ? `
+                    <div style="text-align: right;">
+                        <h4 style="margin: 0; color: ${themeColor}; font-size: 35px;">${displayConf}</h4>
+                        <span style="font-size: 0.7em; opacity: 0.8; color: #64748b;">Confidence</span>
+                    </div>
+                    ` : ''}
                 </div>
-                <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden;">
+                <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden; ${isVideo ? 'display: none;' : ''}">
                     <div style="width: ${barValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
                 </div>
             </div>
