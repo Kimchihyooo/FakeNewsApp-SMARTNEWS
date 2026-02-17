@@ -170,9 +170,16 @@ function openSimpleGraphModal(imgSrc) {
 }
 
 function highlightKeywords(text, keywords) {
-    if (!keywords || keywords.length === 0) return text;
-    const sortedKeys = keywords.slice().sort((a, b) => b.length - a.length);
-    const pattern = new RegExp(`(${sortedKeys.join('|')})`, 'gi');
+    if (!keywords || !Array.isArray(keywords) || keywords.length === 0) return text;
+    
+    // Sort by length (longest first) and escape for Regex
+    const escapedKeywords = keywords
+        .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .sort((a, b) => b.length - a.length);
+
+    // Use \b (Word Boundary) to ensure whole word matches only
+    const pattern = new RegExp(`\\b(${escapedKeywords.join('|')})\\b`, 'gi');
+    
     return text.replace(pattern, '<span style="background-color: #fef08a; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px;">$1</span>');
 }
 
@@ -406,10 +413,13 @@ function displayAnalysis(data) {
             let sourceName = item.website || item.displayLink || "Source";
             const uniqueId = `match-details-${index}`; 
 
-            const contextText = item.matched_context || "No specific sentence match found.";
-            const highlightedContext = typeof highlightKeywords === 'function' 
-                ? highlightKeywords(contextText, item.matched_keywords) 
-                : contextText;
+            const highlightedClaim = typeof highlightKeywords === 'function' 
+                ? highlightKeywords(data.extracted_claim || "No claim extracted.", item.matched_keywords) 
+                : (data.extracted_claim || "No claim extracted.");
+            
+            const highlightedSnippet = typeof highlightKeywords === 'function'
+                ? highlightKeywords(item.snippet || "", item.matched_keywords)
+                : item.snippet;
 
             let transparencyHTML = "";
             let toggleBtnHTML = "";
@@ -424,14 +434,24 @@ function displayAnalysis(data) {
 
                 transparencyHTML = `
                     <div id="${uniqueId}" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.85rem;">
+                        <!-- Section 1: The Claim -->
                         <div style="margin-bottom: 6px; color: #94a3b8; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Matched Sentence from Input:
+                            Claim:
                         </div>
-                        <div style="color: #f8fafc; line-height: 1.6; font-style: italic; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
-                            "${highlightedContext}"
+                        <div style="color: #f8fafc; line-height: 1.6; font-style: italic; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px;">
+                            "${highlightedClaim}"
                         </div>
-                        <div style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8;">
-                            <strong>Matched Keywords:</strong> ${item.matched_keywords ? item.matched_keywords.join(', ') : 'None'}
+
+                        <!-- Section 2: Source Evidence Match (Duplicated Snippet) -->
+                        <div style="margin-bottom: 6px; color: #94a3b8; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Supporting Evidence from Source:
+                        </div>
+                        <div style="color: #f8fafc; line-height: 1.6; background: rgba(59, 130, 246, 0.05); padding: 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            "${highlightedSnippet}"
+                        </div>
+
+                        <div style="margin-top: 10px; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                            <strong>Common Keywords:</strong> ${item.matched_keywords ? item.matched_keywords.join(', ') : 'None'}
                         </div>
                     </div>
                 `;
