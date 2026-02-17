@@ -2,6 +2,6 @@
   "name": "credscan",
   "compatibility_date": "2026-02-17",
   "assets": {
-    "directory": "./public"
+    "directory": "./frontend/public"
   }
 }
