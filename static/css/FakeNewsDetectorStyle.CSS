@@ -707,7 +707,7 @@ body {
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    width: 90%; max-width: 600px; padding: 20px;
+    width: 95%; max-width: 900px; padding: 30px;
     transform: translateY(20px); transition: transform 0.3s ease;
     color: #ffffff;
 }
@@ -715,9 +715,82 @@ body {
 
 /* History List Styling in Modal */
 .history-container h3 { font-family: 'Rubik', sans-serif; font-weight: 600; }
-.history-list { max-height: 400px; overflow-y: auto; }
+
+.history-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.history-filter, .history-search {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.history-filter:focus, .history-search:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.history-filter {
+    cursor: pointer;
+    width: 180px;
+}
+
+.history-filter option {
+    background: #1e293b;
+    color: #ffffff;
+}
+
+.history-search {
+    flex: 1;
+}
+
+.history-search::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.history-list { 
+    max-height: 600px; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding-right: 15px; 
+}
+
+/* Custom Scrollbar for History List */
+.history-list::-webkit-scrollbar {
+    width: 8px;
+}
+.history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.history-list::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5); /* Blue-ish tint to match theme */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.8);
+}
+
+/* Firefox Support */
+.history-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.5) rgba(255, 255, 255, 0.05);
+}
+
 .history-item { 
-    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-bottom: 10px; 
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; margin-bottom: 10px; 
     cursor: pointer; transition: all 0.2s; 
     color: #ffffff;
 }

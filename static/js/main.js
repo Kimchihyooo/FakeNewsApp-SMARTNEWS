@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             wordCountDisplay.innerText = `${count} / 1000 words`;
 
             if (count > 1000) {
-                wordCountDisplay.style.color = "#dc2626"; 
+                wordCountDisplay.style.color = "#ef4444"; 
                 wordCountDisplay.style.fontWeight = "bold";
                 if(analyzeBtn) {
                     analyzeBtn.disabled = true;
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     analyzeBtn.style.cursor = "not-allowed";
                 }
             } else {
-                wordCountDisplay.style.color = "#64748b"; 
+                wordCountDisplay.style.color = "#94a3b8"; 
                 wordCountDisplay.style.fontWeight = "normal";
                 if(analyzeBtn) {
                     analyzeBtn.disabled = false;
@@ -137,7 +137,7 @@ function openImageModal(imgElement, confidenceScore) {
             scoreDisplay.innerText = `${Math.round(confidenceScore)}%`;
             if (confidenceScore > 85) scoreDisplay.style.color = "#ef4444"; 
             else if (confidenceScore > 60) scoreDisplay.style.color = "#f59e0b"; 
-            else scoreDisplay.style.color = "#166534"; 
+            else scoreDisplay.style.color = "#4ade80"; 
         }
         
         modal.style.display = "flex";
@@ -263,7 +263,7 @@ function displayError(message) {
     resultContainer.style.display = 'block';
     
     resultContainer.innerHTML = `
-        <div style="text-align:center; padding: 30px; color: #b91c1c; background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 12px;">
+        <div style="text-align:center; padding: 30px; color: #f87171; background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px;">
             <h3 style="margin-top:0; font-family: 'Rubik', sans-serif;">⚠️ Analysis Failed</h3>
             <p style="margin-top:10px; font-size: 1.1rem; line-height: 1.5;">${message}</p>
         </div>
@@ -313,13 +313,13 @@ function displayAnalysis(data) {
     let isReal = false;
     const labelLower = verdictLabel.toLowerCase();
     
-    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("Most Likely Real")) {
-        themeColor = "#166534"; 
+    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("MOST LIKELY REAL")) {
+        themeColor = "#4ade80"; 
         isReal = true;
-    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("Most Likely Fake")) {
-        themeColor = "#b91c1c"; 
+    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("MOST LIKELY FAKE")) {
+        themeColor = "#f87171"; 
     } else if (labelLower.includes("inconclusive") || labelLower.includes("suspicious") || labelLower.includes("unknown")) {
-        themeColor = "#d97706"; 
+        themeColor = "#fbbf24"; 
     }
 
     const rawConf = data.model_confidence;
@@ -350,14 +350,14 @@ function displayAnalysis(data) {
         }
         
         videoMetaHTML = `
-            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Source Channel</div>
-                    <div style="font-weight:600; color:#334155; font-size:1rem;">${author !== "..." ? author : "Could not fetch"}</div>
+                    <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Source Channel</div>
+                    <div style="font-weight:600; color:#f8fafc; font-size:1rem;">${author !== "..." ? author : "Could not fetch"}</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Platform</div>
-                    <div style="font-weight:600; color:#334155; font-size:1rem;">${platform !== "..." ? platform : "Could not fetch"}</div>
+                    <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Platform</div>
+                    <div style="font-weight:600; color:#f8fafc; font-size:1rem;">${platform !== "..." ? platform : "Could not fetch"}</div>
                 </div>
             </div>
         `;
@@ -367,10 +367,10 @@ function displayAnalysis(data) {
     if (isVideo && data.timeline_graph) {
         timelineHTML = `
             <div style="margin-top: 25px;">
-                <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.9rem;">
+                <h5 style="color: #cbd5e1; margin-bottom: 10px; font-size: 0.9rem;">
                     ${isReal ? 'Frame Integrity Timeline' : '⚠️ Anomaly Detection Timeline'}
                 </h5>
-                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; overflow: hidden;">
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; overflow: hidden;">
                     <img src="data:image/png;base64,${data.timeline_graph}" 
                          style="width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.2s;" 
                          alt="Deepfake Detection Timeline"
@@ -380,12 +380,12 @@ function displayAnalysis(data) {
                 </div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.75rem;">
-                    <div style="display: flex; gap: 12px; color: #475569;">
+                    <div style="display: flex; gap: 12px; color: #94a3b8;">
                         <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#22c55e; border-radius:2px;"></span> Clean</span>
                         <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#f59e0b; border-radius:2px;"></span> Noise</span>
                         <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#ef4444; border-radius:2px;"></span> Deepfake</span>
                     </div>
-                    <div style="color: #94a3b8; font-style: italic;">🔍 Click graph to expand</div>
+                    <div style="color: #cbd5e1; font-style: italic;">🔍 Click graph to expand</div>
                 </div>
             </div>
         `;
@@ -395,8 +395,8 @@ function displayAnalysis(data) {
     const evidenceList = data.evidence || data.supporting_articles || [];
     if (evidenceList.length > 0) {
         evidenceHTML += `
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f3f4f6;">
-                <h5 style="color: #111827; font-weight: 700; font-size: 1.05rem; margin-bottom: 15px; display:flex; align-items:center; gap:8px;">
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <h5 style="color: #f8fafc; font-weight: 700; font-size: 1.05rem; margin-bottom: 15px; display:flex; align-items:center; gap:8px;">
                     <span>📚</span> Supporting Sources
                 </h5>
         `;
@@ -415,20 +415,20 @@ function displayAnalysis(data) {
             if (item.relevance_score && item.relevance_score > 0) {
                 toggleBtnHTML = `
                     <button onclick="document.getElementById('${uniqueId}').style.display = (document.getElementById('${uniqueId}').style.display === 'none' ? 'block' : 'none')" 
-                        style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 0; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;">
+                        style="background: none; border: none; color: #60a5fa; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 0; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;">
                         <span style="font-size: 1rem;">🔍</span> Explain Relevance (${item.relevance_score}% Match)
                     </button>
                 `;
 
                 transparencyHTML = `
-                    <div id="${uniqueId}" style="display: none; margin-top: 10px; background: #f8fafc; padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.85rem;">
-                        <div style="margin-bottom: 6px; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <div id="${uniqueId}" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.85rem;">
+                        <div style="margin-bottom: 6px; color: #94a3b8; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             Matched Sentence from Input:
                         </div>
-                        <div style="color: #334155; line-height: 1.6; font-style: italic; background: white; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                        <div style="color: #f8fafc; line-height: 1.6; font-style: italic; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
                             "${highlightedContext}"
                         </div>
-                        <div style="margin-top: 8px; font-size: 0.75rem; color: #64748b;">
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8;">
                             <strong>Matched Keywords:</strong> ${item.matched_keywords ? item.matched_keywords.join(', ') : 'None'}
                         </div>
                     </div>
@@ -436,16 +436,16 @@ function displayAnalysis(data) {
             }
 
             evidenceHTML += `
-                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4;">
-                        <a href="${item.link}" target="_blank" style="text-decoration:none; color:#1a0dab;">
+                        <a href="${item.link}" target="_blank" style="text-decoration:none; color:#60a5fa;">
                             ${item.title}
                         </a>
                     </div>
-                    <div style="font-size: 0.85rem; color: #166534; margin-bottom: 6px;">
+                    <div style="font-size: 0.85rem; color: #4ade80; margin-bottom: 6px;">
                         ${sourceName}
                     </div>
-                    <div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5;">
+                    <div style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
                         ${item.snippet || "No preview text available."}
                     </div>
                     
@@ -457,7 +457,7 @@ function displayAnalysis(data) {
         evidenceHTML += `</div>`;
     } else {
         evidenceHTML += `
-            <div style="margin-top: 20px; padding: 20px; text-align: center; color: #6b7280; background: #f9fafb; border-radius: 8px;">
+            <div style="margin-top: 20px; padding: 20px; text-align: center; color: #94a3b8; background: rgba(255,255,255,0.05); border-radius: 8px;">
                 No matching news reports found.
             </div>
         `;
@@ -466,19 +466,19 @@ function displayAnalysis(data) {
     let gridHTML = "";
     if (isVideo) {
         let visualCheckText = "Clean";
-        let visualCheckColor = "#166534"; 
+        let visualCheckColor = "#4ade80"; 
         let anomaliesText = "0 Frames";
-        let anomaliesColor = "#334155"; 
+        let anomaliesColor = "#cbd5e1"; 
 
         if (!isReal) {
             visualCheckText = "Failed";
-            visualCheckColor = "#b91c1c"; 
+            visualCheckColor = "#f87171"; 
             anomaliesText = `${actualFrameCount} Frames`;
-            anomaliesColor = "#b91c1c"; 
+            anomaliesColor = "#f87171"; 
         } 
         else if (data.suspicious_frames && data.suspicious_frames.length > 0) {
             visualCheckText = "Pass";
-            visualCheckColor = "#d97706"; 
+            visualCheckColor = "#fbbf24"; 
             anomaliesText = "0 Frames"; 
         }
 
@@ -489,7 +489,7 @@ function displayAnalysis(data) {
             </div>
             <div class="forensic-stat">
                 <h5>Metadata</h5>
-                <p style="color: ${data.search_verdict === 'VERIFIED' ? '#166534' : '#64748b'}">
+                <p style="color: ${data.search_verdict === 'VERIFIED' ? '#4ade80' : '#94a3b8'}">
                     ${data.search_verdict || "Checked"}
                 </p>
             </div>
@@ -502,7 +502,7 @@ function displayAnalysis(data) {
         const articleCount = evidenceList.length;
         gridHTML = `
             <div class="forensic-stat"><h5>Type</h5><p>Text Article</p></div>
-            <div class="forensic-stat"><h5>Fact Check</h5><p style="color:${articleCount > 0 ? '#166534':'#64748b'}">${articleCount > 0 ? 'Evidence Found' : 'No Matches'}</p></div>
+            <div class="forensic-stat"><h5>Fact Check</h5><p style="color:${articleCount > 0 ? '#4ade80':'#94a3b8'}">${articleCount > 0 ? 'Evidence Found' : 'No Matches'}</p></div>
             <div class="forensic-stat"><h5>Sources</h5><p>${articleCount} Links</p></div>
         `;
     }
@@ -519,20 +519,20 @@ function displayAnalysis(data) {
         const frameImages = data.suspicious_frames.map((base64Img) => {
             const confidenceVal = data.model_confidence || 85; 
             return `
-            <div style="cursor: pointer; overflow: hidden; border-radius: 8px; border: 2px solid #e2e8f0; transition: transform 0.2s, border-color 0.2s;" 
+            <div style="cursor: pointer; overflow: hidden; border-radius: 8px; border: 2px solid rgba(255,255,255,0.1); transition: transform 0.2s, border-color 0.2s;" 
                 onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='#f59e0b';" 
-                onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#e2e8f0';">
+                onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(255,255,255,0.1)';"
+                onclick="openImageModal(this, ${confidenceVal})">
                 <img src="data:image/jpeg;base64,${base64Img}" 
                     alt="Suspicious Frame" 
-                    style="width: 100%; height: auto; display: block;"
-                    onclick="openImageModal(this, ${confidenceVal})">
+                    style="width: 100%; height: auto; display: block;">
             </div>
             `;
         }).join('');
 
         frameGalleryHTML = `
-            <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                <h5 style="color: #64748b; margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Visual Forensic Evidence</h5>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                <h5 style="color: #94a3b8; margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Visual Forensic Evidence</h5>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
                     ${frameImages}
                 </div>
@@ -551,11 +551,11 @@ function displayAnalysis(data) {
                     ${!isVideo ? `
                     <div style="text-align: right;">
                         <h4 style="margin: 0; color: ${themeColor}; font-size: 35px;">${displayConf}</h4>
-                        <span style="font-size: 0.7em; opacity: 0.8; color: #64748b;">Confidence</span>
+                        <span style="font-size: 0.7em; opacity: 0.8; color: #94a3b8;">Confidence</span>
                     </div>
                     ` : ''}
                 </div>
-                <div style="width: 100%; height: 8px; background-color: #f1f5f9; border-radius: 4px; overflow: hidden; ${isVideo ? 'display: none;' : ''}">
+                <div style="width: 100%; height: 8px; background-color: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; ${isVideo ? 'display: none;' : ''}">
                     <div style="width: ${barValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
                 </div>
             </div>
@@ -568,7 +568,7 @@ function displayAnalysis(data) {
                 ${videoMetaHTML}
                 ${sourceBadge}
                 
-                <div style="color: #374151; line-height: 1.8; font-size: 1.05rem; margin-bottom: 10px;">
+                <div style="color: #f8fafc; line-height: 1.8; font-size: 1.05rem; margin-bottom: 10px;">
                     ${data.lime_html || data.news_text || data.interpretation || "No content."}
                 </div>
 
@@ -804,23 +804,25 @@ function renderHistory(itemsToRender = null) {
 
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="flex: 1; min-width: 0; padding-right: 10px;">
+                <div style="flex: 1; min-width: 0; padding-right: 15px;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span style="font-size:1.1em;">${typeIcon}</span>
-                        <strong style="color:#333;">${item.score_label}</strong>
+                        <strong style="color:#f8fafc; font-size:1.05rem;">${item.score_label}</strong>
                     </div>
-                    <div style="font-size:0.75rem; color:#888; margin-top:4px;">${item.timestamp}</div>
-                    <div style="font-size:0.8rem; color:#555; margin-top:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        ${item.input_text.substring(0, 50)}...
+                    <div style="font-size:0.85rem; color:#cbd5e1; margin-top:6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${item.input_text.substring(0, 60)}...
                     </div>
+                </div>
+                <div style="font-size:0.85rem; color:#94a3b8; font-weight: 500; text-align: right; flex-shrink: 0; margin-top: 2px;">
+                    ${item.timestamp}
                 </div>
             </div>
 
-            <div class="history-actions" style="margin-top:10px; display:flex; gap:10px; border-top:1px solid #eee; padding-top:8px;">
-                <button onclick="toggleFavorite(event, ${item.id})" style="border:none; background:none; cursor:pointer; color:${isLocked ? '#f59e0b' : '#64748b'}; font-weight:600;">
+            <div class="history-actions" style="margin-top:10px; display:flex; gap:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
+                <button onclick="toggleFavorite(event, ${item.id})" style="border:none; background:none; cursor:pointer; color:${isLocked ? '#f59e0b' : '#94a3b8'}; font-weight:600;">
                     ${starIcon} Save
                 </button>
-                <button onclick="deleteItem(event, ${item.id})" style="border:none; background:none; cursor:pointer; color:#ef4444;">
+                <button onclick="deleteItem(event, ${item.id})" style="border:none; background:none; cursor:pointer; color:#f87171;">
                     🗑️ Delete
                 </button>
             </div>
