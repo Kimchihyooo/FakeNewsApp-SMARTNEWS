@@ -582,223 +582,110 @@ position: relative;
 }
 
 /* === MOBILE RESPONSIVE STYLES === */
-@media (max-width: 768px) {
-    .header-section h1 {
-        font-size: 3rem;
-    }
-
-    .hero-mini {
-        height: 50vh;
-    }
-
-    .sub-header h2 {
-        font-size: 2.2rem;
-    }
-
-    .navbar {
-        width: 95%;
-        top: 15px;
-        height: auto;
-        padding: 15px 12px;
-        border-radius: 30px;
-        flex-direction: column;
-    }
-
-    .navbar-container {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    /* Tab Mobile Styles */
-    /* === 1. THE TABS WRAPPER === */
-.folder-tabs-wrapper {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 0 20px;
-    margin-top: -60px; /* Pulls the tabs up into the dark hero section */
-    margin-bottom: 0;
+/* --- TERMS OF SERVICE SECTION --- */
+.terms-container {
+    background-color: #f8fafc;
+    color: #0f172a;
+    padding: 80px 10% 80px 10%;
     position: relative;
-    z-index: 50; /* CRUCIAL: Ensures tabs sit ON TOP of the white container */
+    z-index: 10;
+    border-radius: 30px 30px 0 0 !important;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* === 2. THE TABS === */
-.folder-tab {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #cbd5e1;
-    padding: 15px 30px;
-    border-radius: 20px 20px 0 0;
+.update-badge {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
     font-family: 'Rubik', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.tos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.tos-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
     transition: all 0.3s ease;
-    
-    /* THE FIX: Remove bottom border and overlap the container by 1px to seal the gap */
-    border-bottom: none; 
-    margin-bottom: -1px; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.folder-tab:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+.tos-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: rgba(37, 99, 235, 0.2);
 }
 
-.folder-tab.active {
+.tos-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tos-header i {
+    font-size: 1.5rem;
+    color: #2563eb;
+}
+
+.tos-header h3 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 2.5rem;
+    color: #0f172a;
+    margin: 0;
+}
+
+.tos-tldr {
+    background: rgba(37, 99, 235, 0.03);
+    border-left: 4px solid #2563eb;
+    padding: 18px 22px;
+    border-radius: 0 12px 12px 0;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.2rem;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+.tos-tldr strong {
     color: #2563eb;
     font-weight: 700;
-    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.15);
-    
-    /* THE FIX: Remove the translateY(-5px) so it stays anchored perfectly to the container */
-    transform: none; 
 }
 
-/* === 3. THE CONTAINERS === */
-.tutorial-container, .tutorial-containervid, .demo-video-section {
-    /* THE FIX: Reset any leftover positioning that pushes it down */
-    position: relative;
-    top: 0 !important; 
-    margin-top: 0 !important; 
-    
-    border-radius: 0 0 40px 40px; 
-    min-height: 60vh;
-    z-index: 10;
-    
-    /* Ensure there is enough padding inside so text doesn't hit the tabs */
-    padding: 60px 10% 150px 10%; 
-    animation: fadeInSlide 0.4s ease-out;
+.tos-card p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1rem;
+    color: #475569;
+    line-height: 1.7;
+    margin: 0;
 }
 
-    .nav-toggle-label {
-        display: block;
-        margin-top: 15px;
-        width: 25px;
-        height: 20px;
+/* Responsive Grid for TOS */
+@media (max-width: 1024px) {
+    .tos-grid {
+        grid-template-columns: 1fr;
     }
+}
 
-    .nav-menu {
-        display: none;
-        width: 100%;
-        padding-top: 20px;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-        margin-top: 15px;
-    }
-
-    .nav-toggle:checked ~ .nav-menu {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .nav-links {
-        flex-direction: column;
-        width: 50%;
-        gap: 5px;
-    }
-
-    .nav-links a {
-        width: 100%;
-        text-align: center;
-        padding: 12px;
-    }
-
-    .status-chip {
-        margin: 10px 0 0 0;
-        width: auto;
-        text-align: center;
-    }
-
-    .tutorial-container,
-    .tutorial-containervid, 
-    .demo-video-section, 
-    .site-footer {
-        margin-top: -60px;
+@media (max-width: 768px) {
+    .terms-container {
+        padding: 100px 20px 40px 20px;
         border-radius: 25px 25px 0 0;
-        padding-top: 100px;
-    }
-
-    .tutorial-container {
-        margin-top: 0;
-    }
-
-    /* 2. Container Spacing */
-    .tutorial-container, 
-    .tutorial-containervid {
-        padding: 100px 20px 40px 20px; /* Less padding on sides/top */
-    }
-
-
-    /* 3. Typography Scaling */
-    .header-section h2 {
-        font-size: 2rem; /* Smaller headings */
-    }
-
-    .step-number {
-        font-size: 2.5rem; /* Smaller step numbers */
-    }
-
-    .step-text h3 {
-        font-size: 1.5rem; /* Smaller step titles */
-    }
-
-    .step-text p {
-        font-size: 1rem;
-    }
-
-    /* 4. Step Layout (Stacking) */
-    /* Since your HTML structure is Text First -> Visual Second for ALL steps,
-       using column-reverse puts the Image on TOP for all steps. */
-    .step-row, 
-    .step-row.reverse {
-        flex-direction: column-reverse; 
-        gap: 30px;
-        margin-bottom: 60px;
-        text-align: center; /* Center text for mobile */
-    }
-
-    .step-text {
-        padding: 0;
-    }
-
-    /* 5. Image & Placeholder Fixes */
-    .step-visual {
-        width: 100%;
-    }
-
-    .img-placeholder {
-        width: 100%;           /* Full width of the mobile screen */
-        height: 250px;         /* Fixed height so it doesn't get too tall */
-        overflow: hidden;      /* essential: cuts off anything that tries to spill out */
-        display: flex;         /* centers the image */
-        justify-content: center;
-        align-items: center;
-        margin: 0 auto;        /* centers the box itself */
-    }
-
-    /* 2. Tame the image inside */
-    .img-placeholder img {
-        width: 100% !important;      /* Force image to fit width */
-        height: 100% !important;     /* Force image to fit height */
-        object-fit: contain;         /* SHOWS WHOLE IMAGE: Ensures nothing is cut off */
-        border-radius: 8px;
-        
-        /* Reset any desktop shifting/zooming */
-        transform: none !important;  
-        margin: 0 !important;
     }
     
-    .step-action {
-        justify-content: center; /* Centers the button content */
-    }
-
-        .footer-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
+    .tos-header h3 {
+        font-size: 1.3rem;
     }
 }
