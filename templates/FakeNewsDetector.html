@@ -347,7 +347,7 @@
                 <div class="detector-disclaimer">
                     <i class="fas fa-shield-halved"></i>
                     <p>
-                        <strong>Disclaimer:</strong> CredibilityScan uses AI to highlight potential misinformation, but it does not claim absolute truth. Please use these results as a guide and always exercise your own critical thinking.
+                        <strong>Disclaimer:</strong> CredibilityScan uses AI to highlight potential misinformation, but it does not claim absolute truth. Please use these results as a guide and to enhance your critical thinking.
                     </p>
                 </div>
             </div> 
@@ -627,7 +627,13 @@
             
             // 2. Change text after fade out (500ms transition)
             setTimeout(() => {
-                currentIndex = (currentIndex + 1) % facts.length;
+                // Randomize index instead of sequential increment
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * facts.length);
+                } while (newIndex === currentIndex && facts.length > 1);
+                
+                currentIndex = newIndex;
                 triviaEl.innerHTML = facts[currentIndex];
                 
                 // 3. Fade back in
