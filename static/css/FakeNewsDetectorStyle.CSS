@@ -838,3 +838,33 @@ body {
 .detector-disclaimer strong {
     color: #3b82f6;
 }
+
+/* New styles for #sources-list */
+#sources-list {
+    max-height: 200px; /* Example height, adjust as needed */
+    overflow-y: auto;
+    padding-right: 10px; /* To prevent scrollbar from overlapping content */
+    /* Custom Scrollbar Styles for Webkit (Chrome, Safari) */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(59, 130, 246, 0.5) rgba(255, 255, 255, 0.05); /* Firefox */
+}
+
+#sources-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#sources-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+#sources-list::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+#sources-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.8);
+}
