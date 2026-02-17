@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // =========================================
 // EXISTING ADVANCED MODAL (For Frames)
 // =========================================
+// =========================================
+// EXISTING ADVANCED MODAL (For Frames)
+// =========================================
 function openImageModal(imgElement, confidenceScore) {
     const modal = document.getElementById('image-modal-overlay');
     const originalImg = document.getElementById('modal-original-img');
@@ -131,9 +134,14 @@ function openImageModal(imgElement, confidenceScore) {
     const scoreDisplay = document.getElementById('modal-score');
     
     if (modal && originalImg && zoomImg) {
-        const src = imgElement.src;
-        originalImg.src = src;
-        zoomImg.src = src;
+        // --- THE FIX: Find the image whether the <div> or the <img> was clicked ---
+        const targetImg = imgElement.tagName === 'IMG' ? imgElement : imgElement.querySelector('img');
+        
+        if (targetImg) {
+            const src = targetImg.src;
+            originalImg.src = src;
+            zoomImg.src = src;
+        }
         
         if(scoreDisplay) {
             scoreDisplay.innerText = `${Math.round(confidenceScore)}%`;
@@ -701,7 +709,10 @@ function addToHistory(data) {
         itemType = 'video';
     }
 
-    const totalFrames = data.suspicious_frames ? data.suspicious_frames.length : 0;
+    // --- THE FIX: Use the true frame count from Python, not the image array length ---
+    const actualFrameCount = (data.frame_count !== undefined) 
+        ? data.frame_count 
+        : (data.suspicious_frames ? data.suspicious_frames.length : 0);
 
     const baseSnapshot = {
         id: Date.now(),
@@ -712,7 +723,9 @@ function addToHistory(data) {
         classification_text: data.classification_text,
         model_confidence: data.model_confidence,
         colors: data.colors,   
-        frame_count: totalFrames,
+        
+        frame_count: actualFrameCount, // <-- FIX APPLIED HERE
+        
         scan_skipped: data.scan_skipped, 
         timeline_graph: data.timeline_graph,       
         lime_html: data.lime_html,
