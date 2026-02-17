@@ -70,6 +70,12 @@
 
 </head>
 <body>
+    <div class="aurora-container">
+        <div class="aurora-light light-1"></div>
+        <div class="aurora-light light-2"></div>
+        <div class="aurora-light light-3"></div>
+        <div class="aurora-light light-4"></div>
+    </div>
 <div id="custom-loader-overlay">
         <div class="custom-spinner-ring"></div>
         <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">Analyzing Content...</div>
@@ -78,21 +84,36 @@
             <div id="loading-progress-bar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.4s ease; box-shadow: 0 0 15px #3b82f6;"></div>
         </div>
     </div>
+
+    <!-- Navbar-->
     <header class="navbar">
-        <div class="logo"><h1>CredibilityScan</h1></div>
+    <div class="navbar-container">
+        <div class="logo">
+            <h1>CredibilityScan</h1>
+        </div>
+
+        <!-- Hamburger Toggle Checkbox (hidden) -->
         <input type="checkbox" id="nav-toggle" class="nav-toggle">
-        <label for="nav-toggle" class="nav-toggle-label"><span></span></label>
+        
+        <!-- Hamburger Icon Label -->
+        <label for="nav-toggle" class="nav-toggle-label">
+            <span></span>
+        </label>
+    
+        <!-- Navigation Menu Wrapper -->
         <nav class="nav-menu">
-            <div class="bordnav">
+            <div class="nav-links">
                 <a href="/">Home</a>
                 <a href="detector">Detector</a>
                 <a href="about">How to Use?</a>
-                <span id="ph-clock" style="margin-left: 20px; font-weight: 600; color: #2563eb; font-size: 0.9rem; white-space: nowrap;">
-                    Loading Time...
-                </span>
+                <div id="ph-clock" class="status-chip">
+                Loading Time...
+                </div>
             </div>
         </nav>
+    </div>
     </header>
+
 
     <div class="detector-container">
         <div class="main-content-wrapper">

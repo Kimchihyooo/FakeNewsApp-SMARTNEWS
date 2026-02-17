@@ -15,331 +15,527 @@
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;
-    background-color: #f9fbff;
-    color: #080505;
+    background-color: #020617;
+    color: #ffffff;
+    overflow-x: clip; /* Prevent breaking position: sticky */
 }
 
-
-/* Navbar */
-/* Find your .navbar class and add position: relative */
-.navbar {
-    height: 80px;
-    padding: 20px 30px; /* Note: Your code had two paddings; this one wins */
+/* --- HERO MINI (Aurora) --- */
+.hero-mini {
+    position: relative;
+    top: 0;
+    height: 60vh;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    /* left: 0; top: 0;  <-- These were doing nothing before */
-    
-    /* === ADD THIS === */
-    position: relative; 
-    /* ================ */
-    
-    box-sizing: border-box;
-    background-color: #ffffff;
-    box-shadow: 0 30px 30px rgba(0,0,0,0.05);
-    z-index: 1000;   
-}
-
-.logo {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-}
-
-.logo h1 {
-    font-size: 1.3rem;
-    margin: 0;
-    font-family: "Recoleta", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-
-}
-
-.logo p {
-    font-size: 0.8rem;
-    color: #080505;
-    margin: auto;
-}
-
-nav a {
-    text-decoration: none;
-    color: #080505;
-    margin-left: 50px;
-    font-family: "Rubik", sans-serif;
-    font-weight: normal;
-    border-radius: 8px;
-    padding: 8px 16px;
-    transition: background 0.3s, color 0.3s;
-}
-
-nav a:hover {
-    color: #3B82F6;
-    border-radius: 8px;
-    background: #f3f4f6;
-}
-
-/* === NEW HAMBURGER MENU STYLES === */
-.nav-toggle {
-  display: none; /* Hide checkbox */
-}
-
-.nav-toggle-label {
-  display: none; /* Hide hamburger label on desktop */
-  cursor: pointer;
-  width: 30px;
-  height: 25px;
-  position: relative;
-  /* Ensure it's on top in mobile view if needed */
-  z-index: 1001; 
-}
-
-/* Hamburger Icon Lines */
-.nav-toggle-label span,
-.nav-toggle-label span::before,
-.nav-toggle-label span::after {
-  display: block;
-  background-color: #080505;
-  height: 3px;
-  width: 100%;
-  border-radius: 2px;
-  position: absolute;
-  transition: all 0.3s ease-in-out;
-}
-
-.nav-toggle-label span::before {
-  content: '';
-  top: -8px;
-}
-
-.nav-toggle-label span::after {
-  content: '';
-  top: 8px;
-}
-
-/* Hamburger Animation on Click (transform to 'X') */
-.nav-toggle:checked ~ .nav-toggle-label span {
-  background-color: transparent; /* Middle bar fades */
-}
-
-.nav-toggle:checked ~ .nav-toggle-label span::before {
-  transform: rotate(45deg);
-  top: 0;
-}
-
-.nav-toggle:checked ~ .nav-toggle-label span::after {
-  transform: rotate(-45deg);
-  top: 0;
-}
-/* === END HAMBURGER STYLES === */
-
-
-.tutorial-wrapper{
-    display: flex;
-    align-items: center;
     flex-direction: column;
-    justify-content: space-evenly;
-    min-height: 650px;
-    max-width: 100%;
-    padding-top: 50px; 
-    box-sizing: border-box;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: rgb(0, 0, 0);   
-}
-
-/* === MAIN CONTAINER === */
-.tutorial-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 120px 20px 80px 20px; /* Top padding clears the fixed navbar */
-    overflow-x: hidden; /* Prevents horizontal scroll from animations */   
-    max-width: 100%;    
-    background: linear-gradient(180deg, #88b2eb 0%, #fcfafa 100%);
-    background-size: cover; 
-    background-repeat: no-repeat;
-    color: rgb(0, 0, 0);                   
-}
-.tutorial-containervid {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 120px 20px 80px 20px; /* Top padding clears the fixed navbar */
-    overflow-x: hidden; /* Prevents horizontal scroll from animations */   
-    max-width: 100%;    
-    background: linear-gradient(180deg, #fcfafa 0%, #88b2eb 100%);
-    background-size: cover; 
-    background-repeat: no-repeat;
-    color: rgb(0, 0, 0);                   
-}
-
-
-/* === HEADER === */
-.header-section {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding-top: 80px;
     text-align: center;
-    margin-bottom: 80px;
+    z-index: 1;
+    background-color: #020617;
 }
 
-.header-section h2 {
+.aurora-container {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: radial-gradient(circle at 50% 50%, #020617 0%, #010409 100%);
+    filter: blur(80px);
+    opacity: 0.8;
+}
+
+.aurora-light {
+    position: absolute;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    animation: aurora-liquid 20s infinite linear;
+    opacity: 0.5;
+}
+
+.light-1 { background: radial-gradient(circle, rgba(6, 182, 212, 0.6) 0%, transparent 70%); width: 80vw; height: 80vh; top: -10%; left: -10%; animation-duration: 25s; }
+.light-2 { background: radial-gradient(circle, rgba(37, 99, 235, 0.5) 0%, transparent 70%); width: 70vw; height: 70vh; top: 20%; right: -10%; animation-duration: 30s; animation-delay: -5s; }
+.light-3 { background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 70%); width: 90vw; height: 90vh; bottom: -20%; left: 10%; animation-duration: 22s; animation-delay: -10s; }
+.light-4 { background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%); width: 60vw; height: 60vh; top: 30%; left: 30%; animation-duration: 35s; animation-delay: -15s; }
+
+@keyframes aurora-liquid {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    33% { transform: translate(10%, 15%) scale(1.2) rotate(120deg); }
+    66% { transform: translate(-15%, 5%) scale(0.8) rotate(240deg); }
+    100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+}
+
+/* --- HEADER SECTION --- */
+.header-section h1 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 3rem;
-    color: #080505;
-    margin-bottom: 10px;
+    font-size: 5.5rem;
+    color: #ffffff;
+    margin: 0;
+    text-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+    letter-spacing: -2px;
 }
 
 .header-section p {
     font-family: 'Rubik', sans-serif;
-    color: #666;
-    font-size: rem;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    margin-top: 10px;
 }
 
-/* === THE ZIG-ZAG ROWS === */
+
+/* Navbar Glassmorphism Pill Style */
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Centers the pill perfectly */
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    font-family: "Recoleta", sans-serif;
+    color: #0f172a;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #1e293b;
+    padding: 10px 20px;
+    font-family: "Rubik", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+}
+
+/* Status Chip Integrated Clock */
+.status-chip {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    white-space: nowrap;
+    margin-left: 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* === HAMBURGER MENU STYLES === */
+.nav-toggle {
+  display: none; 
+}
+
+.nav-toggle-label {
+  display: none; 
+  cursor: pointer;
+  width: 25px;
+  height: 20px;
+  position: relative;
+  z-index: 1001; 
+}
+
+.nav-toggle-label span,
+.nav-toggle-label span::before,
+.nav-toggle-label span::after {
+  display: block;
+  background-color: #0f172a;
+  height: 2px;
+  width: 100%;
+  border-radius: 4px;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.nav-toggle-label span::before { content: ''; top: -8px; }
+.nav-toggle-label span::after { content: ''; top: 8px; }
+
+.nav-toggle:checked ~ .nav-toggle-label span { background-color: transparent; }
+.nav-toggle:checked ~ .nav-toggle-label span::before { transform: rotate(45deg); top: 0; }
+.nav-toggle:checked ~ .nav-toggle-label span::after { transform: rotate(-45deg); top: 0; }
+
+
+
+/* --- FOLDER TABS SYSTEM --- */
+.folder-tabs-wrapper {
+    position: relative;
+    z-index: 50;
+    margin-top: -100px; /* Must be higher than the container */
+    margin-bottom: 0;
+    margin-left: 50px;
+    /* THE FIX: Pushes the tabs down by 2 pixels to physically overlap and seal the seam */
+    transform: translateY(1px);
+}
+
+.folder-tab {
+    padding: 15px 30px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #475569;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.folder-tab:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateY(-1px);
+}
+
+.folder-tab.active {
+    font-weight: 700;
+    color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* --- MAIN CONTAINERS (Tabbed Layout) --- */
+.tutorial-container, .tutorial-containervid, .demo-video-section {
+position: relative;
+    z-index: 10;
+    
+    /* Reset any leftover sticky positioning */
+    margin-top: 0 !important; 
+    top: 0 !important;
+    
+    /* THE FIX: This padding acts as a buffer, stopping inner margins from pushing the box down */
+    padding-top: 60px !important; 
+    
+    border-radius: 30px 30px 0 0 !important;
+    
+    /* Fills any remaining black space on the sides */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tutorial-container {
+    background-color: #f8fafc;
+    color: #0f172a;
+    padding: 80px 10% 80px 10%;
+}
+
+.tutorial-containervid {
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    color: #0f172a;
+    padding: 80px 10% 80px 10%;
+}
+
+.demo-video-section {
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    color: #0f172a;
+    padding: 80px 10% 80px 10%;
+}
+/* Custom Sleek Scrollbar */
+.tutorial-container::-webkit-scrollbar,
+.tutorial-containervid::-webkit-scrollbar {
+    width: 6px;
+}
+.tutorial-container::-webkit-scrollbar-track,
+.tutorial-containervid::-webkit-scrollbar-track {
+    background: transparent;
+}
+.tutorial-container::-webkit-scrollbar-thumb,
+.tutorial-containervid::-webkit-scrollbar-thumb {
+    background: rgba(37, 99, 235, 0.2);
+    border-radius: 10px;
+}
+.tutorial-container::-webkit-scrollbar-thumb:hover,
+.tutorial-containervid::-webkit-scrollbar-thumb:hover {
+    background: rgba(37, 99, 235, 0.4);
+}
+
+.sub-header {
+    margin-bottom: 50px; /* Compacted */
+    text-align: left;
+}
+
+.sub-header h2 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 3rem;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.accent-line {
+    width: 60px;
+    height: 5px;
+    background: #2563eb;
+    border-radius: 3px;
+}
+
+/* --- STEP ROWS (Modern Layout) --- */
 .step-row {
     display: flex;
-    align-items: center; /* Vertically Aligns Text with Image */
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 100px; /* Space between steps */
-    gap: 50px;
-    min-height: 40vh; /* Ensures each step takes up decent vertical space */
+    margin-bottom: 60px; /* Tighter flow */
+    gap: 60px;
+    position: relative;
 }
 
-/* Reverse the layout for even numbers (Image Left, Text Right) */
-.step-row.reverse {
-    flex-direction: row-reverse;
-}
-
-/* === TEXT CONTENT === */
 .step-text {
     flex: 1;
-    padding: 20px;
+    position: relative;
+    z-index: 2;
 }
 
+/* Giant Background Watermark Number */
 .step-number {
-    display: inline-block;
+    position: absolute;
+    top: -20px;
+    left: -20px;
     font-family: 'Recoleta', sans-serif;
-    font-size: 4rem;
-    color: #f0f4ff; 
-    font-weight: bold;
+    font-size: 10rem; /* Giant watermark */
+    color: #2563eb;
+    opacity: 0.05; /* Low opacity watermark */
+    font-weight: 800;
+    z-index: 1;
+    pointer-events: none;
     line-height: 1;
-    margin-bottom: -20px;
-    position: relative;
-    z-index: -1;
-    text-shadow: 2px 2px 0px #3B82F6; 
 }
 
 .step-text h3 {
     font-family: 'Recoleta', sans-serif;
     font-size: 2rem;
+    color: #0f172a;
     margin-bottom: 15px;
-    color: #080505;
 }
 
 .step-text p {
-    font-family: 'Rubik', sans-serif;
     font-size: 1.1rem;
+    color: #475569;
     line-height: 1.6;
-    color: #555;
-    margin-bottom: 20px;
 }
 
+/* Glassmorphism Action Buttons */
 .step-action {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: #f1f5f9;
-    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #2563eb;
+    padding: 10px 20px;
     border-radius: 50px;
     font-weight: 600;
-    color: #3B82F6;
     font-family: 'Rubik', sans-serif;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
-/* === VISUAL / IMAGE PLACEHOLDER === */
+.step-action:hover {
+    transform: translateY(-3px);
+    background: rgba(37, 99, 235, 0.1);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+}
+
+/* --- IMAGE LIQUID MORPH (App Window Style) --- */
 .step-visual {
     flex: 1;
+    z-index: 2;
     display: flex;
     justify-content: center;
 }
 
-/* The Placeholder Box */
 .img-placeholder {
     width: 100%;
-    max-width: 500px;
-    height: 300px; /* Fixed height for consistency */
-    border-radius: 20px;
+    max-width: 550px; /* Made wider to fit UI screenshots better */
+    height: auto;     /* Removed fixed height */
+    aspect-ratio: 16 / 9; /* Perfect widescreen ratio for desktop screenshots */
+    background: #ffffff;  /* Solid background so transparent PNGs look good */
+    border: 1px solid rgba(0, 0, 0, 0.08); 
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); 
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    
-    /* Adds a subtle floating animation to the image container */
-    animation: float 6s ease-in-out infinite;
+    padding: 10px; /* Padding creates a nice "frame" around the image */
 }
 
-/* Use this class when you add real images later */
 .img-placeholder img {
-    width: 150%;
-    height: 200%;
-    opacity: 0.9;
-     /* Ensures image fills box without stretching */
-    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* THE FIX: Ensures the whole image is seen, no cropping */
+    transition: transform 0.5s ease;
+    border-radius: 8px; /* Softens the image edges inside the frame */
 }
+
+.img-placeholder:hover img {
+    transform: scale(1.03); /* Slightly gentler zoom */
+}
+/* --- DEMO VIDEO --- */
+.demo-video-section {
+    z-index: 30;
+    background: #ffffff;
+    padding: 100px 10% 100px 10%;
+    text-align: center;
+    min-height: 80vh;
+}
+
+.header-section h2 {
+    font-family: 'Recoleta', sans-serif;
+    font-size: 3rem;
+    color: #0f172a;
+    margin-bottom: 10px;
+
+}
+/* --- PREMIUM VIDEO SHOWCASE --- */
+.video-box {
+    width: 100%;
+    max-width: 900px; /* Constrains it from getting too massive on wide screens */
+    margin: 40px auto 0 auto; /* Centers the box and gives breathing room */
+    
+    /* Perfect widescreen ratio without needing fixed heights */
+    aspect-ratio: 16 / 9; 
+    
+    /* The "App Window" styling */
+    background-color: #020617; /* Very dark background while video loads */
+    border-radius: 24px; /* Soft, modern corners */
+    border: 1px solid rgba(0, 0, 0, 0.08); /* Crisp edge definition */
+    overflow: hidden; /* Crucial: Ensures the video respects the curved corners */
+    
+    /* Deep, layered shadows for a 3D lift effect */
+    box-shadow: 
+        0 30px 60px -12px rgba(0, 0, 0, 0.25), 
+        0 18px 36px -18px rgba(0, 0, 0, 0.3);
+        
+    position: relative;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Subtle lift effect on hover to make it feel interactive */
+.video-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 40px 70px -15px rgba(0, 0, 0, 0.3), 
+        0 20px 40px -20px rgba(0, 0, 0, 0.4);
+}
+
+/* --- THE NATIVE VIDEO ELEMENT --- */
+.video-box video {
+    width: 100%;
+    height: 100%;
+    display: block; /* Removes tiny default inline gaps */
+    object-fit: cover; /* Ensures the video fills the box perfectly without letterboxing */
+    border-radius: 24px; /* Matches the parent container */
+    outline: none; /* Removes the ugly default browser focus ring */
+}
+
 
 /* --- FOOTER --- */
 .site-footer {
-    background-color: #88b2eb; /* Matching your dark text color for contrast */
-    color: #000000;
-    padding: 60px 10% 20px 10%;
+    position: relative;
+    z-index: 20; 
+    background-color: #020617; 
+    color: #ffffff;
+    padding: 80px 10% 40px 10%;
     font-family: 'Rubik', sans-serif;
 }
 
 .footer-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
+    align-items: flex-start;
+    margin-bottom: 60px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 40px;
+    padding-bottom: 60px;
 }
 
 .footer-logo h2 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 1.8rem;
-    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    margin: 0 0 15px 0;
+    color: #ffffff;
 }
 
 .footer-logo p {
-    color: #222222;
-    font-size: 0.9rem;
-    margin: 0;
+    color: #94a3b8;
+    font-size: 1rem;
+    max-width: 300px;
+    line-height: 1.6;
 }
 
 .footer-links {
     display: flex;
-    gap: 30px;
+    gap: 40px;
 }
 
 .footer-links a {
-    color: #000000;
+    color: #cbd5e1;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .footer-links a:hover {
-    color: #32425c;
+    color: #3B82F6;
+    transform: translateX(5px);
 }
 
 .footer-bottom {
     text-align: center;
-    font-size: 0.85rem;
-    color: #232425;
+    font-size: 0.9rem;
+    color: #64748b;
 }
-
-
-
 /* === ANIMATIONS === */
 
 /* Floating Animation Keyframes */
@@ -364,7 +560,7 @@ nav a:hover {
 /* CTA Button */
 .final-cta {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 100px;
 }
 
 .btn-primary {
@@ -385,68 +581,149 @@ nav a:hover {
     transform: scale(1.05);
 }
 
-/* === DEMO VIDEO SECTION === */
-.demo-video-section {
-    text-align: center;
-    margin: 80px auto; /* Spacing above and below */
-    max-width: 900px;
-    padding: 0 20px;
-}
-
-.video-box {
-    width: 100%;
-    border-radius: 20px;
-    overflow: hidden; /* Ensures video respects the rounded corners */
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15); /* Soft shadow depth */
-    border: 5px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
-    background-color: #000; /* Fallback background */
-}
-
-.video-box video {
-    width: 100%;
-    height: auto;
-    display: block; /* Removes bottom spacing issues */
-}
 /* === MOBILE RESPONSIVE STYLES === */
 @media (max-width: 768px) {
+    .header-section h1 {
+        font-size: 3rem;
+    }
 
-    /* 1. Navbar & Menu Fixes */
+    .hero-mini {
+        height: 50vh;
+    }
+
+    .sub-header h2 {
+        font-size: 2.2rem;
+    }
+
     .navbar {
-        padding: 15px 20px; /* Reduced padding */
-        height: auto; /* Allow height to expand for menu */
-        flex-wrap: wrap; /* Allows menu to wrap below logo */
+        width: 95%;
+        top: 15px;
+        height: auto;
+        padding: 15px 12px;
+        border-radius: 30px;
+        flex-direction: column;
     }
 
-    .logo h1 {
-        font-size: 1.2rem; /* Smaller logo text */
+    .navbar-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
     }
+
+    /* Tab Mobile Styles */
+    /* === 1. THE TABS WRAPPER === */
+.folder-tabs-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+    margin-top: -60px; /* Pulls the tabs up into the dark hero section */
+    margin-bottom: 0;
+    position: relative;
+    z-index: 50; /* CRUCIAL: Ensures tabs sit ON TOP of the white container */
+}
+
+/* === 2. THE TABS === */
+.folder-tab {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #cbd5e1;
+    padding: 15px 30px;
+    border-radius: 20px 20px 0 0;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* THE FIX: Remove bottom border and overlap the container by 1px to seal the gap */
+    border-bottom: none; 
+    margin-bottom: -1px; 
+}
+
+.folder-tab:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.folder-tab.active {
+    color: #2563eb;
+    font-weight: 700;
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.15);
+    
+    /* THE FIX: Remove the translateY(-5px) so it stays anchored perfectly to the container */
+    transform: none; 
+}
+
+/* === 3. THE CONTAINERS === */
+.tutorial-container, .tutorial-containervid, .demo-video-section {
+    /* THE FIX: Reset any leftover positioning that pushes it down */
+    position: relative;
+    top: 0 !important; 
+    margin-top: 0 !important; 
+    
+    border-radius: 0 0 40px 40px; 
+    min-height: 60vh;
+    z-index: 10;
+    
+    /* Ensure there is enough padding inside so text doesn't hit the tabs */
+    padding: 60px 10% 150px 10%; 
+    animation: fadeInSlide 0.4s ease-out;
+}
 
     .nav-toggle-label {
-        display: block; /* Show hamburger icon */
+        display: block;
+        margin-top: 15px;
+        width: 25px;
+        height: 20px;
     }
 
     .nav-menu {
         display: none;
         width: 100%;
-        background-color: #ffffff;
-        padding: 20px 0;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        position: absolute; /* Detach from flow */
-        top: 70px; /* Push below navbar */
-        left: 0;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        margin-top: 15px;
+    }
+
+    .nav-toggle:checked ~ .nav-menu {
+        display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    .nav-toggle:checked ~ .nav-menu {
-        display: flex; /* Show menu when checked */
+    .nav-links {
+        flex-direction: column;
+        width: 50%;
+        gap: 5px;
     }
 
-    nav a {
-        margin: 10px 0; /* Vertical spacing for links */
+    .nav-links a {
         width: 100%;
         text-align: center;
-        display: block;
+        padding: 12px;
+    }
+
+    .status-chip {
+        margin: 10px 0 0 0;
+        width: auto;
+        text-align: center;
+    }
+
+    .tutorial-container,
+    .tutorial-containervid, 
+    .demo-video-section, 
+    .site-footer {
+        margin-top: -60px;
+        border-radius: 25px 25px 0 0;
+        padding-top: 100px;
+    }
+
+    .tutorial-container {
+        margin-top: 0;
     }
 
     /* 2. Container Spacing */
@@ -454,6 +731,7 @@ nav a:hover {
     .tutorial-containervid {
         padding: 100px 20px 40px 20px; /* Less padding on sides/top */
     }
+
 
     /* 3. Typography Scaling */
     .header-section h2 {

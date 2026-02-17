@@ -17,123 +17,118 @@ body {
   margin: 0;
   background-color: #f9fbff;
   color: #080505;
+  overflow-x: hidden; /* Prevent horizontal scroll from aurora/animations */
 }
 
-/* Navbar */
-/* Find your .navbar class and add position: relative */
+/* Navbar Glassmorphism Pill Style */
 .navbar {
-    height: 80px;
-    padding: 20px 30px; /* Note: Your code had two paddings; this one wins */
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Centers the pill perfectly */
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar-container {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    /* left: 0; top: 0;  <-- These were doing nothing before */
-    
-    /* === ADD THIS === */
-    position: relative; 
-    /* ================ */
-    
-    box-sizing: border-box;
-    background-color: #ffffff;
-    box-shadow: 0 30px 30px rgba(0,0,0,0.05);
-    z-index: 1000;   
-}
-
-.logo {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
 }
 
 .logo h1 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     margin: 0;
     font-family: "Recoleta", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-
+    color: #0f172a;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-.logo p {
-    font-size: 0.8rem;
-    color: #080505;
-    margin: auto;
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-nav a{
+.nav-links a {
     text-decoration: none;
-    color: #080505;
-    margin-left: 50px;
+    color: #1e293b;
+    padding: 10px 20px;
     font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: normal;
-    font-style: normal;
-    border-radius: 8px;
-    padding: 8px 16px;
-    transition: background 0.3s, color 0.3s;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 25px;
+    transition: all 0.3s ease;
 }
 
-nav a:hover {
-    color: #3B82F6;
-    border-radius: 8px;
-    background: #f3f4f6;
+.nav-links a:hover {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
 }
 
-/* === NEW HAMBURGER MENU STYLES === */
+/* Status Chip Integrated Clock */
+.status-chip {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    white-space: nowrap;
+    margin-left: 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* === HAMBURGER MENU STYLES === */
 .nav-toggle {
-  display: none; /* Hide checkbox */
+  display: none; 
 }
 
 .nav-toggle-label {
-  display: none; /* Hide hamburger label on desktop */
+  display: none; 
   cursor: pointer;
-  width: 30px;
-  height: 25px;
+  width: 25px;
+  height: 20px;
   position: relative;
-  /* Ensure it's on top in mobile view if needed */
   z-index: 1001; 
 }
 
-/* Hamburger Icon Lines */
 .nav-toggle-label span,
 .nav-toggle-label span::before,
 .nav-toggle-label span::after {
   display: block;
-  background-color: #080505;
-  height: 3px;
+  background-color: #0f172a;
+  height: 2px;
   width: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
   position: absolute;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
 }
 
-.nav-toggle-label span::before {
-  content: '';
-  top: -8px;
-}
+.nav-toggle-label span::before { content: ''; top: -8px; }
+.nav-toggle-label span::after { content: ''; top: 8px; }
 
-.nav-toggle-label span::after {
-  content: '';
-  top: 8px;
-}
-
-/* Hamburger Animation on Click (transform to 'X') */
-.nav-toggle:checked ~ .nav-toggle-label span {
-  background-color: transparent; /* Middle bar fades */
-}
-
-.nav-toggle:checked ~ .nav-toggle-label span::before {
-  transform: rotate(45deg);
-  top: 0;
-}
-
-.nav-toggle:checked ~ .nav-toggle-label span::after {
-  transform: rotate(-45deg);
-  top: 0;
-}
-/* === END HAMBURGER STYLES === */
+.nav-toggle:checked ~ .nav-toggle-label span { background-color: transparent; }
+.nav-toggle:checked ~ .nav-toggle-label span::before { transform: rotate(45deg); top: 0; }
+.nav-toggle:checked ~ .nav-toggle-label span::after { transform: rotate(-45deg); top: 0; }
 
 
 /* --- HERO SECTION LAYOUT --- */
@@ -141,168 +136,148 @@ nav a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 80px 10%;
-    height: 90vh;
-    
-    /* 1. Base Sky Color */
-    background-color: #a7c5eb; /* A soft blue base */
-    background-image: linear-gradient(180deg, #88b2eb 0%, #fcfafa 100%);
-    
-    position: relative;
+    /* === THE FIX: Adjust padding to clear the floating navbar === */
+    padding: 140px 10% 80px 10%; 
+    margin-top: 0;
+    padding: 0 10%;
+    height: 100vh;
+    background-color: #020617; 
+    position: sticky;
+    top: 0;
     overflow: hidden;
     z-index: 1;
 }
+
 /* --- AURORA CONTAINER --- */
 .aurora-container {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Behind the text */
+    inset: 0;
+    z-index: -1;
     overflow: hidden;
-    filter: blur(60px); /* This creates the soft, diffuse light look */
+    background: radial-gradient(circle at 50% 50%, #020617 0%, #010409 100%);
+    filter: blur(80px);
     opacity: 0.8;
+    pointer-events: none;
 }
 
-/* --- SHARED LIGHT STYLES --- */
 .aurora-light {
     position: absolute;
     border-radius: 50%;
-    opacity: 0.9;
-    /* Changed from 15s to 6s for faster default speed */
-    animation: aurora-flow 6s infinite alternate; 
+    mix-blend-mode: screen;
+    animation: aurora-liquid 20s infinite linear;
+    will-change: transform, border-radius;
+    opacity: 0.5;
 }
 
-/* --- INDIVIDUAL LIGHT LAYERS --- */
-
-/* Light 1: Primary blue/cyan */
 .light-1 {
-    background: radial-gradient(circle, rgba(136, 178, 235, 1) 0%, rgba(255,255,255,0) 70%);
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.6) 0%, transparent 70%);
     width: 80vw;
-    height: 60vh;
-    top: -20%;
-    left: -10%;
-    /* Changed from 12s to 5s */
-    animation-duration: 1s; 
-    opacity: 0.9;
-}
-
-/* Light 2: Softer purple/white */
-.light-2 {
-    background: radial-gradient(circle, rgba(230, 240, 255, 0.8) 0%, rgba(255,255,255,0) 60%);
-    width: 70vw;
-    height: 50vh;
+    height: 80vh;
     top: -10%;
+    left: -10%;
+    animation-duration: 25s;
+}
+
+.light-2 {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.5) 0%, transparent 70%);
+    width: 70vw;
+    height: 70vh;
+    top: 20%;
     right: -10%;
-    /* Changed from 18s to 7s */
-    animation-duration: 2s; 
-    animation-direction: alternate-reverse;
-    opacity: 0.9;
+    animation-duration: 30s;
+    animation-delay: -5s;
 }
 
-/* Light 3: Wandering deep blue */
 .light-3 {
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, rgba(255,255,255,0) 60%);
-    width: 60vw;
-    height: 40vh;
-    bottom: 20%;
-    left: 20%;
-    animation-name: aurora-float;
-    /* Changed from 20s to 8s */
-    animation-duration: 3s; 
-    opacity: 0.9;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 70%);
+    width: 90vw;
+    height: 90vh;
+    bottom: -20%;
+    left: 10%;
+    animation-duration: 22s;
+    animation-delay: -10s;
 }
 
-/* Light 4: Small bright shimmer */
 .light-4 {
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255,255,255,0) 70%);
-    width: 40vw;
-    height: 30vh;
-    top: 10%;
-    left: 40%;
-    /* Changed from 15s to 6s */
-    animation-duration: 4s; 
-    opacity: 0.9;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+    width: 60vw;
+    height: 60vh;
+    top: 30%;
+    left: 30%;
+    animation-duration: 35s;
+    animation-delay: -15s;
 }
-/* --- ANIMATIONS --- */
 
-/* Horizontal expansion and contraction (breathing) */
-@keyframes aurora-flow {
+@keyframes aurora-liquid {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); border-radius: 50%; }
+    33% { transform: translate(10%, 15%) scale(1.2) rotate(120deg); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+    66% { transform: translate(-15%, 5%) scale(0.8) rotate(240deg); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    100% { transform: translate(0, 0) scale(1) rotate(360deg); border-radius: 50%; }
+}
+
+@keyframes liquid-morph {
     0% {
-        transform: scale(1) translate(0, 0);
-        opacity: 0.9;
+        transform: translateY(0) rotate(0deg);
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+    25% {
+        border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
     }
     50% {
-        transform: scale(1.2) translate(5%, 2%);
-        opacity: 0.9;
+        transform: translateY(-20px) rotate(2deg);
+        border-radius: 60% 40% 50% 50% / 40% 40% 60% 60%;
+    }
+    75% {
+        border-radius: 40% 60% 40% 60% / 60% 40% 60% 40%;
     }
     100% {
-        transform: scale(1.1) translate(-5%, 5%);
-        opacity: 0.9;
+        transform: translateY(0) rotate(0deg);
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     }
 }
 
-/* Vertical floating for variation */
-@keyframes aurora-float {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(10%, -10%) rotate(10deg); }
-    100% { transform: translate(-5%, 5%) rotate(-5deg); }
-}
-/* --- LEFT SIDE: TEXT --- */
 .hero-text {
-    flex: 1; /* Takes 50% width */
-    z-index: 2; /* Sits above background shapes */
-    max-width: 600px;
+    flex: 1;
+    z-index: 2;
+    max-width: 650px;
 }
 
 .hero-text h1 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 5rem;
-    color: #f0f4ff;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
-    line-height: 1.1;
-    text-shadow: 2px 2px 0px #3B82F6;
+    font-size: 5.5rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+    line-height: 1.05;
+    text-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+    letter-spacing: -2px;
 }
 
-.hero-description {
-    font-family: 'Rubik', sans-serif;
-    font-size: 1.2rem;
-    color: #4a5568;
-    margin-bottom: 30px;
-    max-width: 450px;
-}
-
-/* --- TYPEWRITER EFFECT --- */
 .typewriter p {
     font-family: 'Geo', sans-serif;
     font-size: 1.8rem;
-    color: #2d3748;
-    overflow: hidden; /* Hides text until it types */
-    border-right: .15em solid #333; /* The cursor */
-    white-space: nowrap; /* Keeps text on one line */
+    color: #cbd5e1; 
+    overflow: hidden; 
+    border-right: .15em solid #3B82F6; 
+    white-space: nowrap; 
     margin: 0 0 20px 0;
-    width: 0; /* Start with 0 width */
+    width: 0; 
     animation: 
-      typing 3.5s steps(40, end) forwards, /* Type out effect */
-      blink-caret .75s step-end infinite; /* Cursor blinking */
+      typing 3.5s steps(40, end) forwards, 
+      blink-caret .75s step-end infinite; 
 }
 
-/* Keyframes for Typing */
 @keyframes typing {
   from { width: 0 }
-  to { width: 120% }
+  to { width: 100% }
 }
 
 @keyframes blink-caret {
   from, to { border-color: transparent }
-  50% { border-color: #333; }
+  50% { border-color: #3B82F6; }
 }
 
-/* --- RIGHT SIDE: VISUALS --- */
 .hero-visual {
-    flex: 1; /* Takes 50% width */
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -311,99 +286,83 @@ nav a:hover {
 
 .floating-img {
     width: 100%;
-    max-width: 550px; /* Limits size */
+    max-width: 550px;
     height: auto;
-    animation: float 6s ease-in-out infinite; /* The Floating Magic */
+    animation: float 6s ease-in-out infinite, liquid-morph 12s infinite ease-in-out; 
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
 }
 
-/* Keyframes for Floating */
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-25px); } /* Moves up */
-    100% { transform: translateY(0px); } /* Moves down */
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-25px) rotate(2deg); } 
+    100% { transform: translateY(0px) rotate(0deg); } 
 }
 
-/* --- BUTTONS UPDATE --- */
 .buttons {
     display: flex;
     gap: 20px;
 }
 
 .btn {
-    padding: 15px 30px;
-    border-radius: 8px;
+    padding: 16px 36px;
+    border-radius: 12px;
     text-decoration: none;
-    font-weight: bold;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    letter-spacing: 0.5px;
 }
 
 .btn.primary {
     background-color: #2563eb;
     color: white;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
 }
 
 .btn.secondary {
-    background-color: transparent;
-    border: 2px solid #2563eb;
-    color: #2563eb;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    backdrop-filter: blur(10px);
 }
 
 .btn:hover {
-    transform: translateY(-3px); /* Button lifts up on hover */
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.5);
 }
 
-/* --- BACKGROUND SHAPES (BLOBS) --- */
-.shape {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
-    filter: blur(40px);
-    z-index: 1;
-    animation: float 8s infinite alternate;
+.btn.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
 }
-
-.shape-1 {
-    width: 300px;
-    height: 300px;
-    top: -50px;
-    right: -50px;
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.shape-2 {
-    width: 200px;
-    height: 200px;
-    bottom: 50px;
-    left: 10%;
-    background: rgba(147, 197, 253, 0.5);
-}
-
 
 
 /* --- FEATURES SECTION --- */
 .features-section {
-    padding: 100px 10%;
-    background-color: #fcfafa; /* Clean white to contrast with the colorful Hero */
+    position: relative;
+    z-index: 10; 
+    padding: 120px 10%;
+    background-color: #f8fafc; 
     text-align: center;
+    border-radius: 60px 60px 0 0;
+    box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.2); 
 }
 
 .features-header h2 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 3rem;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: 3.5rem;
+    color: #0f172a;
+    margin-bottom: 15px;
 }
 
 .features-header p {
     font-family: 'Rubik', sans-serif;
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 60px;
-    max-width: 600px;
+    font-size: 1.25rem;
+    color: #475569;
+    margin-bottom: 70px;
+    max-width: 650px;
     margin-left: auto;
     margin-right: auto;
+    line-height: 1.6;
 }
 
 .features-grid {
@@ -415,133 +374,124 @@ nav a:hover {
 
 .feature-card {
     flex: 1;
-    min-width: 280px; /* Prevents squishing on small screens */
-    background: #f9fbff;
-    padding: 40px 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.02);
+    min-width: 280px; 
+    background: #ffffff;
+    padding: 50px 35px;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .feature-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15); /* Blue glow on hover */
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.1);
 }
 
 .icon-box {
-    background-color: #e0eaff;
+    background-color: #f1f5f9;
     width: 80px;
     height: 80px;
-    border-radius: 50%;
+    border-radius: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto 25px auto; /* Centers the icon */
+    margin: 0 auto 30px auto; 
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .icon-box {
+    background-color: #2563eb;
+    transform: rotate(10deg);
+}
+
+.feature-card:hover .icon-box svg {
+    stroke: #ffffff;
 }
 
 .feature-card h3 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 1.5rem;
-    color: #1e293b;
-    margin-bottom: 15px;
+    font-size: 1.75rem;
+    color: #0f172a;
+    margin-bottom: 20px;
 }
 
 .feature-card p {
     font-family: 'Rubik', sans-serif;
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: #64748b;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 
-/*HOW IT WORKS SECTION*/
 /* --- BEHIND THE SCENES SECTION --- */
 .bts-section {
-    padding: 80px 20px;
-    background: linear-gradient(180deg, #fcfafa 0%, #88b2eb 100%); /* Light gray background to separate from other sections */
+    padding: 120px 20px;
+    background: #f8fafc;
     overflow: hidden;
+    position: relative;
+    z-index: 10;
 }
 
 .bts-header {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 80px;
 }
 
 .bts-header h1 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 3rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.bts-head h3 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2rem;
-    color: #333;
-    margin-top: -10px;
-    margin-bottom: 20px;
+    font-size: 3.5rem;
+    color: #0f172a;
+    margin-bottom: 15px;
 }
 
 .bts-header p {
     font-family: 'Rubik', sans-serif;
-    font-size: 1.2rem;
-    color: #666;
+    font-size: 1.3rem;
+    color: #475569;
 }
 
 .bts-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 80px; /* Space between items */
+    gap: 120px; 
 }
 
-/* Individual Item Container */
 .bts-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 50px;
+    gap: 80px;
 }
 
-/* Reverse layout for even items (Asymmetry) */
 .bts-item.reverse {
     flex-direction: row-reverse;
 }
 
-/* --- VISUALS (IMAGES) --- */
 .bts-visual {
     flex: 1;
     display: flex;
     justify-content: center;
-    object-fit: cover;
 }
 
 .img-placeholder {
-    width: 350px;
-    height: 350px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-    transition: transform 0.4s ease, border-radius 0.4s ease;
-    text-align: center;
-    padding: 20px;
+    width: 420px;
+    height: 420px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
     object-fit: cover;
     overflow: hidden;
+    animation: liquid-morph 10s infinite ease-in-out;
 }
 
-/* Hover Effect: Blob changes shape and floats */
 .bts-item:hover .img-placeholder {
-    transform: translateY(-10px) scale(1.02);
-    border-radius: 50% !important; /* Morphs into a circle on hover */
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.2);
 }
 
-/* --- CONTENT (TEXT) --- */
 .bts-content {
     flex: 1;
     font-family: 'Rubik', sans-serif;
@@ -550,7 +500,7 @@ nav a:hover {
 .bts-content h2 {
     font-family: 'Recoleta', sans-serif;
     font-size: 3rem;
-    color: #f0f4ff; /* Subtle numbering color */
+    color: #f0f4ff; 
     text-shadow: 2px 2px 0px #3B82F6;
     margin: 0;
     line-height: 1;
@@ -571,102 +521,182 @@ nav a:hover {
     margin-bottom: 15px;
 }
 
-/* --- ANIMATION KEYFRAMES --- */
-@keyframes fadeInSlide {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Stagger animations for each child so they don't load all at once */
-.bts-item:nth-child(1) { animation-delay: 0.2s; }
-.bts-item:nth-child(2) { animation-delay: 0.4s; }
-.bts-item:nth-child(3) { animation-delay: 0.6s; }
-.bts-item:nth-child(4) { animation-delay: 0.8s; }
-.bts-item:nth-child(5) { animation-delay: 1.0s; }
-.bts-item:nth-child(6) { animation-delay: 1.2s; }
-
 
 /* --- SCROLL ANIMATION CLASSES --- */
-
-/* Initial State: Hidden and slightly pushed down */
 .scroll-reveal {
     opacity: 0;
-    transform: translateY(50px); /* Slides up from 50px down */
-    transition: all 0.8s ease-out; /* Smooth transition */
+    transform: translateY(50px); 
+    transition: all 0.8s ease-out; 
 }
 
-/* Visible State: Fully opaque and back to original position */
 .scroll-reveal.active {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Optional: Add delays if you want items to appear one after another */
-/* This will affect the feature cards and bts items */
 .scroll-reveal:nth-child(2) { transition-delay: 0.1s; }
 .scroll-reveal:nth-child(3) { transition-delay: 0.2s; }
 
+
 /* --- FOOTER --- */
 .site-footer {
-    background-color: #88b2eb; /* Matching your dark text color for contrast */
-    color: #000000;
-    padding: 60px 10% 20px 10%;
+    position: relative;
+    z-index: 20; 
+    background-color: #020617; 
+    color: #ffffff;
+    padding: 80px 10% 40px 10%;
     font-family: 'Rubik', sans-serif;
 }
 
 .footer-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
+    align-items: flex-start;
+    margin-bottom: 60px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 40px;
+    padding-bottom: 60px;
 }
 
 .footer-logo h2 {
     font-family: 'Recoleta', sans-serif;
-    font-size: 1.8rem;
-    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    margin: 0 0 15px 0;
+    color: #ffffff;
 }
 
 .footer-logo p {
-    color: #222222;
-    font-size: 0.9rem;
-    margin: 0;
+    color: #94a3b8;
+    font-size: 1rem;
+    max-width: 300px;
+    line-height: 1.6;
 }
 
 .footer-links {
     display: flex;
-    gap: 30px;
+    gap: 40px;
 }
 
 .footer-links a {
-    color: #000000;
+    color: #cbd5e1;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .footer-links a:hover {
-    color: #32425c;
+    color: #3B82F6;
+    transform: translateX(5px);
 }
 
 .footer-bottom {
     text-align: center;
-    font-size: 0.85rem;
-    color: #232425;
+    font-size: 0.9rem;
+    color: #64748b;
 }
+
 
 /* --- RESPONSIVE DESIGN (MOBILE) --- */
 @media (max-width: 768px) {
-    .bts-item, .bts-item.reverse {
-        flex-direction: column; /* Stack everything vertically on mobile */
+    .navbar {
+        width: 95%;
+        top: 15px;
+        height: auto;
+        padding: 15px 12px;
+        border-radius: 30px;
+        flex-direction: column;
+    }
+
+    .navbar-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-toggle-label {
+        display: block;
+        margin-top: 15px;
+        width: 25px;
+        height: 20px;
+    }
+
+    .nav-menu {
+        display: none;
+        width: 100%;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        margin-top: 15px;
+    }
+
+    .nav-toggle:checked ~ .nav-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        width: 50%;
+        gap: 5px;
+    }
+
+    .nav-links a {
+        width: 100%;
         text-align: center;
+        padding: 12px;
+    }
+
+    .status-chip {
+        margin: 10px 0 0 0;
+        width: auto;
+        text-align: center;
+    }
+
+    .hero {
+        flex-direction: column-reverse; 
+        text-align: center;
+        height: auto;
+        padding-top: 120px;
+        padding-bottom: 80px;
+    }
+    .aurora-container {
+        padding-bottom: -100px;
+    }
+
+    .features-section {
+        margin-top: -40px; /* Less aggressive overlap for smaller screens */
+        border-radius: 30px 30px 0 0; /* Softer, proportional curve */
+        padding: 60px 5% 40px 5%; /* Adjust inner padding so it breathes */
+    }
+
+    .hero-text h1 {
+        font-size: 3rem;
+    }
+
+    .typewriter p {
+        white-space: normal; 
+        border: none; 
+        width: auto;
+        animation: none; 
+        font-size: 1.4rem;
+    }
+
+    .buttons {
+        justify-content: center;
+        flex-direction: column;
+        width: 83%;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .bts-item, .bts-item.reverse {
+        flex-direction: column; 
+        text-align: center;
+        gap: 40px;
     }
     
     .img-placeholder {
@@ -674,102 +704,15 @@ nav a:hover {
         height: 280px;
     }
 
-    .bts-header h1 {
-        font-size: 2.2rem;
-    }
-    .features-header h2 {
-        font-size: 2.2rem;
-    }
-    
     .footer-content {
         flex-direction: column;
         text-align: center;
-        gap: 30px;
-    }
-}
-
-
-
-
-/* =================================== */
-/* Mobile Responsive                   */
-/* =================================== */
-@media (max-width: 768px) {
-    
-    .navbar {
-        /* Keep logo and hamburger on one line */
-        flex-direction: row;
-        flex-wrap: wrap; /* Allows menu to drop below */
-        padding: 20px 30px; /* Consistent padding */
-    }
-
-    .logo {
-        margin-bottom: 0; /* Remove bottom margin */
-    }
-    
-    .logo h1 {
-        margin: 0; /* Remove top margin */
-    }
-
-    /* Show hamburger label */
-    .nav-toggle-label {
-        display: block;
-    }
-
-    /* Hide nav menu by default */
-    .nav-menu {
-        display: none;
-        width: 100%;
-        background-color: #ffffff;
-        padding: 20px 0;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        position: absolute; /* Detach from flow */
-        top: 70px; /* Push below navbar */
-        left: 0;
-        flex-direction: column;
         align-items: center;
+        gap: 40px;
     }
 
-    /* Show menu when checkbox is checked */
-    .nav-toggle:checked ~ .nav-menu {
-        display: flex;
-    }
-
-    /* Style links for mobile dropdown */
-    .nav-menu .bordernav {
-        display: flex;
+    .footer-links {
         flex-direction: column;
-        width: 100%;
-        align-items: center;
+        gap: 20px;
     }
-
-    nav a {
-        margin: 10px 0; /* Vertical spacing for links */
-        width: 100%;
-        text-align: center;
-        display: block;
-    }
-
-  .hero {
-        flex-direction: column-reverse; /* Stack image on top, text below */
-        text-align: center;
-        height: auto;
-        padding-top: 100px;
-    }
-
-    .hero-text {
-        margin-top: 30px;
-    }
-    
-    .typewriter p {
-        white-space: normal; /* Allow text wrapping on mobile */
-        border: none; /* Remove cursor on mobile if it breaks lines */
-        width: auto;
-        animation: none; /* Remove typing animation on mobile for safety */
-    }
-
-    .buttons {
-        justify-content: center;
-    }
-
 }

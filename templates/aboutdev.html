@@ -8,36 +8,63 @@
     <link rel="stylesheet" href="../static/css/aboutdevstyle.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Oswald:wght@200..700&family=Rubik:wght@500&display=swap" rel="stylesheet">
     
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="logo">
-            <h1>CredibilityScan</h1>
-        </div>
-        <input type="checkbox" id="nav-toggle" class="nav-toggle">
-        <label for="nav-toggle" class="nav-toggle-label">
-            <span></span>
-        </label>
-        <nav class="nav-menu">
-            <div class="bordernav">
-                <a href="/">Home</a>
-                <a href="detector">Detector</a>
-                <a href="about">How to Use?</a>
-                <span id="ph-clock" style="margin-left: 20px; font-weight: 600; color: #2563eb; font-size: 0.9rem; white-space: nowrap;">
-                    Loading Time...
-                </span>
-            </div>
-        </nav>
-    </header>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <h1>CredibilityScan</h1>
+      </div>
+      
+      <!-- Hamburger Toggle Checkbox (hidden) -->
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      
+      <!-- Hamburger Icon Label -->
+      <label for="nav-toggle" class="nav-toggle-label">
+        <span></span>
+      </label>
 
-    <main class="tutorial-container">
+      <!-- Navigation Menu Wrapper -->
+      <nav class="nav-menu">
+          <div class="nav-links">
+              <a href="/">Home</a>
+              <a href="detector">Detector</a>
+              <a href="about">How to Use?</a>
+              <div id="ph-clock" class="status-chip">
+                  Loading Time...
+              </div>
+          </div>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero-mini">
+    <div class="aurora-container">
+      <div class="aurora-light light-1"></div>
+      <div class="aurora-light light-2"></div>
+      <div class="aurora-light light-3"></div>
+      <div class="aurora-light light-4"></div>
+    </div>
+    <div class="header-section reveal">
+        <h1>User Guide</h1>
+        <p>Master the tools of digital verification.</p>
+    </div>
+  </section>
+
+  <div class="folder-tabs-wrapper">
+    <button class="folder-tab active" data-target="text-tutorial">Text Tutorial</button>
+    <button class="folder-tab" data-target="video-tutorial">Video Tutorial</button>
+    <button class="folder-tab" data-target="demo-video">Watch Demo</button>
+  </div>
+
+    <main class="tutorial-container" id="text-tutorial">
         
-        <div class="header-section reveal">
-            <h2>How to Use</h2>
-            <p>For Text Content</p>
+        <div class="sub-header reveal">
+            <h2>For Text Content</h2>
+            <div class="accent-line"></div>
         </div>
 
         <section class="step-row reveal">
@@ -104,14 +131,18 @@
                 </div>
             </div>
         </section>
+                <div class="final-cta reveal">
+            <a href="/detector" class="btn-primary">Start Scanning Now</a>
+        </div>
         </main>
+        
 
         <!--Video Content-->
-        <main class="tutorial-containervid">
+<main class="tutorial-containervid" id="video-tutorial" style="display: none;">
         
-        <div class="header-section reveal">
-            <h2>How to Use</h2>
-            <p>For Video Content</p>
+        <div class="sub-header reveal">
+            <h2>For Video Content</h2>
+            <div class="accent-line"></div>
         </div>
 
         <section class="step-row reveal">
@@ -126,7 +157,7 @@
             <div class="step-visual">
                 <div class="img-placeholder">
                     <img src="../static/howtousepics/5.png" alt="Copy text example">
-                    
+                </div>
             </div>
         </section>
 
@@ -142,6 +173,7 @@
             <div class="step-visual">
                 <div class="img-placeholder">
                     <img src="../static/howtousepics/6.png" alt="Copy text example">
+                </div>
             </div>
         </section>
 
@@ -149,7 +181,7 @@
             <div class="step-text">
                 <span class="step-number">03</span>
                 <h3>Analyze Content</h3>
-                <p>Hit the <strong>Analyze Video</strong> button. The model will process the video if manipulated by Deepfake Technology and collects supporting evidences from Reputable Philippine News Sources</p>
+                <p>Hit the <strong>Analyze Video</strong> button. The model will process the video if manipulated by Deepfake Technology and collects supporting evidences from Reputable Philippine News Sources.</p>
                 <div class="step-action">
                     <i class="fa-solid fa-magnifying-glass-chart"></i> <span>Click Analyze</span>
                 </div>
@@ -157,6 +189,7 @@
             <div class="step-visual">
                 <div class="img-placeholder">
                     <img src="../static/howtousepics/7.png" alt="Copy text example">
+                </div>
             </div>
         </section>
 
@@ -170,33 +203,36 @@
                 </div>
             </div>
             <div class="step-visual">
-                <div class="step-visual">
                 <div class="img-placeholder">
                     <img src="../static/howtousepics/8.png" alt="Copy text example">
                 </div>
             </div>
         </section>
 
-        <section class="demo-video-section reveal">
-            <div class="header-section">
-                <h2>Watch it in Action</h2>
-                <p>A quick demonstration of CredibilityScan</p>
-            </div>
-            
-            <div class="video-box">
-                <video controls poster="../static/howtousepics/thumbnail.png">
-                    <source src="../static/howtousepics/vid_tutorial.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </section>
-
         <div class="final-cta reveal">
-            <a href="/detector" class="btn-primary">Start Scanning Now</a>
-        </div>   
-
+            <a href="/detector" class="btn-primary">Start Detecting Now</a>
+        </div>
     </main>
-    <footer class="site-footer">
+
+    <main class="demo-video-section" id="demo-video" style="display: none;">
+        <div class="header-section reveal">
+            <h2 style="color: #0f172a;">Watch it in Action</h2>
+            <p style="color: #475569;">A quick demonstration of CredibilityScan</p>
+        </div>
+
+        <div class="video-box reveal">
+            <video controls poster="../static/howtousepics/thumbnail.png">
+                <source src="../static/howtousepics/vid_tutorial.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+                <div class="final-cta reveal">
+            <a href="/detector" class="btn-primary">Use Detector Now</a>
+        </div>
+    </main>
+
+
+<footer class="site-footer">
     <div class="footer-content">
         <div class="footer-logo">
             <h2>CredibilityScan</h2>
@@ -211,10 +247,61 @@
     <div class="footer-bottom">
         <p>&copy; 2026 CredibilityScan. All rights reserved.</p>
     </div>
-    </footer>
+</footer>
 
 
     <script>
+        // Tab Switching Logic
+        (function() {
+            const tabs = document.querySelectorAll('.folder-tab');
+            const containers = {
+                'text-tutorial': document.getElementById('text-tutorial'),
+                'video-tutorial': document.getElementById('video-tutorial'),
+                'demo-video': document.getElementById('demo-video')
+            };
+
+            const bgColors = {
+                'text-tutorial': '#f8fafc',
+                'video-tutorial': '#ffffff',
+                'demo-video': '#ffffff'
+            };
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-target');
+
+                    // Remove active class from all tabs
+                    tabs.forEach(t => {
+                        t.classList.remove('active');
+                        t.style.backgroundColor = ''; // Reset background
+                    });
+
+                    // Hide all containers
+                    Object.values(containers).forEach(c => {
+                        if (c) c.style.display = 'none';
+                    });
+
+                    // Activate clicked tab
+                    tab.classList.add('active');
+                    tab.style.backgroundColor = bgColors[target];
+
+                    // Show target container
+                    if (containers[target]) {
+                        containers[target].style.display = 'block';
+                        // Re-trigger reveal animation if needed
+                        containers[target].classList.remove('active');
+                        setTimeout(() => containers[target].classList.add('active'), 10);
+                    }
+                });
+            });
+
+            // Set initial color for active tab
+            const activeTab = document.querySelector('.folder-tab.active');
+            if (activeTab) {
+                activeTab.style.backgroundColor = bgColors[activeTab.getAttribute('data-target')];
+            }
+        })();
+
         // Simple Intersection Observer to trigger animations on scroll
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
