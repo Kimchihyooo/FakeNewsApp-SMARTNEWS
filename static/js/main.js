@@ -4,7 +4,7 @@
 // NEW LOADING OVERLAY FUNCTION
 // =========================================
 function toggleLoadingState(isLoading) {
-    const overlay = document.getElementById('custom-loader-overlay'); // Updated ID
+    const overlay = document.getElementById('custom-loader-overlay');
 
     if (!overlay) return; 
 
@@ -172,14 +172,11 @@ function openSimpleGraphModal(imgSrc) {
 function highlightKeywords(text, keywords) {
     if (!keywords || !Array.isArray(keywords) || keywords.length === 0) return text;
     
-    // Sort by length (longest first) and escape for Regex
     const escapedKeywords = keywords
         .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
         .sort((a, b) => b.length - a.length);
 
-    // Use \b (Word Boundary) to ensure whole word matches only
     const pattern = new RegExp(`\\b(${escapedKeywords.join('|')})\\b`, 'gi');
-    
     return text.replace(pattern, '<span style="background-color: #fef08a; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px;">$1</span>');
 }
 
@@ -292,6 +289,7 @@ function displayAnalysis(data) {
         if(el) el.style.display = 'none';
     });
 
+    // --- 1. INITIALIZE KEY VARIABLES EARLY ---
     let isVideo = false;
     if (data.type) {
         isVideo = (data.type === 'video');
@@ -306,7 +304,7 @@ function displayAnalysis(data) {
     let verdictLabel = data.score_label || "Processing..."; 
     const isVerifiedSource = data.search_verdict === "VERIFIED";
 
-    // --- DYNAMIC THRESHOLD OVERRIDE ---
+    // --- DYNAMIC THRESHOLD OVERRIDE FOR VIDEO ---
     if (isVideo && verdictLabel.toLowerCase().includes("deepfake")) {
         if (actualFrameCount < 45) {
             if (isVerifiedSource) {
@@ -318,17 +316,24 @@ function displayAnalysis(data) {
         }
     }
 
-    let themeColor = "#3b82f6"; 
-    let isReal = false;
-    const labelLower = verdictLabel.toLowerCase();
+    // --- 2. DYNAMIC THEME COLOR LOGIC & UNCERTAIN CHECK ---
+    const labelLower = verdictLabel.toLowerCase().trim();
     
-    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("MOST LIKELY REAL")) {
-        themeColor = "#4ade80"; 
+    const isUncertain = labelLower.includes("uncertain") || 
+                        labelLower.includes("inconclusive") || 
+                        labelLower.includes("suspicious") || 
+                        labelLower.includes("unknown");
+
+    let themeColor = "#3b82f6"; // Default blue
+    let isReal = false;
+    
+    if (labelLower.includes("source verified") || labelLower.includes("real") || labelLower.includes("most likely real")) {
+        themeColor = "#4ade80"; // Green
         isReal = true;
-    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("MOST LIKELY FAKE")) {
-        themeColor = "#f87171"; 
-    } else if (labelLower.includes("inconclusive") || labelLower.includes("suspicious") || labelLower.includes("unknown")) {
-        themeColor = "#fbbf24"; 
+    } else if (labelLower.includes("fake") || labelLower.includes("deepfake") || labelLower.includes("most likely fake")) {
+        themeColor = "#f87171"; // Red
+    } else if (isUncertain) {
+        themeColor = "#f59e0b"; // Yellow/Amber
     }
 
     const rawConf = data.model_confidence;
@@ -343,6 +348,7 @@ function displayAnalysis(data) {
         }
     }
 
+    // --- 3. BUILD UI COMPONENTS ---
     let videoMetaHTML = "";
     if (isVideo) {
         let author = data.author;
@@ -387,7 +393,6 @@ function displayAnalysis(data) {
                          onmouseover="this.style.opacity='0.8'"
                          onmouseout="this.style.opacity='1'">
                 </div>
-                
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.75rem;">
                     <div style="display: flex; gap: 12px; color: #94a3b8;">
                         <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#22c55e; border-radius:2px;"></span> Clean</span>
@@ -434,22 +439,18 @@ function displayAnalysis(data) {
 
                 transparencyHTML = `
                     <div id="${uniqueId}" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.85rem;">
-                        <!-- Section 1: The Claim -->
                         <div style="margin-bottom: 6px; color: #94a3b8; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             Claim:
                         </div>
                         <div style="color: #f8fafc; line-height: 1.6; font-style: italic; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px;">
                             "${highlightedClaim}"
                         </div>
-
-                        <!-- Section 2: Source Evidence Match (Duplicated Snippet) -->
                         <div style="margin-bottom: 6px; color: #94a3b8; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
                             Supporting Evidence from Source:
                         </div>
                         <div style="color: #f8fafc; line-height: 1.6; background: rgba(59, 130, 246, 0.05); padding: 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2);">
                             "${highlightedSnippet}"
                         </div>
-
                         <div style="margin-top: 10px; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
                             <strong>Common Keywords:</strong> ${item.matched_keywords ? item.matched_keywords.join(', ') : 'None'}
                         </div>
@@ -470,7 +471,6 @@ function displayAnalysis(data) {
                     <div style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
                         ${item.snippet || "No preview text available."}
                     </div>
-                    
                     ${toggleBtnHTML}
                     ${transparencyHTML}
                 </div>
@@ -562,6 +562,29 @@ function displayAnalysis(data) {
         `;
     }
 
+// --- DYNAMIC CONTEXTUAL ANALYSIS BOX ---
+    let explanationHTML = "";
+    if (!isVideo && data.explanation) {
+        
+        // Change the icon based on the verdict
+        let icon = "⚠️";
+        if (isReal) icon = "✅";
+        else if (!isUncertain) icon = "🚨"; // For Most Likely Fake
+
+        // We use the themeColor and append hex opacity (1A = 10%, 33 = 20%)
+        explanationHTML = `
+            <div style="background: ${themeColor}1A; border-left: 4px solid ${themeColor}; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-right: 1px solid ${themeColor}33; border-top: 1px solid ${themeColor}33; border-bottom: 1px solid ${themeColor}33;">
+                <div style="color: ${themeColor}; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <span>${icon}</span> Contextual Analysis
+                </div>
+                <div style="color: #f8fafc; font-size: 0.95rem; line-height: 1.6; font-family: 'Rubik', sans-serif;">
+                    ${data.explanation}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- 4. ASSEMBLE REPORT HTML (Hiding logic applied here) ---
     const reportHTML = `
         <div class="forensic-card">
             <div class="forensic-header" style="border-left: 6px solid ${themeColor}; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px;">
@@ -570,14 +593,16 @@ function displayAnalysis(data) {
                         <h4>Verdict</h4>
                         <h2 style="color: ${themeColor}; margin: 0;">${verdictLabel}</h2>
                     </div>
-                    ${!isVideo ? `
+                    
+                    ${(!isVideo && !isUncertain) ? `
                     <div style="text-align: right;">
                         <h4 style="margin: 0; color: ${themeColor}; font-size: 35px;">${displayConf}</h4>
                         <span style="font-size: 0.7em; opacity: 0.8; color: #94a3b8;">Confidence</span>
                     </div>
                     ` : ''}
                 </div>
-                <div style="width: 100%; height: 8px; background-color: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; ${isVideo ? 'display: none;' : ''}">
+                
+                <div style="width: 100%; height: 8px; background-color: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; ${(isVideo || isUncertain) ? 'display: none;' : ''}">
                     <div style="width: ${barValue}%; height: 100%; background-color: ${themeColor}; transition: width 0.6s ease-in-out;"></div>
                 </div>
             </div>
@@ -590,19 +615,20 @@ function displayAnalysis(data) {
                 ${videoMetaHTML}
                 ${sourceBadge}
                 
+                ${explanationHTML}
+                
                 <div style="color: #f8fafc; line-height: 1.8; font-size: 1.05rem; margin-bottom: 10px;">
                     ${data.lime_html || data.news_text || data.interpretation || "No content."}
                 </div>
 
                 ${timelineHTML}
-
                 ${frameGalleryHTML}
-
                 ${evidenceHTML}
             </div>
         </div>
     `;
 
+    // --- 5. RENDER TO DOM ---
     let container = document.getElementById('forensic-report-container');
     if (!container) {
         container = document.createElement('div');
@@ -616,6 +642,7 @@ function displayAnalysis(data) {
         resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
 
+    // --- 6. RENDER BIAS DISTRIBUTION ---
     const biasContainer = document.getElementById('bias-container');
     const segLeft = document.getElementById('bias-seg-left');
     const segCenter = document.getElementById('bias-seg-center');
@@ -684,14 +711,10 @@ function addToHistory(data) {
         score_label: data.score_label,
         classification_text: data.classification_text,
         model_confidence: data.model_confidence,
-        colors: data.colors,
-        
+        colors: data.colors,   
         frame_count: totalFrames,
         scan_skipped: data.scan_skipped, 
-        
-        // --- ADDED: SAVE GRAPH ---
-        timeline_graph: data.timeline_graph, 
-        
+        timeline_graph: data.timeline_graph,       
         lime_html: data.lime_html,
         supporting_articles: data.supporting_articles,
         bias_data: data.bias_data,
@@ -699,6 +722,7 @@ function addToHistory(data) {
         search_verdict: data.search_verdict,
         search_reason: data.search_reason,
         evidence: data.evidence,
+        explanation: data.explanation,
         author: document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : (data.author || "Unknown"),
         platform: document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : (data.platform || "Platform"),
         isFavorite: false 
