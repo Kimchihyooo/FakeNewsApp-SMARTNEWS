@@ -441,7 +441,7 @@ function displayAnalysis(data) {
                 toggleBtnHTML = `
                     <button onclick="document.getElementById('${uniqueId}').style.display = (document.getElementById('${uniqueId}').style.display === 'none' ? 'block' : 'none')" 
                         style="background: none; border: none; color: #60a5fa; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 0; margin-top: 8px; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;">
-                        <span style="font-size: 1rem;">🔍</span> Explain Relevance (${item.relevance_score}% Match)
+                        <span style="font-size: 1rem;">🔍</span> Explain Relevance
                     </button>
                 `;
 
@@ -724,10 +724,9 @@ function addToHistory(data) {
         model_confidence: data.model_confidence,
         colors: data.colors,   
         
-        frame_count: actualFrameCount, // <-- FIX APPLIED HERE
-        
-        scan_skipped: data.scan_skipped, 
-        timeline_graph: data.timeline_graph,       
+                frame_count: actualFrameCount,
+        scan_skipped: data.scan_skipped,
+        timeline_graph: data.timeline_graph,
         lime_html: data.lime_html,
         supporting_articles: data.supporting_articles,
         bias_data: data.bias_data,
@@ -736,6 +735,7 @@ function addToHistory(data) {
         search_reason: data.search_reason,
         evidence: data.evidence,
         explanation: data.explanation,
+        extracted_claim: data.extracted_claim,
         author: document.getElementById('preview-author') ? document.getElementById('preview-author').innerText : (data.author || "Unknown"),
         platform: document.getElementById('preview-platform') ? document.getElementById('preview-platform').innerText : (data.platform || "Platform"),
         isFavorite: false 
@@ -871,6 +871,9 @@ function renderHistory(itemsToRender = null) {
                     <div style="font-size:0.85rem; color:#cbd5e1; margin-top:6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         ${item.input_text.substring(0, 60)}...
                     </div>
+                    <div style="font-size:0.75rem; color:#6b7280; margin-top:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        Claim: ${item.extracted_claim ? item.extracted_claim.substring(0, 60) + '...' : 'N/A'}
+                    </div>
                 </div>
                 <div style="font-size:0.85rem; color:#94a3b8; font-weight: 500; text-align: right; flex-shrink: 0; margin-top: 2px;">
                     ${item.timestamp}
@@ -898,7 +901,7 @@ window.restoreSession = function(id) {
         const data = {
             ...item,
             suspicious_frames: item.suspicious_frames || [],
-            frame_count: item.frame_count 
+            extracted_claim: item.extracted_claim // Ensure extracted_claim is passed when restoring
         };
         
         if(item.type === 'video') {
