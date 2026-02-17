@@ -160,6 +160,94 @@
         body.loading-active {
             overflow: hidden !important;
         }
+
+        /* === TOOLTIP SYSTEM === */
+        .info-tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            color: #94a3b8;
+            transition: color 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .info-tooltip:hover {
+            color: #3b82f6;
+        }
+
+        .tooltip-box {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 14px;
+            padding: 18px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 160%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(15px) scale(0.9);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            pointer-events: none;
+            font-family: 'Rubik', sans-serif;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        /* Tooltip Arrow */
+        .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent;
+        }
+
+        /* Show Animation */
+        .info-tooltip:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Alignment Overrides */
+        .info-tooltip.right .tooltip-box {
+            left: 0;
+            margin-left: -15px;
+        }
+        .info-tooltip.right .tooltip-box::after {
+            left: 25px;
+        }
+
+        .info-tooltip.left .tooltip-box {
+            left: auto;
+            right: 0;
+            margin-left: 0;
+            margin-right: -15px;
+        }
+        .info-tooltip.left .tooltip-box::after {
+            left: auto;
+            right: 25px;
+        }
+
+        .info-tooltip.center .tooltip-box {
+            left: 50%;
+            margin-left: -130px;
+        }
 </style>
 
 </head>
@@ -296,8 +384,9 @@
 <div id="bias-container" class="animate-enter delay-2" style="display: none; margin-top: 25px; padding-top: 15px; border-top: 1px solid #f1f5f9;">
     
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
-        <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
+        <div style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
             Bias Distribution
+            <div class="info-tooltip right"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like checking the ingredients in a recipe. This distribution shows the overall mix of viewpoints inside the article. It tells you if the author is mostly giving you straight facts <span style="color: #a855f7">(Center)</span>, pushing for progressive change <span style="color: #3b82f6">(Left)</span>, or leaning toward traditional values <span style="color: #ef4444">(Right)</span>. Knowing the mix helps you spot if the writer is trying to push you in a certain direction!</span></div>
         </div>
     </div>
 
@@ -316,10 +405,19 @@
         </div>
     </div>
 
-    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.75rem; color: #64748b;">
-        <span id="bias-legend-left">Left: 0%</span>
-        <span id="bias-legend-center">Center: 0%</span>
-        <span id="bias-legend-right">Right: 0%</span>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.9rem; font-weight: 700; text-transform: uppercase;">
+        <div style="display: flex; align-items: center; gap: 6px; color: #3b82f6;">
+            <span id="bias-legend-left">Left: 0%</span>
+            <div class="info-tooltip right" style="color: #3b82f6;"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like focusing on the whole community. <span style="color: #3b82f6">Left-leaning</span> news likes to talk about fairness, protecting the environment, and changing old rules to make sure everyone is treated equally. They believe the government should step in to help people who need it.</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #a855f7;">
+            <span id="bias-legend-center">Center: 0%</span>
+            <div class="info-tooltip center" style="color: #a855f7;"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like a referee in a sports game. <span style="color: #a855f7">Center</span> news doesn't cheer for either side. It just wants to tell you exactly what happened, when it happened, and who was involved. It gives you the straight facts so you can make up your own mind.</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #ef4444;">
+            <span id="bias-legend-right">Right: 0%</span>
+            <div class="info-tooltip left" style="color: #ef4444;"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like focusing on independence. <span style="color: #ef4444">Right-leaning</span> news likes to talk about personal freedom, working hard, and respecting traditions. They believe that people do best when they can make their own choices and build their own success without too many rules from the government.</span></div>
+        </div>
     </div>
 
     <div style="margin-bottom: 20px;"></div>
