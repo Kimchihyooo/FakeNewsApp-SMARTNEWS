@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CredibilityScan Detector</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="stylesheet" href="/css/FakeNewsDetectorStyle.CSS" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+/* Scanning Animation Class */
+.scanning-effect {
+    position: relative;
+    /* Create a blue gradient beam */
+    background-image: linear-gradient(180deg, transparent, rgba(59, 130, 246, 0.25) 50%, transparent);
+    background-size: 100% 150px; /* Height of the beam */
+    background-repeat: no-repeat;
+    /* Animate it */
+    animation: scan-slide 1.5s infinite linear;
+    /* Highlight the border */
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Define the movement */
+@keyframes scan-slide {
+    0% { background-position: 0 -150px; }
+    100% { background-position: 0 calc(100% + 150px); }
+}
+
+/* === PREMIUM AI SCANNING LOADER === */
+        #custom-loader-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(2, 6, 23, 0.85) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            z-index: 999999 !important;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white !important;
+            font-family: 'Inter', sans-serif !important;
+            animation: loaderFadeIn 0.3s ease-out;
+        }
+
+        @keyframes loaderFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 3D ORBITAL CORE */
+        .custom-spinner-ring {
+            width: 80px !important;
+            height: 80px !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-bottom: 30px !important;
+            border: none !important;
+            animation: none !important;
+        }
+
+        .custom-spinner-ring::before,
+        .custom-spinner-ring::after {
+            content: "" !important;
+            position: absolute !important;
+            border-radius: 50% !important;
+            border: 3px solid transparent !important;
+        }
+
+        /* Outer Orbit */
+        .custom-spinner-ring::before {
+            width: 100% !important;
+            height: 100% !important;
+            border-top-color: #06b6d4 !important;
+            border-bottom-color: #06b6d4 !important;
+            animation: orbit-spin-1 2s linear infinite !important;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5) !important;
+        }
+
+        /* Inner Orbit */
+        .custom-spinner-ring::after {
+            width: 70% !important;
+            height: 70% !important;
+            border-left-color: #3b82f6 !important;
+            border-right-color: #3b82f6 !important;
+            animation: orbit-spin-2 1.5s linear infinite reverse !important;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important;
+        }
+
+        @keyframes orbit-spin-1 {
+            0% { transform: rotateX(45deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(45deg) rotateY(0deg) rotateZ(360deg); }
+        }
+
+        @keyframes orbit-spin-2 {
+            0% { transform: rotateX(-45deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(-45deg) rotateY(0deg) rotateZ(360deg); }
+        }
+
+        /* PULSING TYPOGRAPHY */
+        .loader-text-wrapper {
+            text-align: center !important;
+            animation: textPulse 2s ease-in-out infinite !important;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { opacity: 0.8; transform: scale(0.98); filter: drop-shadow(0 0 0px #3b82f6); }
+            50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6)); }
+        }
+
+        /* DYNAMIC TRIVIA STYLING */
+        .loading-trivia-text {
+            margin-top: 35px !important;
+            max-width: 650px !important;
+            min-height: 90px !important;
+            text-align: center !important;
+            color: #f1f5f9 !important;
+            font-size: 1.25rem !important;
+            font-family: 'Rubik', sans-serif !important;
+            font-weight: 400 !important;
+            line-height: 1.7 !important;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out !important;
+            padding: 0 40px !important;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.4) !important;
+            letter-spacing: 0.3px !important;
+            font-style: normal !important;
+        }
+
+        .loading-trivia-text.fade-out {
+            opacity: 0 !important;
+        }
+
+        /* ANIMATED DOTS */
+        .loading-dots::after {
+            content: "..." !important;
+            display: inline-block !important;
+            width: 20px !important;
+            text-align: left !important;
+            animation: dotsPulse 1.5s steps(4, end) infinite !important;
+        }
+
+        @keyframes dotsPulse {
+            0%, 20% { content: "" }
+            40% { content: "." }
+            60% { content: ".." }
+            80%, 100% { content: "..." }
+        }
+
+        body.loading-active {
+            overflow: hidden !important;
+        }
+
+        /* === TOOLTIP SYSTEM === */
+        .info-tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            color: #94a3b8;
+            transition: color 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .info-tooltip:hover {
+            color: #3b82f6;
+        }
+
+        .tooltip-box {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 14px;
+            padding: 18px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 160%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(15px) scale(0.9);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            pointer-events: none;
+            font-family: 'Rubik', sans-serif;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        /* Tooltip Arrow */
+        .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent;
+        }
+
+        /* Show Animation */
+        .info-tooltip:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Alignment Overrides */
+        .info-tooltip.right .tooltip-box {
+            left: 0;
+            margin-left: -15px;
+        }
+        .info-tooltip.right .tooltip-box::after {
+            left: 25px;
+        }
+
+        .info-tooltip.left .tooltip-box {
+            left: auto;
+            right: 0;
+            margin-left: 0;
+            margin-right: -15px;
+        }
+        .info-tooltip.left .tooltip-box::after {
+            left: auto;
+            right: 25px;
+        }
+
+        .info-tooltip.center .tooltip-box {
+            left: 50%;
+            margin-left: -130px;
+        }
+        /* === HIGHLIGHT SENTENCE TOOLTIP === */
+        .inline-tooltip-container {
+            position: relative;
+            cursor: help;
+            display: inline; /* Ensures multi-line sentences wrap naturally */
+        }
+
+        .inline-tooltip-box {
+            visibility: hidden;
+            width: 280px;
+            background-color: rgba(30, 41, 59, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 12px;
+            padding: 15px;
+            position: absolute;
+            z-index: 1010; /* Keeps it above other UI elements */
+            bottom: 100%;
+            left: 50%;
+            margin-bottom: 8px; /* Space between text and tooltip */
+            
+            /* Start hidden and slightly smaller for the animation */
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            font-family: 'Rubik', sans-serif;
+            font-weight: 400;
+            pointer-events: none; /* Prevents the cursor from glitching on hover */
+            text-transform: none; 
+            white-space: normal;
+        }
+
+        /* Tooltip Arrow pointing down */
+        .inline-tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(30, 41, 59, 0.98) transparent transparent transparent;
+        }
+
+        /* Show the tooltip with a smooth snap-in animation on hover */
+        .inline-tooltip-container:hover .inline-tooltip-box {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+</style>
+
+</head>
+<body>
+    <div class="aurora-container">
+        <div class="aurora-light light-1"></div>
+        <div class="aurora-light light-2"></div>
+        <div class="aurora-light light-3"></div>
+        <div class="aurora-light light-4"></div>
+    </div>
+<div id="custom-loader-overlay">
+        <div class="custom-spinner-ring"></div>
+        <div class="loader-text-wrapper">
+            <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">Analyzing Content<span class="loading-dots"></span></div>
+            <div id="loading-timer" style="font-family: monospace; color: #94a3b8; font-size: 1rem;">Processing: 0.00s</div>
+        </div>
+        <div id="loading-trivia" class="loading-trivia-text">Initiating credibility scan...</div>
+    </div>
+
+    <!-- Navbar-->
+    <header class="navbar">
+    <div class="navbar-container">
+        <div class="logo">
+            <h1>CredibilityScan</h1>
+        </div>
+
+        <!-- Hamburger Toggle Checkbox (hidden) -->
+        <input type="checkbox" id="nav-toggle" class="nav-toggle">
+        
+        <!-- Hamburger Icon Label -->
+        <label for="nav-toggle" class="nav-toggle-label">
+            <span></span>
+        </label>
+    
+        <!-- Navigation Menu Wrapper -->
+        <nav class="nav-menu">
+            <div class="nav-links">
+                <a href="/index.html">Home</a>
+                <a href="/detector.html">Detector</a>
+                <a href="/about.html">User Guide</a>
+                <div id="ph-clock" class="status-chip">
+                Loading Time...
+                </div>
+            </div>
+        </nav>
+    </div>
+    </header>
+
+
+    <div class="detector-container">
+        <div class="main-content-wrapper">
+
+            <div class="input-column">
+                <div class="input-tab-bar" role="tablist" aria-label="Input mode tabs">
+                    <button class="tab tab-active" data-mode="text" type="button">Text Article</button>
+                    <button class="tab" data-mode="video" type="button">Video Link</button>
+                </div>
+
+                <form id="analyzeForm" class="form" action="/analyze" method="post">
+                    <div class="mode mode-text">
+                        <label class="detector-label">News Content</label>
+                        <textarea id="userInput" name="news_text" class="detector-textarea" 
+                            placeholder="Paste the content of the article here..." required></textarea>
+                        <div id="word-counts" class="word-count" style="text-align: right; margin-top: 5px; color: #64748b; font-size: 0.9rem;">0 words</div>
+                        <button type="submit" class="detector-btn" id="btntext">Analyze</button>
+                    </div>
+                
+                    <div class="mode mode-video" style="display:none;">
+                        <label class="detector-label">Video URL</label>
+                        <input id="videoUrlInput" name="video_url" type="url" class="detector-textarea" 
+                            style="min-height: 60px; height: 60px;"
+                            placeholder="Paste YouTube, TikTok, or Facebook link..." autocomplete="off" />
+                        
+                        <div id="video-preview-card" style="display: none;">
+                            <div style="display: flex;">
+                                <div style="width: 140px; height: 100px; background: #f1f5f9; flex-shrink: 0; position: relative;">
+                                    <img id="preview-thumb" src="" style="width: 100%; height: 100%; object-fit: cover;" alt="Thumbnail">
+                                    <span id="preview-duration" style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;">0:00</span>
+                                </div>
+                                <div style="padding: 15px; display: flex; flex-direction: column; justify-content: center;">
+                                    <h4 id="preview-title" style="margin: 0 0 5px 0; font-size: 1rem; color: #bbb; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">Loading...</h4>
+                                    <div style="font-size: 0.85rem; color: #64748b;">
+                                        <span id="preview-author">Author</span> • <span id="preview-platform">Platform</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="detector-btn" id="btnvid">Analyze Video</button>
+                    </div>
+
+                    <div id="timer-display" style="display:none; text-align:center; margin-top:15px; font-family: monospace; font-size: 0.95rem; color: #64748b;">
+                        Processing: 0.00s
+                    </div>
+                </form>
+
+                <div class="detector-disclaimer">
+                    <i class="fas fa-shield-halved"></i>
+                    <p>
+                        <strong>Disclaimer:</strong> CredibilityScan uses AI to highlight potential misinformation, but it does not claim absolute truth. Please use these results as a guide and to enhance your critical thinking.
+                    </p>
+                </div>
+            </div> 
+
+            <div class="results-column">
+
+                <button type="button" class="history-trigger-btn" id="history-trigger-btn">
+                    View Recent Analysis
+                </button>
+
+                <div id="results-placeholder" class="results-placeholder">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <h3 style="color:#64748b; margin-top: 15px;">Ready to Scan</h3>
+                    <p style="color:#94a3b8; max-width: 300px; margin: 0 auto;">Enter content on the left to begin the deepfake or text verification process.</p>
+                </div>
+
+                <div id="results-area" style="display: none;">
+                    
+                    <div class="score-box animate-enter delay-1" id="scoreBox">
+                        <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: inherit; opacity: 0.8; margin-bottom: 5px;">Verdict</div>
+                        <h3 class="score" id="verdict-label">--</h3>
+                    </div>
+
+                    <div class="classification animate-enter delay-2" id="classifications">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 8px; color: #475569;">
+                            <span>AI Confidence</span>
+                            <strong id="confidence-score">0%</strong>
+                        </div>
+                        <div class="confidence-track">
+                            <div id="confidence-bar"></div>
+                        </div>
+                    </div>
+
+<div id="bias-container" class="animate-enter delay-2" style="display: none; margin-top: 25px; padding-top: 15px; border-top: 1px solid #f1f5f9;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+        <div style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+            Bias Distribution
+            <div class="info-tooltip right"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like checking the ingredients in a recipe. This distribution shows the overall mix of viewpoints inside the article. It tells you if the author is mostly giving you straight facts <span style="color: #a855f7">(Center)</span>, pushing for progressive change <span style="color: #3b82f6">(Left)</span>, or leaning toward traditional values <span style="color: #ef4444">(Right)</span>. Knowing the mix helps you spot if the writer is trying to push you in a certain direction!</span></div>
+        </div>
+    </div>
+
+    <div style="display: flex; width: 100%; height: 24px; background: #e2e8f0; border-radius: 6px; overflow: hidden;">
+        
+        <div id="bias-seg-left" style="width: 0%; background-color: #3b82f6; transition: width 0.8s; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span class="bias-text" style="color: white; font-size: 0.75rem; font-weight: 600; white-space: nowrap; padding: 0 4px;"></span>
+        </div>
+        
+        <div id="bias-seg-center" style="width: 0%; background-color: #a855f7; transition: width 0.8s; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span class="bias-text" style="color: white; font-size: 0.75rem; font-weight: 600; white-space: nowrap; padding: 0 4px;"></span>
+        </div>
+        
+        <div id="bias-seg-right" style="width: 0%; background-color: #ef4444; transition: width 0.8s; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span class="bias-text" style="color: white; font-size: 0.75rem; font-weight: 600; white-space: nowrap; padding: 0 4px;"></span>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.9rem; font-weight: 700; text-transform: uppercase;">
+        <div style="display: flex; align-items: center; gap: 6px; color: #3b82f6;">
+            <span id="bias-legend-left">Left: 0%</span>
+            <div class="info-tooltip right" style="color: #3b82f6;"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like focusing on the whole community. <span style="color: #3b82f6">Left-leaning</span> news likes to talk about fairness, protecting the environment, and changing old rules to make sure everyone is treated equally. They believe the government should step in to help people who need it.</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #a855f7;">
+            <span id="bias-legend-center">Center: 0%</span>
+            <div class="info-tooltip center" style="color: #a855f7;"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like a referee in a sports game. <span style="color: #a855f7">Center</span> news doesn't cheer for either side. It just wants to tell you exactly what happened, when it happened, and who was involved. It gives you the straight facts so you can make up your own mind.</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #ef4444;">
+            <span id="bias-legend-right">Right: 0%</span>
+            <div class="info-tooltip left" style="color: #ef4444;"><i class="fa-solid fa-circle-info"></i><span class="tooltip-box">Think of this like focusing on independence. <span style="color: #ef4444">Right-leaning</span> news likes to talk about personal freedom, working hard, and respecting traditions. They believe that people do best when they can make their own choices and build their own success without too many rules from the government.</span></div>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 20px;"></div>
+</div>
+
+                    <div class="animate-enter delay-3">
+                        <h4 style="margin: 0 0 10px 0; color: #334155; font-family: 'Rubik', sans-serif;"></h4>
+                        
+                        <div id="text-results-container">
+                            <div id="result-container" style="font-size: 0.95rem; line-height: 1.7; color: #334155;"></div>
+                            
+                            <div class="legend-box">
+                                <div class="legend-item">
+                                    <div class="legend-color-box legend-bad"></div>
+                                    <span>Sentences flagged as highly suspicious.</span>
+                                </div>
+                            </div>
+
+                            <div class="sources animate-enter delay-4" style="margin-top: 25px;">
+                                <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Supporting Sources</h3>
+                                <div id="sources-list"></div>
+                            </div>
+                        </div>
+
+                        <div id="video-results-container" style="display: none;">
+                            <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                                <p id="video-interpretation" style="color: #4b5563; margin: 0; line-height: 1.6;">Analysis pending...</p>
+                            </div>
+                            
+                            <h5 style="color: #64748b; margin-bottom: 10px;">Suspicious Frames (Click to Expand)</h5>
+                            <div id="frame-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;"></div>
+                            
+                            <div id="video-transcript-container" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;"></div>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+
+    <div class="modal-overlay" id="history-modal-overlay">
+        <div class="modal-content">
+            <div class="history-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin:0; font-size: 1.5rem; font-family: 'Recoleta', sans-serif;">Recent Analysis</h3>
+                    <button id="history-close-btn" style="background:none; border:none; font-size: 2rem; cursor:pointer; color: #94a3b8; transition: color 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">&times;</button>
+                </div>
+                
+                <div class="history-controls">
+                    <select id="history-filter-select" class="history-filter">
+                        <option value="all">All History</option>
+                        <option value="saved">⭐ Saved</option>
+                        <option value="text">📄 Text Articles</option>
+                        <option value="video">🎥 Videos</option>
+                        <option value="verified">✅ Verified / Real</option>
+                        <option value="fake">⚠️ Fake / Deepfake</option>
+                        <option value="uncertain">❓ Uncertain / Unknown</option>
+                    </select>
+                    <input type="text" id="history-search-input" class="history-search" placeholder="Search keywords...">
+                </div>
+
+                <div id="history-list" class="history-list">
+                    <p class="history-empty" style="text-align: center; color: #999;">Your analysis history will appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="image-modal-overlay" id="image-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.95); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:#fff; width:90%; max-width:900px; border-radius:12px; overflow:hidden; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); display:flex; flex-direction:column;">
+        
+        <div style="background:#f8fafc; padding:15px 20px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.5rem;">🔍</span>
+                <div>
+                    <h3 style="margin:0; font-size:1.1rem; color:#1e293b;">Forensic Analysis</h3>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2px; background:#e2e8f0;">
+            
+            <div style="background:#fff; padding:20px; display:flex; flex-direction:column; align-items:center;">
+                <span style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Original Frame</span>
+                <img id="modal-original-img" src="" style="max-width:100%; height:auto; border-radius:8px; border:1px solid #e2e8f0;">
+            </div>
+
+            <div style="background:#f8fafc; padding:20px; display:flex; flex-direction:column; align-items:center; position:relative;">
+                <span style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">sFocus Area (Zoom)</span>
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; border:1px solid #e2e8f0; overflow:hidden;">
+                    <img id="modal-zoom-img" src="" style="width:100%; height:100%; object-fit:contain; transform: scale(1.5);">
+                </div>
+                <div style="position:absolute; inset:20px; pointer-events:none; background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 20px 20px; opacity:0.3;"></div>
+            </div>
+        </div>
+
+        <div style="background:#f8fafc; padding:15px; border-top:1px solid #e2e8f0; text-align:right;">
+            <button id="image-modal-close" style="background:#3b82f6; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:600; cursor:pointer; transition:background 0.2s;">Done</button>
+        </div>
+    </div>
+</div>
+
+    <script src="/js/main.js"></script>
+
+    <script>
+    (function(){
+        // UI Elements
+        const tabs = document.querySelectorAll('.tab');
+        const textMode = document.querySelector('.mode-text');
+        const videoMode = document.querySelector('.mode-video');
+        const analyzeForm = document.getElementById('analyzeForm');
+        
+        // Inputs
+        const textInput = document.getElementById('userInput');
+        const videoInput = document.getElementById('videoUrlInput');
+        
+        // Results & Previews (To Clear)
+        const resultsArea = document.getElementById('results-area');
+        const placeholder = document.getElementById('results-placeholder');
+        const videoPreview = document.getElementById('video-preview-card');
+        const wordCountDisplay = document.getElementById('word-counts'); // NEW SELECTOR
+
+        tabs.forEach(t => {
+            t.addEventListener('click', () => {
+                // 1. Activate Tab Visuals
+                tabs.forEach(x => x.classList.remove('tab-active'));
+                t.classList.add('tab-active');
+                
+                // 2. CLEAR ALL INPUTS
+                if(textInput) {
+                    textInput.value = "";
+                    // NEW: Reset Word Count to 0
+                    if(wordCountDisplay) wordCountDisplay.innerText = "0 words";
+                }
+                if(videoInput) videoInput.value = "";
+
+                // 3. RESET RESULTS AREA (Hide old results, show placeholder)
+                if(resultsArea) resultsArea.style.display = 'none';
+                if(placeholder) placeholder.style.display = 'block';
+                
+                // 4. RESET VIDEO PREVIEW CARD
+                if(videoPreview) videoPreview.style.display = 'none';
+                
+                // 5. SWITCH MODES
+                const mode = t.getAttribute('data-mode');
+                if(mode === 'video'){
+                    textMode.style.display = 'none';
+                    videoMode.style.display = 'block';
+                    analyzeForm.setAttribute('action', '/analyze-video'); 
+                    
+                    if(textInput) textInput.required = false;
+                    if(videoInput) videoInput.required = true;
+                } else { 
+                    textMode.style.display = 'block';
+                    videoMode.style.display = 'none';
+                    analyzeForm.setAttribute('action', '/analyze'); 
+                    
+                    if(textInput) textInput.required = true;
+                    if(videoInput) videoInput.required = false;
+                }
+            });
+        });
+
+        // History Modal Logic
+        const histBtn = document.getElementById('history-trigger-btn');
+        const histModal = document.getElementById('history-modal-overlay');
+        const histClose = document.getElementById('history-close-btn');
+        
+        if(histBtn && histModal) {
+            histBtn.addEventListener('click', () => histModal.classList.add('modal-active'));
+            if(histClose) histClose.addEventListener('click', () => histModal.classList.remove('modal-active'));
+            histModal.addEventListener('click', (e) => {
+                if(e.target === histModal) histModal.classList.remove('modal-active');
+            });
+        }
+    })();
+
+    /* === DYNAMIC TRIVIA CAROUSEL LOGIC === */
+    (function() {
+        const triviaEl = document.getElementById('loading-trivia');
+        const facts = [
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Always check the URL. Fake news sites often use domains that mimic legitimate Philippine news outlets (e.g., .co or .site instead of .com).",
+            "📊 <strong style='color: #a855f7;'>Trivia:</strong> The Philippines was once dubbed the 'patient zero' of the digital disinformation era due to the heavy weaponization of social media.",
+            "🔍 <strong style='color: #60a5fa;'>Tip:</strong> Watch out for emotionally charged headlines. Disinformation relies on anger and fear to go viral.",
+            "🗣️ <strong style='color: #fbbf24;'>Quote:</strong> <em>'A lie can travel halfway around the world while the truth is putting on its shoes.'</em>",
+            "🤖 <strong style='color: #a855f7;'>Trivia:</strong> Deepfakes and AI voice cloning are increasingly being used in the Philippines to mimic public figures and politicians.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Check the date! Old news is frequently recycled and shared out of context to spark outrage today.",
+            "🔍 <strong style='color: #60a5fa;'>Tip:</strong> Verify the author. Anonymous articles or heavily biased pseudonyms are red flags for coordinated troll networks.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Read beyond the headline! Many fake news articles use shocking, clickbait titles that don't match the actual story.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Spotting a deepfake? Look closely at the eyes, teeth, and shadows. AI often struggles with unnatural blinking and lighting.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Use reverse image search. Fake news peddlers frequently recycle old photos from years ago to fit a new, false narrative.",
+            "📊 <strong style='color: #a855f7;'>Trivia:</strong> Filipinos consistently rank among the top social media users globally, spending over 4 hours a day on platforms like Facebook and TikTok.",
+            "🗣️ <strong style='color: #fbbf24;'>Quote:</strong> <em>'In the age of information, ignorance is a choice.'</em> – Donny Miller",
+            "🔍 <strong style='color: #60a5fa;'>Tip:</strong> Beware of confirmation bias. We are much more likely to believe and share fake news if it aligns with our existing political beliefs.",
+            "🗣️ <strong style='color: #fbbf24;'>Quote:</strong> <em>'Falsehood flies, and the truth comes limping after it.'</em> – Jonathan Swift"
+        ];
+
+        let triviaInterval = null;
+        let currentIndex = 0;
+
+        function cycleTrivia() {
+            if (!triviaEl) return;
+            
+            // 1. Fade out
+            triviaEl.classList.add('fade-out');
+            
+            // 2. Change text after fade out (500ms transition)
+            setTimeout(() => {
+                // Randomize index instead of sequential increment
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * facts.length);
+                } while (newIndex === currentIndex && facts.length > 1);
+                
+                currentIndex = newIndex;
+                triviaEl.innerHTML = facts[currentIndex];
+                
+                // 3. Fade back in
+                triviaEl.classList.remove('fade-out');
+            }, 500);
+        }
+
+        window.startTriviaCycle = function() {
+            if (triviaInterval) return;
+            
+            // Pick a random start
+            currentIndex = Math.floor(Math.random() * facts.length);
+            if (triviaEl) triviaEl.innerHTML = facts[currentIndex];
+            
+            triviaInterval = setInterval(cycleTrivia, 9000);
+        };
+
+        window.stopTriviaCycle = function() {
+            if (triviaInterval) {
+                clearInterval(triviaInterval);
+                triviaInterval = null;
+            }
+        };
+    })();
+
+    (function() {
+            const clockElement = document.getElementById('ph-clock');
+            if (!clockElement) return;
+
+            function updateClock() {
+                const now = new Date();
+                try {
+                    const options = { 
+                        timeZone: 'Asia/Manila', 
+                        weekday: 'short', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: true
+                    };
+                    clockElement.innerText = "🇵🇭 " + now.toLocaleString('en-US', options);
+                } catch (e) {
+                    clockElement.innerText = new Date().toLocaleTimeString(); // Fallback
+                }
+            }
+            
+            // Run immediately, then every second
+            updateClock();
+            setInterval(updateClock, 1000);
+        })();
+    </script>
+</body>
+</html>

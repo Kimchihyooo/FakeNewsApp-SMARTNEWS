@@ -1,0 +1,6 @@
+# Frontend .gitignore
+.DS_Store
+npm-debug.log
+.env
+.vercel/
+.netlify/
