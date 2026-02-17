@@ -809,3 +809,32 @@ body {
     position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer;
 }
 @keyframes zoom { from {transform:scale(0.8); opacity: 0;} to {transform:scale(1); opacity: 1;} }
+
+/* --- AI DISCLAIMER --- */
+.detector-disclaimer {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 25px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.detector-disclaimer i {
+    color: #3b82f6;
+    font-size: 1.1rem;
+    margin-top: 2px;
+}
+
+.detector-disclaimer p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.detector-disclaimer strong {
+    color: #3b82f6;
+}

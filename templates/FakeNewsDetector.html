@@ -6,6 +6,7 @@
     <title>CredibilityScan Detector</title>
     <link rel="icon" type="image/png" href="../static/logo.png">
     <link rel="stylesheet" href="../static/css/FakeNewsDetectorStyle.CSS" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
@@ -31,36 +32,129 @@
     100% { background-position: 0 calc(100% + 150px); }
 }
 
-#custom-loader-overlay {
+/* === PREMIUM AI SCANNING LOADER === */
+        #custom-loader-overlay {
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            background: rgba(15, 23, 42, 0.9) !important;
-            backdrop-filter: blur(8px) !important;
+            background: rgba(2, 6, 23, 0.85) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
             z-index: 999999 !important;
-            display: none; /* Changed by JS */
+            display: none; 
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white !important;
-            font-family: sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
+            animation: loaderFadeIn 0.3s ease-out;
         }
 
+        @keyframes loaderFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 3D ORBITAL CORE */
         .custom-spinner-ring {
-            width: 65px !important;
-            height: 65px !important;
-            border: 6px solid rgba(255, 255, 255, 0.1) !important; 
-            border-top: 6px solid #3b82f6 !important; 
-            border-radius: 50% !important;
-            animation: force-spin 1s linear infinite !important; 
-            margin-bottom: 20px !important;
-            box-sizing: border-box !important;
+            width: 80px !important;
+            height: 80px !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-bottom: 30px !important;
+            border: none !important;
+            animation: none !important;
         }
 
-        @keyframes force-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .custom-spinner-ring::before,
+        .custom-spinner-ring::after {
+            content: "" !important;
+            position: absolute !important;
+            border-radius: 50% !important;
+            border: 3px solid transparent !important;
+        }
+
+        /* Outer Orbit */
+        .custom-spinner-ring::before {
+            width: 100% !important;
+            height: 100% !important;
+            border-top-color: #06b6d4 !important;
+            border-bottom-color: #06b6d4 !important;
+            animation: orbit-spin-1 2s linear infinite !important;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5) !important;
+        }
+
+        /* Inner Orbit */
+        .custom-spinner-ring::after {
+            width: 70% !important;
+            height: 70% !important;
+            border-left-color: #3b82f6 !important;
+            border-right-color: #3b82f6 !important;
+            animation: orbit-spin-2 1.5s linear infinite reverse !important;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important;
+        }
+
+        @keyframes orbit-spin-1 {
+            0% { transform: rotateX(45deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(45deg) rotateY(0deg) rotateZ(360deg); }
+        }
+
+        @keyframes orbit-spin-2 {
+            0% { transform: rotateX(-45deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(-45deg) rotateY(0deg) rotateZ(360deg); }
+        }
+
+        /* PULSING TYPOGRAPHY */
+        .loader-text-wrapper {
+            text-align: center !important;
+            animation: textPulse 2s ease-in-out infinite !important;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { opacity: 0.8; transform: scale(0.98); filter: drop-shadow(0 0 0px #3b82f6); }
+            50% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6)); }
+        }
+
+        /* DYNAMIC TRIVIA STYLING */
+        .loading-trivia-text {
+            margin-top: 35px !important;
+            max-width: 650px !important;
+            min-height: 90px !important;
+            text-align: center !important;
+            color: #f1f5f9 !important;
+            font-size: 1.25rem !important;
+            font-family: 'Rubik', sans-serif !important;
+            font-weight: 400 !important;
+            line-height: 1.7 !important;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out !important;
+            padding: 0 40px !important;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.4) !important;
+            letter-spacing: 0.3px !important;
+            font-style: normal !important;
+        }
+
+        .loading-trivia-text.fade-out {
+            opacity: 0 !important;
+        }
+
+        /* ANIMATED DOTS */
+        .loading-dots::after {
+            content: "..." !important;
+            display: inline-block !important;
+            width: 20px !important;
+            text-align: left !important;
+            animation: dotsPulse 1.5s steps(4, end) infinite !important;
+        }
+
+        @keyframes dotsPulse {
+            0%, 20% { content: "" }
+            40% { content: "." }
+            60% { content: ".." }
+            80%, 100% { content: "..." }
         }
 
         body.loading-active {
@@ -78,11 +172,11 @@
     </div>
 <div id="custom-loader-overlay">
         <div class="custom-spinner-ring"></div>
-        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">Analyzing Content...</div>
-        <div id="loading-timer" style="font-family: monospace; color: #94a3b8; font-size: 1rem;">Processing: 0.00s</div>
-        <div style="width: 280px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 25px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
-            <div id="loading-progress-bar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.4s ease; box-shadow: 0 0 15px #3b82f6;"></div>
+        <div class="loader-text-wrapper">
+            <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">Analyzing Content<span class="loading-dots"></span></div>
+            <div id="loading-timer" style="font-family: monospace; color: #94a3b8; font-size: 1rem;">Processing: 0.00s</div>
         </div>
+        <div id="loading-trivia" class="loading-trivia-text">Initiating credibility scan...</div>
     </div>
 
     <!-- Navbar-->
@@ -105,7 +199,7 @@
             <div class="nav-links">
                 <a href="/">Home</a>
                 <a href="detector">Detector</a>
-                <a href="about">How to Use?</a>
+                <a href="about">User Guide</a>
                 <div id="ph-clock" class="status-chip">
                 Loading Time...
                 </div>
@@ -161,6 +255,13 @@
                         Processing: 0.00s
                     </div>
                 </form>
+
+                <div class="detector-disclaimer">
+                    <i class="fas fa-shield-halved"></i>
+                    <p>
+                        <strong>Disclaimer:</strong> CredibilityScan uses AI to highlight potential misinformation, but it does not claim absolute truth. Please use these results as a guide and always exercise your own critical thinking.
+                    </p>
+                </div>
             </div> 
 
             <div class="results-column">
@@ -395,6 +496,63 @@
                 if(e.target === histModal) histModal.classList.remove('modal-active');
             });
         }
+    })();
+
+    /* === DYNAMIC TRIVIA CAROUSEL LOGIC === */
+    (function() {
+        const triviaEl = document.getElementById('loading-trivia');
+        const facts = [
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Always check the URL. Fake news sites often use domains that mimic legitimate Philippine news outlets (e.g., .co or .site instead of .com).",
+            "📊 <strong style='color: #a855f7;'>Trivia:</strong> The Philippines was once dubbed the 'patient zero' of the digital disinformation era due to the heavy weaponization of social media.",
+            "🔍 <strong style='color: #60a5fa;'>Tip:</strong> Watch out for emotionally charged headlines. Disinformation relies on anger and fear to go viral.",
+            "🗣️ <strong style='color: #fbbf24;'>Quote:</strong> <em>'A lie can travel halfway around the world while the truth is putting on its shoes.'</em>",
+            "🤖 <strong style='color: #a855f7;'>Trivia:</strong> Deepfakes and AI voice cloning are increasingly being used in the Philippines to mimic public figures and politicians.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Check the date! Old news is frequently recycled and shared out of context to spark outrage today.",
+            "🔍 <strong style='color: #60a5fa;'>Tip:</strong> Verify the author. Anonymous articles or heavily biased pseudonyms are red flags for coordinated troll networks.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Read beyond the headline! Many fake news articles use shocking, clickbait titles that don't match the actual story.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Spotting a deepfake? Look closely at the eyes, teeth, and shadows. AI often struggles with unnatural blinking and lighting.",
+            "💡 <strong style='color: #60a5fa;'>Tip:</strong> Use reverse image search. Fake news peddlers frequently recycle old photos from years ago to fit a new, false narrative.",
+            "📊 <strong style='color: #a855f7;'>Trivia:</strong> Filipinos consistently rank among the top social media users globally, spending over 4 hours a day on platforms like Facebook and TikTok.",
+            "🗣️ <strong style='color: #fbbf24;'>Quote:</strong> <em>'In the age of information, ignorance is a choice.'</em> – Donny Miller",
+            "🔍 <strong style='color: #60a5fa;'>Tip:</strong> Beware of confirmation bias. We are much more likely to believe and share fake news if it aligns with our existing political beliefs.",
+            "🗣️ <strong style='color: #fbbf24;'>Quote:</strong> <em>'Falsehood flies, and the truth comes limping after it.'</em> – Jonathan Swift"
+        ];
+
+        let triviaInterval = null;
+        let currentIndex = 0;
+
+        function cycleTrivia() {
+            if (!triviaEl) return;
+            
+            // 1. Fade out
+            triviaEl.classList.add('fade-out');
+            
+            // 2. Change text after fade out (500ms transition)
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % facts.length;
+                triviaEl.innerHTML = facts[currentIndex];
+                
+                // 3. Fade back in
+                triviaEl.classList.remove('fade-out');
+            }, 500);
+        }
+
+        window.startTriviaCycle = function() {
+            if (triviaInterval) return;
+            
+            // Pick a random start
+            currentIndex = Math.floor(Math.random() * facts.length);
+            if (triviaEl) triviaEl.innerHTML = facts[currentIndex];
+            
+            triviaInterval = setInterval(cycleTrivia, 4500);
+        };
+
+        window.stopTriviaCycle = function() {
+            if (triviaInterval) {
+                clearInterval(triviaInterval);
+                triviaInterval = null;
+            }
+        };
     })();
 
     (function() {

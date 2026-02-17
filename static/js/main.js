@@ -5,7 +5,6 @@
 // =========================================
 function toggleLoadingState(isLoading) {
     const overlay = document.getElementById('custom-loader-overlay'); // Updated ID
-    const bar = document.getElementById('loading-progress-bar');
 
     if (!overlay) return; 
 
@@ -13,15 +12,18 @@ function toggleLoadingState(isLoading) {
         overlay.style.setProperty('display', 'flex', 'important');
         document.body.classList.add('loading-active');
         
-        if (bar) {
-            bar.style.width = '5%';
-            setTimeout(() => { bar.style.width = '30%'; }, 1500);
-            setTimeout(() => { bar.style.width = '65%'; }, 4000);
+        // Start trivia carousel
+        if (typeof window.startTriviaCycle === 'function') {
+            window.startTriviaCycle();
         }
     } else {
         overlay.style.setProperty('display', 'none', 'important');
         document.body.classList.remove('loading-active');
-        if (bar) bar.style.width = '0%'; 
+
+        // Stop trivia carousel
+        if (typeof window.stopTriviaCycle === 'function') {
+            window.stopTriviaCycle();
+        }
     }
 }
 
