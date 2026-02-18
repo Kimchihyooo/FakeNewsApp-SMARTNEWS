@@ -1,6 +1,6 @@
 // static/js/main.js
 
-const BASE_URL = "https://joshinoya-credscan-api.hf.space"; // REPLACE WITH YOUR DEPLOYED BACKEND URL
+const BASE_URL = "https://backend-production-fa8b.up.railway.app"; // REPLACE WITH YOUR DEPLOYED BACKEND URL
 
 // =========================================
 // NEW LOADING OVERLAY FUNCTION
